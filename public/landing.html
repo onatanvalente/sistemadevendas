@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SGC — Sistema de Gestão Comercial | Gerencie seu Negócio</title>
+  <meta name="description" content="Sistema completo de gestão para mercadinhos, drogarias e pequenos comércios. PDV, estoque, financeiro, fiscal e muito mais.">
+  <meta name="theme-color" content="#2563eb">
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232563eb'/><text x='50' y='65' text-anchor='middle' fill='white' font-family='Inter' font-weight='700' font-size='48'>S</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="/vendor/lucide.min.js"></script>
+
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-light: #3b82f6;
+      --secondary: #059669;
+      --accent: #f59e0b;
+      --bg: #f8fafc;
+      --text: #0f172a;
+      --text-light: #475569;
+      --text-muted: #94a3b8;
+      --border: #e2e8f0;
+      --card-bg: #ffffff;
+      --gradient: linear-gradient(135deg, #2563eb, #7c3aed);
+      --gradient-2: linear-gradient(135deg, #059669, #0ea5e9);
+    }
+    html { font-size:15px; scroll-behavior:smooth; }
+    body { font-family:'Inter',system-ui,-apple-system,sans-serif; color:var(--text); background:var(--bg); line-height:1.6; overflow-x:hidden; }
+    a { color:var(--primary); text-decoration:none; }
+    a:hover { text-decoration:underline; }
+
+    /* ── Navbar ── */
+    .nav { position:fixed; top:0; left:0; right:0; z-index:100; background:rgba(255,255,255,.92); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); padding:0 24px; }
+    .nav-inner { max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; height:64px; }
+    .nav-logo { display:flex; align-items:center; gap:10px; font-weight:800; font-size:1.4rem; color:var(--text); }
+    .nav-logo-icon { width:36px; height:36px; background:var(--primary); border-radius:10px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:1.1rem; }
+    .nav-links { display:flex; align-items:center; gap:32px; }
+    .nav-links a { color:var(--text-light); font-weight:500; font-size:.93rem; transition:color .2s; }
+    .nav-links a:hover { color:var(--primary); text-decoration:none; }
+    .nav-cta { display:flex; gap:12px; align-items:center; }
+    .btn { display:inline-flex; align-items:center; gap:8px; padding:10px 22px; border-radius:10px; font-weight:600; font-size:.93rem; cursor:pointer; border:none; transition:all .2s; text-decoration:none; }
+    .btn-outline { background:transparent; border:1.5px solid var(--border); color:var(--text); }
+    .btn-outline:hover { border-color:var(--primary); color:var(--primary); background:#eff6ff; text-decoration:none; }
+    .btn-primary { background:var(--primary); color:#fff; box-shadow:0 2px 8px rgba(37,99,235,.25); }
+    .btn-primary:hover { background:var(--primary-dark); transform:translateY(-1px); box-shadow:0 4px 12px rgba(37,99,235,.3); text-decoration:none; }
+    .btn-lg { padding:14px 32px; font-size:1.05rem; border-radius:12px; }
+    .btn-success { background:var(--secondary); color:#fff; box-shadow:0 2px 8px rgba(5,150,105,.25); }
+    .btn-success:hover { background:#047857; text-decoration:none; }
+
+    /* ── Hero ── */
+    .hero { padding:140px 24px 80px; text-align:center; position:relative; overflow:hidden; }
+    .hero::before { content:''; position:absolute; top:0; left:0; right:0; bottom:0; background:radial-gradient(ellipse at 30% 0%, rgba(37,99,235,.08) 0%, transparent 60%), radial-gradient(ellipse at 70% 100%, rgba(124,58,237,.06) 0%, transparent 60%); pointer-events:none; }
+    .hero-inner { max-width:800px; margin:0 auto; position:relative; z-index:1; }
+    .hero-badge { display:inline-flex; align-items:center; gap:8px; padding:6px 16px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:999px; font-size:.82rem; font-weight:600; color:var(--primary); margin-bottom:24px; }
+    .hero h1 { font-size:3.4rem; font-weight:900; line-height:1.1; letter-spacing:-.03em; margin-bottom:20px; background:linear-gradient(135deg, #0f172a 0%, #334155 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .hero p { font-size:1.2rem; color:var(--text-light); max-width:600px; margin:0 auto 36px; }
+    .hero-actions { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; }
+    .hero-stats { display:flex; gap:48px; justify-content:center; margin-top:56px; }
+    .hero-stat { text-align:center; }
+    .hero-stat strong { display:block; font-size:2rem; font-weight:800; color:var(--primary); }
+    .hero-stat span { font-size:.85rem; color:var(--text-muted); }
+
+    /* ── Sections ── */
+    .section { padding:80px 24px; }
+    .section-alt { background:#fff; }
+    .section-inner { max-width:1100px; margin:0 auto; }
+    .section-header { text-align:center; margin-bottom:56px; }
+    .section-header h2 { font-size:2.2rem; font-weight:800; letter-spacing:-.02em; margin-bottom:12px; }
+    .section-header p { font-size:1.05rem; color:var(--text-light); max-width:600px; margin:0 auto; }
+
+    /* ── Features Grid ── */
+    .features-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:24px; }
+    .feature-card { background:var(--card-bg); border:1px solid var(--border); border-radius:16px; padding:32px 28px; transition:all .25s; }
+    .feature-card:hover { transform:translateY(-4px); box-shadow:0 12px 32px rgba(0,0,0,.08); border-color:transparent; }
+    .feature-icon { width:52px; height:52px; border-radius:14px; display:flex; align-items:center; justify-content:center; margin-bottom:20px; }
+    .feature-icon.blue { background:#eff6ff; color:var(--primary); }
+    .feature-icon.green { background:#ecfdf5; color:var(--secondary); }
+    .feature-icon.purple { background:#f5f3ff; color:#7c3aed; }
+    .feature-icon.amber { background:#fffbeb; color:var(--accent); }
+    .feature-icon.rose { background:#fff1f2; color:#e11d48; }
+    .feature-icon.cyan { background:#ecfeff; color:#0891b2; }
+    .feature-card h3 { font-size:1.15rem; font-weight:700; margin-bottom:8px; }
+    .feature-card p { color:var(--text-light); font-size:.92rem; line-height:1.65; }
+
+    /* ── Pricing ── */
+    .pricing-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:28px; align-items:start; }
+    .price-card { background:var(--card-bg); border:1.5px solid var(--border); border-radius:20px; padding:36px 32px; position:relative; transition:all .25s; }
+    .price-card:hover { transform:translateY(-4px); box-shadow:0 16px 40px rgba(0,0,0,.08); }
+    .price-card.popular { border-color:var(--primary); box-shadow:0 8px 32px rgba(37,99,235,.12); }
+    .price-card.popular::after { content:'Mais Popular'; position:absolute; top:-13px; left:50%; transform:translateX(-50%); background:var(--gradient); color:#fff; padding:4px 20px; border-radius:999px; font-size:.78rem; font-weight:700; white-space:nowrap; }
+    .price-name { font-size:1.25rem; font-weight:700; margin-bottom:8px; }
+    .price-value { font-size:2.6rem; font-weight:900; margin-bottom:4px; }
+    .price-value span { font-size:1rem; font-weight:500; color:var(--text-muted); }
+    .price-desc { color:var(--text-muted); font-size:.88rem; margin-bottom:24px; padding-bottom:24px; border-bottom:1px solid var(--border); }
+    .price-features { list-style:none; margin-bottom:28px; }
+    .price-features li { padding:6px 0; font-size:.92rem; display:flex; align-items:center; gap:10px; color:var(--text-light); }
+    .price-features li::before { content:'✓'; color:var(--secondary); font-weight:700; font-size:1rem; }
+
+    /* ── Segments ── */
+    .segments { display:grid; grid-template-columns:1fr 1fr; gap:28px; }
+    .segment-card { background:var(--card-bg); border:1.5px solid var(--border); border-radius:20px; padding:40px 36px; display:flex; gap:24px; align-items:flex-start; transition:all .25s; }
+    .segment-card:hover { border-color:transparent; box-shadow:0 12px 32px rgba(0,0,0,.08); }
+    .segment-icon { width:64px; height:64px; border-radius:16px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .segment-icon.mercado { background:#eff6ff; color:var(--primary); }
+    .segment-icon.drogaria { background:#ecfdf5; color:var(--secondary); }
+    .segment-card h3 { font-size:1.25rem; font-weight:700; margin-bottom:8px; }
+    .segment-card p { color:var(--text-light); font-size:.93rem; margin-bottom:12px; }
+    .segment-tags { display:flex; flex-wrap:wrap; gap:6px; }
+    .segment-tag { padding:4px 12px; background:var(--bg); border-radius:999px; font-size:.78rem; font-weight:500; color:var(--text-light); }
+
+    /* ── CTA ── */
+    .cta-section { background:var(--gradient); padding:80px 24px; text-align:center; color:#fff; }
+    .cta-section h2 { font-size:2.4rem; font-weight:800; margin-bottom:16px; }
+    .cta-section p { font-size:1.1rem; opacity:.85; margin-bottom:36px; max-width:600px; margin-left:auto; margin-right:auto; }
+    .btn-white { background:#fff; color:var(--primary); font-weight:700; box-shadow:0 4px 16px rgba(0,0,0,.15); }
+    .btn-white:hover { transform:translateY(-2px); box-shadow:0 6px 24px rgba(0,0,0,.2); text-decoration:none; }
+
+    /* ── Footer ── */
+    .footer { background:#0f172a; color:#94a3b8; padding:48px 24px; text-align:center; }
+    .footer-inner { max-width:1100px; margin:0 auto; }
+    .footer p { font-size:.88rem; }
+    .footer a { color:#e2e8f0; }
+
+    /* ── Registration Modal ── */
+    .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); backdrop-filter:blur(4px); z-index:1000; align-items:center; justify-content:center; padding:24px; }
+    .modal-overlay.active { display:flex; }
+    .modal { background:#fff; border-radius:20px; width:100%; max-width:520px; max-height:90vh; overflow-y:auto; box-shadow:0 24px 64px rgba(0,0,0,.2); }
+    .modal-header { padding:28px 32px 0; display:flex; align-items:center; justify-content:space-between; }
+    .modal-header h2 { font-size:1.4rem; font-weight:800; }
+    .modal-close { width:36px; height:36px; border:none; background:var(--bg); border-radius:10px; cursor:pointer; font-size:1.2rem; display:flex; align-items:center; justify-content:center; color:var(--text-light); }
+    .modal-close:hover { background:#fee2e2; color:#dc2626; }
+    .modal-body { padding:24px 32px 32px; }
+    .form-group { margin-bottom:16px; }
+    .form-label { display:block; font-size:.85rem; font-weight:600; margin-bottom:6px; color:var(--text); }
+    .form-control { width:100%; padding:11px 14px; border:1.5px solid var(--border); border-radius:10px; font-size:.95rem; font-family:inherit; transition:border-color .2s; background:#fff; }
+    .form-control:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(37,99,235,.1); }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .form-select { width:100%; padding:11px 14px; border:1.5px solid var(--border); border-radius:10px; font-size:.95rem; font-family:inherit; background:#fff; cursor:pointer; }
+    .form-select:focus { outline:none; border-color:var(--primary); }
+    .slug-preview { background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:10px 14px; font-size:.88rem; color:#166534; margin-top:8px; display:none; }
+    .slug-preview code { background:#dcfce7; padding:2px 8px; border-radius:4px; font-weight:600; }
+    .form-error { color:#dc2626; font-size:.82rem; margin-top:4px; display:none; }
+    .form-success { background:#f0fdf4; border:1px solid #bbf7d0; border-radius:16px; padding:32px; text-align:center; }
+    .form-success h3 { color:#166534; font-size:1.2rem; margin-bottom:8px; }
+    .form-success p { color:#15803d; font-size:.95rem; margin-bottom:16px; }
+    .form-success .link-box { background:#fff; border:1.5px solid #86efac; border-radius:10px; padding:14px; font-size:1.1rem; font-weight:700; color:var(--primary); word-break:break-all; }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .features-grid, .pricing-grid { grid-template-columns:1fr; }
+      .segments { grid-template-columns:1fr; }
+      .hero h1 { font-size:2.4rem; }
+      .hero-stats { gap:24px; flex-wrap:wrap; }
+      .nav-links { display:none; }
+    }
+    @media (max-width: 600px) {
+      .hero { padding:120px 16px 60px; }
+      .hero h1 { font-size:2rem; }
+      .hero-actions { flex-direction:column; align-items:center; }
+      .form-row { grid-template-columns:1fr; }
+      .section { padding:56px 16px; }
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    .fade-up { animation: fadeUp .6s ease forwards; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════ NAVBAR ═══════════════ -->
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-logo">
+      <div class="nav-logo-icon">S</div>
+      SGC
+    </div>
+    <div class="nav-links">
+      <a href="#features">Funcionalidades</a>
+      <a href="#segmentos">Segmentos</a>
+      <a href="#planos">Planos</a>
+    </div>
+    <div class="nav-cta">
+      <a href="/master" class="btn btn-outline" style="font-size:.85rem;padding:8px 16px;">Painel Admin</a>
+      <button class="btn btn-primary" data-action="open-registro" style="font-size:.85rem;padding:8px 18px;">
+        <i data-lucide="rocket" style="width:16px;height:16px"></i> Começar Grátis
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<section class="hero">
+  <div class="hero-inner fade-up">
+    <div class="hero-badge">
+      <i data-lucide="zap" style="width:14px;height:14px"></i>
+      Novo: PDV completo com leitor de código de barras
+    </div>
+    <h1>Gerencie seu negócio de forma simples e profissional</h1>
+    <p>Sistema completo para mercadinhos, drogarias e comércios. PDV, estoque, financeiro, fiscal — tudo em um só lugar, na nuvem.</p>
+    <div class="hero-actions">
+      <button class="btn btn-primary btn-lg" data-action="open-registro">
+        <i data-lucide="rocket" style="width:20px;height:20px"></i> Criar Conta Grátis
+      </button>
+      <a href="#features" class="btn btn-outline btn-lg">
+        <i data-lucide="play" style="width:18px;height:18px"></i> Ver Funcionalidades
+      </a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><strong>100%</strong><span>Na nuvem</span></div>
+      <div class="hero-stat"><strong>0</strong><span>Instalação</span></div>
+      <div class="hero-stat"><strong>24/7</strong><span>Disponível</span></div>
+      <div class="hero-stat"><strong>Multi</strong><span>Dispositivos</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FEATURES ═══════════════ -->
+<section class="section section-alt" id="features">
+  <div class="section-inner">
+    <div class="section-header">
+      <h2>Tudo que você precisa em um só sistema</h2>
+      <p>Funcionalidades completas para transformar a gestão do seu negócio</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon blue"><i data-lucide="monitor" style="width:26px;height:26px"></i></div>
+        <h3>PDV Completo</h3>
+        <p>Ponto de venda com leitor de código de barras, múltiplos pagamentos, descontos e emissão de cupom fiscal.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon green"><i data-lucide="package" style="width:26px;height:26px"></i></div>
+        <h3>Controle de Estoque</h3>
+        <p>Gestão de estoque com alertas de mínimo/máximo, curva ABC, entrada via NF-e XML e inventário.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon purple"><i data-lucide="wallet" style="width:26px;height:26px"></i></div>
+        <h3>Financeiro</h3>
+        <p>Contas a pagar e receber, fluxo de caixa, centros de custo, conciliação bancária e DRE automático.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon amber"><i data-lucide="receipt" style="width:26px;height:26px"></i></div>
+        <h3>Fiscal & NF-e</h3>
+        <p>Emissão e importação de NF-e, CST, CFOP, NCM. Tudo preparado para obrigações fiscais.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon rose"><i data-lucide="users" style="width:26px;height:26px"></i></div>
+        <h3>Gestão de Equipe</h3>
+        <p>Perfis de acesso (admin, gerente, vendedor, financeiro, farmacêutico) com permissões granulares.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon cyan"><i data-lucide="bar-chart-3" style="width:26px;height:26px"></i></div>
+        <h3>Dashboard Inteligente</h3>
+        <p>Visão em tempo real de vendas, metas, produtos mais vendidos e indicadores de performance.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ SEGMENTOS ═══════════════ -->
+<section class="section" id="segmentos">
+  <div class="section-inner">
+    <div class="section-header">
+      <h2>Feito sob medida para seu segmento</h2>
+      <p>Módulos específicos que se adaptam ao seu tipo de negócio</p>
+    </div>
+    <div class="segments">
+      <div class="segment-card">
+        <div class="segment-icon mercado"><i data-lucide="shopping-cart" style="width:30px;height:30px"></i></div>
+        <div>
+          <h3>Mercadinhos & Mercearias</h3>
+          <p>PDV rápido, controle de validade, padaria com fracionamento, sugestão de compras e combos promocionais.</p>
+          <div class="segment-tags">
+            <span class="segment-tag">PDV Rápido</span>
+            <span class="segment-tag">Padaria</span>
+            <span class="segment-tag">Fracionamento</span>
+            <span class="segment-tag">Combos</span>
+            <span class="segment-tag">Fornecedores</span>
+          </div>
+        </div>
+      </div>
+      <div class="segment-card">
+        <div class="segment-icon drogaria"><i data-lucide="heart-pulse" style="width:30px;height:30px"></i></div>
+        <div>
+          <h3>Drogarias & Farmácias</h3>
+          <p>SNGPC integrado, controle de lote e validade, receituário digital, medicamentos controlados e genéricos.</p>
+          <div class="segment-tags">
+            <span class="segment-tag">SNGPC</span>
+            <span class="segment-tag">Controlados</span>
+            <span class="segment-tag">Lote & Validade</span>
+            <span class="segment-tag">Genéricos</span>
+            <span class="segment-tag">Receituário</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ PLANOS ═══════════════ -->
+<section class="section section-alt" id="planos">
+  <div class="section-inner">
+    <div class="section-header">
+      <h2>Planos para cada fase do seu negócio</h2>
+      <p>Comece grátis e evolua conforme cresce</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="price-name">Básico</div>
+        <div class="price-value">Grátis</div>
+        <div class="price-desc">Para quem está começando</div>
+        <ul class="price-features">
+          <li>1 usuário</li>
+          <li>1 caixa PDV</li>
+          <li>Até 200 produtos</li>
+          <li>Controle de estoque</li>
+          <li>Relatórios básicos</li>
+        </ul>
+        <button class="btn btn-outline" style="width:100%" data-action="open-registro">Começar Grátis</button>
+      </div>
+      <div class="price-card popular">
+        <div class="price-name">Profissional</div>
+        <div class="price-value">R$ 89<span>/mês</span></div>
+        <div class="price-desc">Para negócios em crescimento</div>
+        <ul class="price-features">
+          <li>5 usuários</li>
+          <li>3 caixas PDV</li>
+          <li>Produtos ilimitados</li>
+          <li>Financeiro completo</li>
+          <li>Fiscal & NF-e</li>
+          <li>Dashboard avançado</li>
+        </ul>
+        <button class="btn btn-primary" style="width:100%" data-action="open-registro">Começar Agora</button>
+      </div>
+      <div class="price-card">
+        <div class="price-name">Empresarial</div>
+        <div class="price-value">R$ 189<span>/mês</span></div>
+        <div class="price-desc">Para operações maiores</div>
+        <ul class="price-features">
+          <li>Usuários ilimitados</li>
+          <li>Caixas ilimitados</li>
+          <li>Produtos ilimitados</li>
+          <li>SNGPC integrado</li>
+          <li>API & integrações</li>
+          <li>Suporte prioritário</li>
+        </ul>
+        <button class="btn btn-success" style="width:100%" data-action="open-registro">Falar com Vendas</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ CTA ═══════════════ -->
+<section class="cta-section">
+  <h2>Pronto para transformar sua gestão?</h2>
+  <p>Crie sua conta em menos de 1 minuto. Sem cartão de crédito, sem compromisso.</p>
+  <button class="btn btn-white btn-lg" data-action="open-registro">
+    <i data-lucide="rocket" style="width:20px;height:20px"></i> Criar Conta Grátis
+  </button>
+</section>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer class="footer">
+  <div class="footer-inner">
+    <p>&copy; 2024 SGC — Sistema de Gestão Comercial. Todos os direitos reservados.</p>
+  </div>
+</footer>
+
+<!-- ═══════════════ MODAL REGISTRO ═══════════════ -->
+<div class="modal-overlay" id="registroModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Criar sua conta</h2>
+      <button class="modal-close" data-action="close-registro">&times;</button>
+    </div>
+    <div class="modal-body" id="registroBody">
+      <div class="form-group">
+        <label class="form-label">Nome da Empresa *</label>
+        <input type="text" class="form-control" id="regEmpNome" placeholder="Ex: Mercadinho Bom Preço">
+        <div class="slug-preview" id="slugPreview">
+          Seu link de acesso: <code id="slugUrl"></code>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Tipo de Negócio</label>
+          <select class="form-select" id="regTipo">
+            <option value="mercado">Mercado / Mercearia</option>
+            <option value="drogaria">Drogaria / Farmácia</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Telefone</label>
+          <input type="tel" class="form-control" id="regTelefone" placeholder="(00) 00000-0000">
+        </div>
+      </div>
+      <hr style="border:none;border-top:1px solid var(--border);margin:20px 0;">
+      <div class="form-group">
+        <label class="form-label">Seu Nome *</label>
+        <input type="text" class="form-control" id="regNome" placeholder="Nome completo">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email *</label>
+        <input type="email" class="form-control" id="regEmail" placeholder="seu@email.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Senha *</label>
+        <input type="password" class="form-control" id="regSenha" placeholder="Mínimo 6 caracteres">
+      </div>
+      <div class="form-error" id="regError"></div>
+      <button class="btn btn-primary btn-lg" style="width:100%;margin-top:8px" id="regBtn">
+        <i data-lucide="rocket" style="width:18px;height:18px"></i> Criar Conta
+      </button>
+      <p style="text-align:center;margin-top:16px;font-size:.85rem;color:var(--text-muted);">
+        Já tem conta? <a href="#" data-action="close-registro">Acesse pelo link da sua empresa</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ SCRIPT ═══════════════ -->
+<script>
+var Landing = {
+  slugTimeout: null,
+
+  openRegistro: function() {
+    document.getElementById('registroModal').classList.add('active');
+  },
+
+  closeRegistro: function() {
+    document.getElementById('registroModal').classList.remove('active');
+  },
+
+  checkSlug: function() {
+    var nome = document.getElementById('regEmpNome').value;
+    var preview = document.getElementById('slugPreview');
+    var urlEl = document.getElementById('slugUrl');
+    
+    if (nome.length < 3) {
+      preview.style.display = 'none';
+      return;
+    }
+
+    // Gerar slug local
+    var slug = nome.toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '')
+      .substring(0, 50);
+
+    urlEl.textContent = window.location.origin + '/app/' + slug;
+    preview.style.display = 'block';
+
+    // Verificar disponibilidade com debounce
+    clearTimeout(this.slugTimeout);
+    this.slugTimeout = setTimeout(function() {
+      fetch('/api/landing/check-slug/' + encodeURIComponent(slug))
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.disponivel) {
+            preview.style.background = '#f0fdf4';
+            preview.style.borderColor = '#bbf7d0';
+            preview.style.color = '#166534';
+          } else {
+            preview.style.background = '#fef2f2';
+            preview.style.borderColor = '#fecaca';
+            preview.style.color = '#991b1b';
+            urlEl.textContent += ' (indisponível, será ajustado)';
+          }
+        }).catch(function(){});
+    }, 400);
+  },
+
+  doRegistro: async function() {
+    var btn = document.getElementById('regBtn');
+    var errEl = document.getElementById('regError');
+    errEl.style.display = 'none';
+
+    var empresa_nome = document.getElementById('regEmpNome').value.trim();
+    var tipo_negocio = document.getElementById('regTipo').value;
+    var telefone = document.getElementById('regTelefone').value.trim();
+    var nome = document.getElementById('regNome').value.trim();
+    var email = document.getElementById('regEmail').value.trim();
+    var senha = document.getElementById('regSenha').value;
+
+    if (!empresa_nome || !nome || !email || !senha) {
+      errEl.textContent = 'Preencha todos os campos obrigatórios (*)';
+      errEl.style.display = 'block';
+      return;
+    }
+    if (senha.length < 6) {
+      errEl.textContent = 'A senha deve ter pelo menos 6 caracteres';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i data-lucide="loader" style="width:18px;height:18px;animation:spin 1s linear infinite"></i> Criando...';
+
+    try {
+      var res = await fetch('/api/landing/registro', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ empresa_nome: empresa_nome, tipo_negocio: tipo_negocio, telefone: telefone, nome: nome, email: email, senha: senha })
+      });
+      var data = await res.json();
+
+      if (!res.ok) {
+        errEl.textContent = data.error || 'Erro ao criar conta';
+        errEl.style.display = 'block';
+        btn.disabled = false;
+        btn.innerHTML = '<i data-lucide="rocket" style="width:18px;height:18px"></i> Criar Conta';
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+        return;
+      }
+
+      // Sucesso! Mostrar link de acesso
+      var url = window.location.origin + data.url_acesso;
+      document.getElementById('registroBody').innerHTML =
+        '<div class="form-success">' +
+          '<div style="margin-bottom:16px"><i data-lucide="check-circle" style="width:56px;height:56px;color:#059669"></i></div>' +
+          '<h3>Conta criada com sucesso!</h3>' +
+          '<p>Seu sistema já está pronto. Salve o link abaixo para acessar:</p>' +
+          '<div class="link-box">' + url + '</div>' +
+          '<div style="margin-top:20px">' +
+            '<a href="' + data.url_acesso + '" class="btn btn-primary btn-lg">' +
+              '<i data-lucide="arrow-right" style="width:18px;height:18px"></i> Acessar Meu Sistema' +
+            '</a>' +
+          '</div>' +
+          '<p style="margin-top:16px;font-size:.82rem;color:#64748b;">Login: ' + email + '</p>' +
+        '</div>';
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+
+    } catch(e) {
+      errEl.textContent = 'Erro de conexão. Tente novamente.';
+      errEl.style.display = 'block';
+      btn.disabled = false;
+      btn.innerHTML = '<i data-lucide="rocket" style="width:18px;height:18px"></i> Criar Conta';
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+  }
+};
+
+// Init icons
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('[data-action="open-registro"]').forEach(function(btn) {
+    btn.addEventListener('click', function() { Landing.openRegistro(); });
+  });
+  document.querySelectorAll('[data-action="close-registro"]').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      Landing.closeRegistro();
+    });
+  });
+  var regEmpNome = document.getElementById('regEmpNome');
+  if (regEmpNome) regEmpNome.addEventListener('input', function() { Landing.checkSlug(); });
+  var regBtn = document.getElementById('regBtn');
+  if (regBtn) regBtn.addEventListener('click', function() { Landing.doRegistro(); });
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+});
+
+// Spin animation
+var style = document.createElement('style');
+style.textContent = '@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }';
+document.head.appendChild(style);
+</script>
+
+</body>
+</html>

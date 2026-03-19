@@ -4,6 +4,7 @@
         "/^# Verificar qual porta cada instância usa\n\\$passwords = @\\(\"postgres\", \"123456\", \"admin\", \"root\", \"1234\", \"password\", \"\"\\)\n\\$ports = @\\(5432, 5433\\)\nforeach \\(\\$port in \\$ports\\) \\{\n    Write-Output \"--- Tentando porta \\$port ---\"\n    foreach \\(\\$p in \\$passwords\\) \\{\n        \\$env:PGPASSWORD = \\$p\n        \\$null = & \"C:\\\\Program Files\\\\PostgreSQL\\\\17\\\\bin\\\\psql\\.exe\" -U postgres -h localhost -p \\$port -c \"SELECT 1;\" 2>\\$null\n        if \\(\\$LASTEXITCODE -eq 0\\) \\{ Write-Output \"ENCONTRADA! Porta: \\$port, Senha: '\\$p'\"; break \\}\n    \\}\n\\}$/": {
             "approve": true,
             "matchCommandLine": true
-        }
+        },
+        "Get-NetTCPConnection": true
     }
 }

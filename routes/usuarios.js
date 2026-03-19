@@ -26,6 +26,11 @@ router.post('/', auth, perfil('administrador'), async (req, res) => {
       return res.status(400).json({ error: 'Nome, email e senha são obrigatórios' });
     }
 
+    // Senha mínima 8 caracteres (§5.2)
+    if (senha.length < 8) {
+      return res.status(400).json({ error: 'Senha deve ter pelo menos 8 caracteres' });
+    }
+
     const existe = await Usuario.findOne({ where: { email, empresa_id: req.empresa_id } });
     if (existe) {
       return res.status(400).json({ error: 'Email já cadastrado nesta empresa' });
@@ -62,7 +67,12 @@ router.put('/:id', auth, perfil('administrador'), async (req, res) => {
     if (req.body.email) dados.email = req.body.email;
     if (req.body.perfil) dados.perfil = req.body.perfil;
     if (req.body.ativo !== undefined) dados.ativo = req.body.ativo;
-    if (req.body.senha) dados.senha = await bcrypt.hash(req.body.senha, 12);
+    if (req.body.senha) {
+      if (req.body.senha.length < 8) {
+        return res.status(400).json({ error: 'Senha deve ter pelo menos 8 caracteres' });
+      }
+      dados.senha = await bcrypt.hash(req.body.senha, 12);
+    }
 
     await usuario.update(dados);
     res.json({ id: usuario.id, nome: usuario.nome, email: usuario.email, perfil: usuario.perfil, ativo: usuario.ativo });

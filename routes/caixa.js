@@ -94,8 +94,8 @@ router.post('/fechar', auth, async (req, res) => {
   }
 });
 
-// Sangria
-router.post('/sangria', auth, async (req, res) => {
+// Sangria — requer perfil gerente ou superior
+router.post('/sangria', auth, perfil('administrador', 'gerente'), async (req, res) => {
   try {
     const caixa = await Caixa.findOne({
       where: { empresa_id: req.empresa_id, usuario_id: req.usuario.id, status: 'aberto' }
@@ -107,6 +107,7 @@ router.post('/sangria', auth, async (req, res) => {
 
     await CaixaMovimentacao.create({
       caixa_id: caixa.id,
+      empresa_id: req.empresa_id,
       tipo: 'sangria',
       valor,
       motivo: req.body.motivo || 'Sangria',
@@ -123,8 +124,8 @@ router.post('/sangria', auth, async (req, res) => {
   }
 });
 
-// Suprimento
-router.post('/suprimento', auth, async (req, res) => {
+// Suprimento — requer perfil gerente ou superior
+router.post('/suprimento', auth, perfil('administrador', 'gerente'), async (req, res) => {
   try {
     const caixa = await Caixa.findOne({
       where: { empresa_id: req.empresa_id, usuario_id: req.usuario.id, status: 'aberto' }
@@ -136,6 +137,7 @@ router.post('/suprimento', auth, async (req, res) => {
 
     await CaixaMovimentacao.create({
       caixa_id: caixa.id,
+      empresa_id: req.empresa_id,
       tipo: 'suprimento',
       valor,
       motivo: req.body.motivo || 'Suprimento',
@@ -152,15 +154,31 @@ router.post('/suprimento', auth, async (req, res) => {
   }
 });
 
-// Histórico de caixas
-router.get('/historico', auth, async (req, res) => {
+// Histórico de caixas (paginado) — requer perfil gerente ou superior
+router.get('/historico', auth, perfil('administrador', 'gerente'), async (req, res) => {
   try {
-    const caixas = await Caixa.findAll({
-      where: { empresa_id: req.empresa_id },
-      order: [['created_at', 'DESC']],
-      limit: 30
+    const { Op } = require('sequelize');
+    const where = { empresa_id: req.empresa_id };
+
+    // Filtros
+    if (req.query.status) where.status = req.query.status;
+    if (req.query.data_inicio || req.query.data_fim) {
+      where.data_abertura = {};
+      if (req.query.data_inicio) where.data_abertura[Op.gte] = new Date(req.query.data_inicio);
+      if (req.query.data_fim) where.data_abertura[Op.lte] = new Date(req.query.data_fim + 'T23:59:59');
+    }
+
+    const limit = Math.min(parseInt(req.query.limit) || 20, 100);
+    const page = parseInt(req.query.page) || 1;
+    const offset = (page - 1) * limit;
+
+    const { count, rows } = await Caixa.findAndCountAll({
+      where,
+      order: [['data_abertura', 'DESC']],
+      limit,
+      offset
     });
-    res.json(caixas);
+    res.json({ data: rows, total: count, page, pages: Math.ceil(count / limit) });
   } catch (error) {
     res.status(500).json({ error: 'Erro ao listar histórico' });
   }

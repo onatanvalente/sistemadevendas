@@ -1,7 +1,8 @@
 const router = require('express').Router();
 const { Op } = require('sequelize');
-const { ContaPagar, ContaReceber, Fornecedor } = require('../models');
+const { ContaPagar, ContaReceber, Fornecedor, Cliente, Venda } = require('../models');
 const { auth, perfil } = require('../middleware/auth');
+const { logger } = require('../config/logger');
 
 // ═══════════════════════════════════════════════
 //  CONTAS A PAGAR
@@ -25,9 +26,23 @@ router.get('/pagar', auth, perfil('administrador', 'financeiro'), async (req, re
 
 router.post('/pagar', auth, perfil('administrador', 'financeiro'), async (req, res) => {
   try {
+    const { descricao, fornecedor_id, valor, data_vencimento, categoria, observacoes } = req.body;
+
+    // Validar que o fornecedor pertence ao mesmo tenant
+    if (fornecedor_id) {
+      const forn = await Fornecedor.findOne({ where: { id: fornecedor_id, empresa_id: req.empresa_id } });
+      if (!forn) {
+        logger.warn('ALERTA: FK IDOR bloqueada - fornecedor de outro tenant', {
+          tipo: 'fk_idor_fornecedor', usuario_id: req.usuario.id, empresa_id: req.empresa_id,
+          fornecedor_id, ip: req.ip, url: req.originalUrl
+        });
+        return res.status(400).json({ error: 'Fornecedor não encontrado' });
+      }
+    }
+
     const conta = await ContaPagar.create({
+      descricao, fornecedor_id, valor, data_vencimento, categoria, observacoes,
       empresa_id: req.empresa_id,
-      ...req.body,
       usuario_id: req.usuario.id
     });
     res.status(201).json(conta);
@@ -42,7 +57,21 @@ router.put('/pagar/:id', auth, perfil('administrador', 'financeiro'), async (req
       where: { id: req.params.id, empresa_id: req.empresa_id }
     });
     if (!conta) return res.status(404).json({ error: 'Conta não encontrada' });
-    await conta.update(req.body);
+    const { descricao, fornecedor_id, valor, data_vencimento, categoria, observacoes, status } = req.body;
+
+    // Validar que o fornecedor pertence ao mesmo tenant
+    if (fornecedor_id) {
+      const forn = await Fornecedor.findOne({ where: { id: fornecedor_id, empresa_id: req.empresa_id } });
+      if (!forn) {
+        logger.warn('ALERTA: FK IDOR bloqueada - fornecedor de outro tenant em PUT', {
+          tipo: 'fk_idor_fornecedor', usuario_id: req.usuario.id, empresa_id: req.empresa_id,
+          fornecedor_id, ip: req.ip
+        });
+        return res.status(400).json({ error: 'Fornecedor não encontrado' });
+      }
+    }
+
+    await conta.update({ descricao, fornecedor_id, valor, data_vencimento, categoria, observacoes, status });
     res.json(conta);
   } catch (error) {
     res.status(500).json({ error: 'Erro ao atualizar conta' });
@@ -100,9 +129,35 @@ router.get('/receber', auth, perfil('administrador', 'financeiro'), async (req, 
 
 router.post('/receber', auth, perfil('administrador', 'financeiro'), async (req, res) => {
   try {
+    const { descricao, cliente_nome, cliente_cpf, cliente_id, valor, data_vencimento, categoria, observacoes, venda_id, parcela } = req.body;
+
+    // Validar que cliente_id pertence ao mesmo tenant
+    if (cliente_id) {
+      const cli = await Cliente.findOne({ where: { id: cliente_id, empresa_id: req.empresa_id } });
+      if (!cli) {
+        logger.warn('ALERTA: FK IDOR bloqueada - cliente de outro tenant', {
+          tipo: 'fk_idor_cliente', usuario_id: req.usuario.id, empresa_id: req.empresa_id,
+          cliente_id, ip: req.ip
+        });
+        return res.status(400).json({ error: 'Cliente não encontrado' });
+      }
+    }
+
+    // Validar que venda_id pertence ao mesmo tenant
+    if (venda_id) {
+      const vnd = await Venda.findOne({ where: { id: venda_id, empresa_id: req.empresa_id } });
+      if (!vnd) {
+        logger.warn('ALERTA: FK IDOR bloqueada - venda de outro tenant', {
+          tipo: 'fk_idor_venda', usuario_id: req.usuario.id, empresa_id: req.empresa_id,
+          venda_id, ip: req.ip
+        });
+        return res.status(400).json({ error: 'Venda não encontrada' });
+      }
+    }
+
     const conta = await ContaReceber.create({
+      descricao, cliente_nome, cliente_cpf, cliente_id, valor, data_vencimento, categoria, observacoes, venda_id, parcela,
       empresa_id: req.empresa_id,
-      ...req.body,
       usuario_id: req.usuario.id
     });
     res.status(201).json(conta);

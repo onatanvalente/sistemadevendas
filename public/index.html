@@ -8,18 +8,19 @@
   <meta name="theme-color" content="#2563eb">
   
   <!-- Favicon -->
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💼</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232563eb'/><text x='50' y='65' text-anchor='middle' fill='white' font-family='Inter' font-weight='700' font-size='48'>S</text></svg>">
   
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Fonte Inter (self-hosted) -->
+  <link rel="stylesheet" href="/css/fonts.css">
+  
+  <!-- Lucide Icons (local) -->
+  <script src="/vendor/lucide.min.js"></script>
   
   <!-- Styles -->
   <link rel="stylesheet" href="/css/style.css">
 </head>
-<body>
-  <!-- Root da aplicação SPA -->
+<body style="visibility:hidden">
+  <!-- Root da aplicação SPA — body inicia oculto até o guard CSP liberar -->
   <div id="app">
     <div class="auth-page" style="flex-direction:column;gap:16px">
       <div class="spinner" style="width:48px;height:48px"></div>

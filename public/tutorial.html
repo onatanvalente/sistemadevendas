@@ -1,0 +1,1897 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SGC — Central de Ajuda | Tutorial Completo</title>
+  <style>
+    /* ═══════════════════════════════════════════
+       DESIGN TOKENS
+       ═══════════════════════════════════════════ */
+    :root {
+      --primary: #2563EB;
+      --primary-dark: #1D4ED8;
+      --primary-light: #3B82F6;
+      --primary-bg: #EFF6FF;
+      --violet: #7C3AED;
+      --violet-dark: #6D28D9;
+      --violet-bg: #F5F3FF;
+      --success: #16A34A;
+      --success-light: #DCFCE7;
+      --danger: #DC2626;
+      --danger-light: #FEE2E2;
+      --warning: #F59E0B;
+      --warning-light: #FEF3C7;
+      --teal: #0D9488;
+      --teal-light: #CCFBF1;
+      --bg: #F8FAFC;
+      --bg-card: #FFFFFF;
+      --text: #0F172A;
+      --text-secondary: #334155;
+      --text-light: #64748B;
+      --text-muted: #94A3B8;
+      --border: #E2E8F0;
+      --gradient: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%);
+      --radius: 8px;
+      --radius-lg: 12px;
+      --radius-xl: 16px;
+    }
+
+    /* ═══════════════════════════════════════════
+       RESET & BASE
+       ═══════════════════════════════════════════ */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html {
+      font-size: 15px;
+      scroll-behavior: smooth;
+      scroll-padding-top: 80px;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    ::selection {
+      background: rgba(37, 99, 235, 0.15);
+      color: var(--text);
+    }
+
+    /* ═══════════════════════════════════════════
+       LAYOUT
+       ═══════════════════════════════════════════ */
+    .doc-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ── Sidebar / Índice ── */
+    .doc-sidebar {
+      width: 280px;
+      background: var(--bg-card);
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      overflow-y: auto;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .doc-sidebar-header {
+      padding: 24px 20px 20px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .doc-sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .doc-sidebar-logo-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--gradient);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 800;
+      font-size: 1.1rem;
+    }
+
+    .doc-sidebar-logo-text {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.03em;
+    }
+
+    .doc-sidebar-meta {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .doc-sidebar-nav {
+      flex: 1;
+      padding: 16px 12px;
+      overflow-y: auto;
+    }
+
+    .doc-sidebar-nav-group {
+      margin-bottom: 20px;
+    }
+
+    .doc-sidebar-nav-group-title {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      padding: 0 8px;
+      margin-bottom: 6px;
+    }
+
+    .doc-sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: var(--radius);
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--text-light);
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+
+    .doc-sidebar-nav a:hover {
+      background: var(--primary-bg);
+      color: var(--primary);
+    }
+
+    .doc-sidebar-nav a .nav-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .doc-sidebar-nav a.active {
+      background: var(--primary-bg);
+      color: var(--primary);
+    }
+
+    .doc-sidebar-nav a.active .nav-num {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .doc-sidebar-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      flex-shrink: 0;
+      text-align: center;
+    }
+
+    /* ── Main Content ── */
+    .doc-main {
+      flex: 1;
+      margin-left: 280px;
+      max-width: 100%;
+    }
+
+    /* ── Hero Cover ── */
+    .doc-hero {
+      background: var(--gradient);
+      padding: 80px 64px 72px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .doc-hero::before {
+      content: '';
+      position: absolute;
+      top: -40%;
+      right: -20%;
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, rgba(255,255,255,0.07) 0%, transparent 70%);
+    }
+
+    .doc-hero::after {
+      content: '';
+      position: absolute;
+      bottom: -50%;
+      left: -10%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%);
+    }
+
+    .doc-hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 100px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.9);
+      margin-bottom: 24px;
+      backdrop-filter: blur(4px);
+      position: relative;
+      z-index: 1;
+    }
+
+    .doc-hero h1 {
+      font-size: 3rem;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.1;
+      letter-spacing: -0.04em;
+      margin-bottom: 16px;
+      max-width: 700px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .doc-hero p {
+      font-size: 1.15rem;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.6;
+      max-width: 560px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .doc-hero-meta {
+      display: flex;
+      gap: 28px;
+      margin-top: 40px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .doc-hero-meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .doc-hero-meta-item span:first-child {
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: rgba(255,255,255,0.5);
+    }
+
+    .doc-hero-meta-item span:last-child {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.95);
+    }
+
+    /* ── Content Sections ── */
+    .doc-content {
+      padding: 48px 64px 80px;
+    }
+
+    .doc-section {
+      margin-bottom: 64px;
+    }
+
+    .doc-section-header {
+      margin-bottom: 28px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .doc-section-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius);
+      background: var(--gradient);
+      color: #fff;
+      font-size: 0.82rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .doc-section-header h2 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.03em;
+      margin-bottom: 4px;
+    }
+
+    .doc-section-header p {
+      font-size: 0.9rem;
+      color: var(--text-light);
+    }
+
+    /* ── Paragraph ── */
+    .doc-content p {
+      margin-bottom: 16px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+
+    .doc-content h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text);
+      margin: 32px 0 12px;
+      letter-spacing: -0.01em;
+    }
+
+    .doc-content h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+      margin: 24px 0 8px;
+    }
+
+    /* ── Blockquote ── */
+    .doc-quote {
+      background: var(--primary-bg);
+      border-left: 4px solid var(--primary);
+      padding: 20px 24px;
+      border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+      margin: 24px 0;
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: var(--primary-dark);
+      font-style: italic;
+      line-height: 1.6;
+    }
+
+    .doc-quote.violet {
+      background: var(--violet-bg);
+      border-left-color: var(--violet);
+      color: var(--violet-dark);
+    }
+
+    /* ── Lists ── */
+    .doc-list {
+      list-style: none;
+      margin: 16px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .doc-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 4px 0;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .doc-list li::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--primary);
+      margin-top: 9px;
+      flex-shrink: 0;
+    }
+
+    .doc-list.check li::before {
+      content: '✓';
+      width: auto;
+      height: auto;
+      border-radius: 0;
+      background: none;
+      color: var(--success);
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-top: 2px;
+    }
+
+    .doc-list.cross li::before {
+      content: '✗';
+      width: auto;
+      height: auto;
+      border-radius: 0;
+      background: none;
+      color: var(--danger);
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-top: 2px;
+    }
+
+    .doc-list.numbered {
+      counter-reset: doclist;
+    }
+
+    .doc-list.numbered li::before {
+      counter-increment: doclist;
+      content: counter(doclist);
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: var(--primary-bg);
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.72rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+    }
+
+    /* ── Cards Grid ── */
+    .doc-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin: 24px 0;
+    }
+
+    .doc-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      transition: all 0.2s ease;
+    }
+
+    .doc-card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      transform: translateY(-2px);
+    }
+
+    .doc-card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      margin-bottom: 14px;
+    }
+
+    .doc-card-icon.blue   { background: #DBEAFE; }
+    .doc-card-icon.green  { background: #DCFCE7; }
+    .doc-card-icon.violet { background: #EDE9FE; }
+    .doc-card-icon.amber  { background: #FEF3C7; }
+    .doc-card-icon.red    { background: #FEE2E2; }
+    .doc-card-icon.teal   { background: #CCFBF1; }
+    .doc-card-icon.indigo { background: #E0E7FF; }
+    .doc-card-icon.slate  { background: #F1F5F9; }
+    .doc-card-icon.orange { background: #FFF7ED; }
+    .doc-card-icon.purple { background: #EDE9FE; }
+
+    .doc-card h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin: 0 0 6px;
+      color: var(--text);
+    }
+
+    .doc-card p {
+      font-size: 0.82rem;
+      color: var(--text-light);
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    /* ── Highlight Box ── */
+    .doc-highlight {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px 28px;
+      margin: 24px 0;
+    }
+
+    .doc-highlight.gradient {
+      background: var(--gradient);
+      border: none;
+      color: #fff;
+    }
+
+    .doc-highlight.gradient h3,
+    .doc-highlight.gradient h4 { color: #fff; }
+
+    .doc-highlight.gradient p { color: rgba(255,255,255,0.8); }
+
+    .doc-highlight.gradient .doc-list li { color: rgba(255,255,255,0.85); }
+
+    .doc-highlight.gradient .doc-list li::before { background: rgba(255,255,255,0.5); }
+
+    /* ── Table ── */
+    .doc-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 24px 0;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .doc-table th {
+      background: var(--bg);
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-light);
+      border-bottom: 2px solid var(--border);
+    }
+
+    .doc-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+    }
+
+    .doc-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .doc-table tr:hover td {
+      background: rgba(37,99,235,0.02);
+    }
+
+    /* ── Badge ── */
+    .doc-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: 100px;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+
+    .doc-badge.blue   { background: var(--primary-bg); color: var(--primary); }
+    .doc-badge.green  { background: var(--success-light); color: var(--success); }
+    .doc-badge.violet { background: var(--violet-bg); color: var(--violet); }
+    .doc-badge.amber  { background: var(--warning-light); color: var(--warning); }
+    .doc-badge.teal   { background: var(--teal-light); color: var(--teal); }
+
+    /* ── Divider ── */
+    .doc-divider {
+      border: none;
+      height: 1px;
+      background: var(--border);
+      margin: 40px 0;
+    }
+
+    /* ── Flow Diagram ── */
+    .doc-flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin: 24px 0;
+      flex-wrap: wrap;
+    }
+
+    .doc-flow-step {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 20px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text);
+      text-align: center;
+      min-width: 120px;
+    }
+
+    .doc-flow-arrow {
+      color: var(--text-muted);
+      font-size: 1.2rem;
+      padding: 0 8px;
+    }
+
+    .doc-flow-step.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    /* ── Callout ── */
+    .doc-callout {
+      display: flex;
+      gap: 14px;
+      padding: 16px 20px;
+      border-radius: var(--radius-lg);
+      margin: 20px 0;
+      font-size: 0.88rem;
+    }
+
+    .doc-callout.info {
+      background: rgba(14,165,233,0.06);
+      border: 1px solid rgba(14,165,233,0.15);
+      color: #0369A1;
+    }
+
+    .doc-callout.warning {
+      background: rgba(245,158,11,0.06);
+      border: 1px solid rgba(245,158,11,0.15);
+      color: #92400E;
+    }
+
+    .doc-callout.success {
+      background: rgba(22,163,74,0.06);
+      border: 1px solid rgba(22,163,74,0.15);
+      color: #166534;
+    }
+
+    .doc-callout.danger {
+      background: rgba(220,38,38,0.06);
+      border: 1px solid rgba(220,38,38,0.15);
+      color: #991B1B;
+    }
+
+    .doc-callout-icon {
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      margin-top: -1px;
+    }
+
+    /* ── kbd ── */
+    kbd {
+      display: inline-block;
+      padding: 2px 7px;
+      font-size: 0.78rem;
+      font-family: inherit;
+      font-weight: 600;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text-secondary);
+    }
+
+    /* ── Step block (tutorial-specific) ── */
+    .doc-step {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      margin: 12px 0;
+    }
+
+    .doc-step-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .doc-step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--gradient);
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .doc-step-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    .doc-step > p {
+      color: var(--text-secondary);
+      font-size: 0.88rem;
+      margin: 0 0 8px;
+    }
+
+    .doc-step > p:last-child { margin-bottom: 0; }
+
+    .doc-step > ul { margin: 0; }
+
+    /* ── Drogaria badge ── */
+    .badge-drog {
+      display: inline-block;
+      padding: 1px 7px;
+      font-size: 0.62rem;
+      font-weight: 700;
+      border-radius: 100px;
+      background: var(--teal-light);
+      color: var(--teal);
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    /* ── Two column ── */
+    .doc-two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin: 24px 0;
+    }
+
+    /* ── Print Styles ── */
+    @media print {
+      .doc-sidebar { display: none; }
+      .doc-main { margin-left: 0; }
+      .doc-hero { padding: 40px; }
+      .doc-content { padding: 24px 40px; }
+      .doc-card:hover { transform: none; box-shadow: none; }
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 960px) {
+      .doc-sidebar { display: none; }
+      .doc-main { margin-left: 0; }
+      .doc-hero { padding: 48px 24px; }
+      .doc-hero h1 { font-size: 2rem; }
+      .doc-content { padding: 32px 24px; }
+      .doc-two-col { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="doc-layout">
+
+  <!-- ═══════════════════════════════════════
+       SIDEBAR / ÍNDICE
+       ═══════════════════════════════════════ -->
+  <aside class="doc-sidebar">
+    <div class="doc-sidebar-header">
+      <div class="doc-sidebar-logo">
+        <div class="doc-sidebar-logo-icon">S</div>
+        <span class="doc-sidebar-logo-text">SGC</span>
+      </div>
+      <div class="doc-sidebar-meta">
+        <span>Central de Ajuda v3.0</span>
+        <span>Atualizado: Fevereiro 2026</span>
+      </div>
+    </div>
+
+    <nav class="doc-sidebar-nav">
+      <div class="doc-sidebar-nav-group">
+        <div class="doc-sidebar-nav-group-title">Introdução</div>
+        <a href="#visao-geral"><span class="nav-num">01</span> Visão Geral</a>
+        <a href="#primeiro-acesso"><span class="nav-num">02</span> Primeiro Acesso</a>
+        <a href="#navegacao"><span class="nav-num">03</span> Navegação e Interface</a>
+      </div>
+
+      <div class="doc-sidebar-nav-group">
+        <div class="doc-sidebar-nav-group-title">Operacional</div>
+        <a href="#pdv"><span class="nav-num">04</span> PDV (Ponto de Venda)</a>
+        <a href="#vendas"><span class="nav-num">05</span> Vendas</a>
+        <a href="#caixa"><span class="nav-num">06</span> Caixa</a>
+      </div>
+
+      <div class="doc-sidebar-nav-group">
+        <div class="doc-sidebar-nav-group-title">Cadastros e Estoque</div>
+        <a href="#produtos"><span class="nav-num">07</span> Produtos</a>
+        <a href="#categorias"><span class="nav-num">08</span> Categorias</a>
+        <a href="#fornecedores"><span class="nav-num">09</span> Fornecedores</a>
+        <a href="#estoque"><span class="nav-num">10</span> Estoque</a>
+        <a href="#compras"><span class="nav-num">11</span> Compras</a>
+      </div>
+
+      <div class="doc-sidebar-nav-group">
+        <div class="doc-sidebar-nav-group-title">Comercial e Financeiro</div>
+        <a href="#clientes"><span class="nav-num">12</span> Clientes</a>
+        <a href="#programas"><span class="nav-num">13</span> Programas Comerciais</a>
+        <a href="#financeiro"><span class="nav-num">14</span> Gestão Financeira</a>
+        <a href="#etiquetas"><span class="nav-num">15</span> Etiquetas</a>
+        <a href="#fiscal"><span class="nav-num">16</span> Fiscal</a>
+      </div>
+
+      <div class="doc-sidebar-nav-group">
+        <div class="doc-sidebar-nav-group-title">Drogaria / Farmácia</div>
+        <a href="#sngpc"><span class="nav-num">17</span> SNGPC <span class="badge-drog">Drogaria</span></a>
+      </div>
+
+      <div class="doc-sidebar-nav-group">
+        <div class="doc-sidebar-nav-group-title">Administração</div>
+        <a href="#usuarios"><span class="nav-num">18</span> Usuários e Permissões</a>
+        <a href="#config"><span class="nav-num">19</span> Configurações</a>
+        <a href="#perfis"><span class="nav-num">20</span> Perfis de Acesso</a>
+      </div>
+    </nav>
+
+    <div class="doc-sidebar-footer">
+      &copy; 2026 SGC — Central de Ajuda
+    </div>
+  </aside>
+
+  <!-- ═══════════════════════════════════════
+       MAIN CONTENT
+       ═══════════════════════════════════════ -->
+  <main class="doc-main">
+
+    <!-- ── Hero Cover ── -->
+    <header class="doc-hero">
+      <div class="doc-hero-badge">📖 Central de Ajuda — Guia do Usuário</div>
+      <h1>Tutorial Completo do SGC</h1>
+      <p>Guia passo a passo de todos os módulos do Sistema de Gestão Comercial. Tudo o que você precisa para operar com segurança e eficiência.</p>
+      <div class="doc-hero-meta">
+        <div class="doc-hero-meta-item">
+          <span>Versão</span>
+          <span>3.0</span>
+        </div>
+        <div class="doc-hero-meta-item">
+          <span>Data</span>
+          <span>Fevereiro 2026</span>
+        </div>
+        <div class="doc-hero-meta-item">
+          <span>Módulos</span>
+          <span>16 módulos + dashboard</span>
+        </div>
+        <div class="doc-hero-meta-item">
+          <span>Segmentos</span>
+          <span>Mercado e Drogaria</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="doc-content">
+
+      <!-- ══════════════════════════════════
+           01. VISÃO GERAL DO SISTEMA
+           ══════════════════════════════════ -->
+      <section class="doc-section" id="visao-geral">
+        <div class="doc-section-header">
+          <div class="doc-section-num">01</div>
+          <h2>Visão Geral do Sistema</h2>
+          <p>O que é o SGC e como ele organiza a gestão do seu negócio.</p>
+        </div>
+
+        <p>O SGC (Sistema de Gestão Comercial) é uma plataforma completa para gerenciamento de drogarias e mercados. Ele centraliza todas as operações do dia a dia em um único ambiente: vendas, estoque, financeiro, clientes, fornecedores, fiscal e, para drogarias, o controle regulatório de medicamentos controlados (SNGPC).</p>
+
+        <h3>Módulos Disponíveis</h3>
+        <p>O sistema possui 16 módulos acessíveis pela tela inicial. A quantidade visível depende do tipo do seu negócio e do seu perfil de acesso.</p>
+
+        <div class="doc-cards">
+          <div class="doc-card">
+            <div class="doc-card-icon blue">🖥️</div>
+            <h4>PDV</h4>
+            <p>Ponto de venda em tela cheia. Código de barras, pagamentos múltiplos e emissão automática.</p>
+          </div>
+          <div class="doc-card">
+            <div class="doc-card-icon green">🛍️</div>
+            <h4>Vendas</h4>
+            <p>Histórico completo com filtros por data, status e forma de pagamento.</p>
+          </div>
+          <div class="doc-card">
+            <div class="doc-card-icon amber">🏦</div>
+            <h4>Caixa</h4>
+            <p>Abertura, fechamento, sangria e suprimento com conferência automática de valores.</p>
+          </div>
+          <div class="doc-card">
+            <div class="doc-card-icon violet">📦</div>
+            <h4>Produtos</h4>
+            <p>Cadastro completo com estoque, preços, margens, lotes e campos farmacêuticos.</p>
+          </div>
+          <div class="doc-card">
+            <div class="doc-card-icon teal">🏭</div>
+            <h4>Estoque</h4>
+            <p>Movimentações, inventário, sugestão de compra e controle de lotes por validade.</p>
+          </div>
+          <div class="doc-card">
+            <div class="doc-card-icon indigo">👤</div>
+            <h4>Clientes</h4>
+            <p>Cadastro, histórico de compras e inscrição automática em programas comerciais.</p>
+          </div>
+          <div class="doc-card">
+            <div class="doc-card-icon amber">👑</div>
+            <h4>Programas Comerciais</h4>
+            <p>Clubes de fidelidade, convênios, campanhas e tabelas de desconto.</p>
+          </div>
+          <div class="doc-card">
+            <div class="doc-card-icon slate">🏷️</div>
+            <h4>Cadastros</h4>
+            <p>Categorias de produtos para organização do catálogo.</p>
+          </div>
+          <div class="doc-card">
+            <div class="doc-card-icon slate">🚚</div>
+            <h4>Fornecedores</h4>
+            <p>Gestão de fornecedores com ranking estratégico e histórico de compras.</p>
+          </div>
+          <div class="doc-card">
+            <div class="doc-card-icon orange">🛒</div>
+            <h4>Compras</h4>
+            <p>Notas de compra, importação de XML NF-e e entrada automática de estoque.</p>
+          </div>
+          <div class="doc-card">
+            <div class="doc-card-icon green">💰</div>
+            <h4>Gestão Financeira</h4>
+            <p>Contas a pagar e receber, fluxo de caixa e controle financeiro.</p>
+          </div>
+          <div class="doc-card">
+            <div class="doc-card-icon teal">🏷️</div>
+            <h4>Etiquetas</h4>
+            <p>Impressão de etiquetas de preço com modelos padrão, promocional e clube.</p>
+          </div>
+        </div>
+
+        <h3>Módulo Exclusivo para Drogaria</h3>
+        <div class="doc-callout info">
+          <span class="doc-callout-icon">ℹ️</span>
+          <div>O módulo abaixo só aparece quando o tipo de negócio está configurado como <strong>Drogaria</strong>.</div>
+        </div>
+
+        <div class="doc-cards">
+          <div class="doc-card">
+            <div class="doc-card-icon teal">💊</div>
+            <h4>SNGPC</h4>
+            <p>Controle de medicamentos controlados: movimentações, períodos, transmissão à ANVISA e auditoria regulatória.</p>
+          </div>
+          <div class="doc-card">
+            <div class="doc-card-icon blue">📄</div>
+            <h4>Fiscal</h4>
+            <p>Notas fiscais NFC-e e NF-e com geração, cancelamento e carta de correção.</p>
+          </div>
+          <div class="doc-card">
+            <div class="doc-card-icon blue">👥</div>
+            <h4>Usuários</h4>
+            <p>Gerenciamento de acessos, perfis e permissões por módulo.</p>
+          </div>
+          <div class="doc-card">
+            <div class="doc-card-icon slate">⚙️</div>
+            <h4>Configurações</h4>
+            <p>Dados da empresa, preferências e parâmetros do sistema.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════
+           02. PRIMEIRO ACESSO
+           ══════════════════════════════════ -->
+      <section class="doc-section" id="primeiro-acesso">
+        <div class="doc-section-header">
+          <div class="doc-section-num">02</div>
+          <h2>Primeiro Acesso</h2>
+          <p>Como entrar no sistema pela primeira vez.</p>
+        </div>
+
+        <h3>Acessando o Sistema</h3>
+        <p>O SGC é acessado pelo navegador. Cada empresa possui um endereço único (slug):</p>
+        <div class="doc-quote">seudominio.com/app/nome-da-sua-empresa</div>
+
+        <h3>Passo a Passo</h3>
+
+        <div class="doc-step">
+          <div class="doc-step-header">
+            <div class="doc-step-num">1</div>
+            <div class="doc-step-title">Abra o navegador e acesse o endereço do sistema</div>
+          </div>
+          <p>Digite a URL fornecida pelo administrador. Você será direcionado para a tela de login.</p>
+        </div>
+
+        <div class="doc-step">
+          <div class="doc-step-header">
+            <div class="doc-step-num">2</div>
+            <div class="doc-step-title">Informe seu e-mail e senha</div>
+          </div>
+          <p>Utilize as credenciais fornecidas pelo administrador da empresa.</p>
+        </div>
+
+        <div class="doc-step">
+          <div class="doc-step-header">
+            <div class="doc-step-num">3</div>
+            <div class="doc-step-title">Tela inicial (Home)</div>
+          </div>
+          <p>Após o login você verá os indicadores do dia (faturamento, vendas, ticket médio) e os cards dos módulos disponíveis para o seu perfil.</p>
+        </div>
+
+        <div class="doc-callout warning">
+          <span class="doc-callout-icon">⚠️</span>
+          <div>Caso não consiga efetuar o login, verifique o e-mail e a senha. Se o problema persistir, solicite ao administrador que redefina sua senha.</div>
+        </div>
+
+        <h3>Configuração Inicial (Administrador)</h3>
+        <ul class="doc-list numbered">
+          <li>Acessar <strong>Configurações</strong> — preencher os dados da empresa</li>
+          <li>Acessar <strong>Usuários</strong> — criar acessos da equipe com perfis adequados</li>
+          <li>Acessar <strong>Cadastros</strong> — criar categorias de produtos</li>
+          <li>Acessar <strong>Fornecedores</strong> — cadastrar fornecedores</li>
+          <li>Acessar <strong>Produtos</strong> — cadastrar o catálogo</li>
+          <li>Se drogaria: acessar <strong>SNGPC</strong> — preencher a configuração regulatória</li>
+        </ul>
+      </section>
+
+      <!-- ══════════════════════════════════
+           03. NAVEGAÇÃO E INTERFACE
+           ══════════════════════════════════ -->
+      <section class="doc-section" id="navegacao">
+        <div class="doc-section-header">
+          <div class="doc-section-num">03</div>
+          <h2>Navegação e Interface</h2>
+          <p>Como se orientar dentro do sistema.</p>
+        </div>
+
+        <p>O SGC não possui barra lateral permanente. A navegação parte da tela inicial (Home), onde cada módulo é representado por um card. Para voltar, use o botão de retorno no canto superior esquerdo.</p>
+
+        <table class="doc-table">
+          <thead>
+            <tr><th>Elemento</th><th>Localização</th><th>Função</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Barra superior</strong></td><td>Topo de todas as telas</td><td>Botão voltar, título do módulo, alternância de tema e menu do usuário</td></tr>
+            <tr><td><strong>Cards de módulo</strong></td><td>Tela inicial (Home)</td><td>Acesso direto a cada módulo</td></tr>
+            <tr><td><strong>Sub-navegação</strong></td><td>Abaixo da barra superior</td><td>Abas internas de cada módulo</td></tr>
+            <tr><td><strong>Menu do usuário</strong></td><td>Canto superior direito</td><td>Perfil, configurações, usuários e sair</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Atalhos de Teclado</h3>
+        <table class="doc-table">
+          <thead>
+            <tr><th>Atalho</th><th>Função</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><kbd>Ctrl</kbd> + <kbd>K</kbd></td><td>Abre a busca flutuante</td></tr>
+            <tr><td><kbd>F11</kbd></td><td>Tela cheia (recomendado para o PDV)</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Alternância de Tema</h3>
+        <p>O sistema suporta tema claro e escuro. Clique no ícone de sol/lua na barra superior para alternar. A preferência é salva automaticamente.</p>
+      </section>
+
+      <!-- ══════════════════════════════════
+           04. PDV (PONTO DE VENDA)
+           ══════════════════════════════════ -->
+      <section class="doc-section" id="pdv">
+        <div class="doc-section-header">
+          <div class="doc-section-num">04</div>
+          <h2>PDV — Ponto de Venda</h2>
+          <p>Como realizar vendas no balcão.</p>
+        </div>
+
+        <p>O PDV é a tela principal de vendas. Exibido em tela cheia, otimizado para agilidade no atendimento. Todo o fluxo de venda acontece aqui.</p>
+
+        <h3>Pré-requisitos</h3>
+        <ul class="doc-list check">
+          <li>O caixa deve estar <strong>aberto</strong> antes de iniciar qualquer venda</li>
+          <li>Os produtos devem estar cadastrados com preço de venda e estoque</li>
+          <li>Para drogarias: dados de receita são obrigatórios para medicamentos controlados</li>
+        </ul>
+
+        <h3>Fluxo Completo de uma Venda</h3>
+
+        <div class="doc-flow">
+          <div class="doc-flow-step">Abrir Caixa</div>
+          <div class="doc-flow-arrow">→</div>
+          <div class="doc-flow-step">Adicionar Itens</div>
+          <div class="doc-flow-arrow">→</div>
+          <div class="doc-flow-step">Identificar Cliente</div>
+          <div class="doc-flow-arrow">→</div>
+          <div class="doc-flow-step">Descontos</div>
+          <div class="doc-flow-arrow">→</div>
+          <div class="doc-flow-step">Pagamento</div>
+          <div class="doc-flow-arrow">→</div>
+          <div class="doc-flow-step active">Finalizar</div>
+        </div>
+
+        <div class="doc-step">
+          <div class="doc-step-header">
+            <div class="doc-step-num">1</div>
+            <div class="doc-step-title">Abrir o Caixa</div>
+          </div>
+          <p>Acesse <strong>Caixa</strong> e clique em "Abrir Caixa". Informe o fundo de troco. Somente após a abertura você poderá registrar vendas.</p>
+        </div>
+
+        <div class="doc-step">
+          <div class="doc-step-header">
+            <div class="doc-step-num">2</div>
+            <div class="doc-step-title">Acessar o PDV</div>
+          </div>
+          <p>Clique no card <strong>PDV</strong>. A tela será exibida em fullscreen com o campo de busca em foco, pronto para leitura de código de barras.</p>
+        </div>
+
+        <div class="doc-step">
+          <div class="doc-step-header">
+            <div class="doc-step-num">3</div>
+            <div class="doc-step-title">Adicionar Produtos</div>
+          </div>
+          <p>Três formas de adicionar um produto:</p>
+          <ul class="doc-list">
+            <li><strong>Código de barras:</strong> Passe o leitor no produto. O item é adicionado automaticamente.</li>
+            <li><strong>Busca por nome:</strong> Digite parte do nome e selecione na lista.</li>
+            <li><strong>Código interno:</strong> Digite o código interno no campo de busca.</li>
+          </ul>
+        </div>
+
+        <div class="doc-step">
+          <div class="doc-step-header">
+            <div class="doc-step-num">4</div>
+            <div class="doc-step-title">Identificar o Cliente (opcional)</div>
+          </div>
+          <p>Informe o CPF do cliente. O sistema busca automaticamente o cadastro e habilita os descontos dos programas comerciais vinculados.</p>
+        </div>
+
+        <div class="doc-step">
+          <div class="doc-step-header">
+            <div class="doc-step-num">5</div>
+            <div class="doc-step-title">Descontos</div>
+          </div>
+          <ul class="doc-list">
+            <li><strong>Automático:</strong> O motor avalia as regras dos programas do cliente sem ação manual.</li>
+            <li><strong>Manual:</strong> O operador pode aplicar desconto manual. Se exceder o limite do perfil, será exigida senha de gerente.</li>
+          </ul>
+        </div>
+
+        <div class="doc-step">
+          <div class="doc-step-header">
+            <div class="doc-step-num">6</div>
+            <div class="doc-step-title">Pagamento</div>
+          </div>
+          <p>Clique em "Finalizar Venda". O sistema suporta pagamento múltiplo (split): Dinheiro (com cálculo automático de troco), Cartão de Débito, Cartão de Crédito e PIX. É possível combinar formas de pagamento numa mesma venda.</p>
+        </div>
+
+        <div class="doc-step">
+          <div class="doc-step-header">
+            <div class="doc-step-num">7</div>
+            <div class="doc-step-title">Finalizar</div>
+          </div>
+          <p>Após confirmar, o sistema automaticamente:</p>
+          <ul class="doc-list check">
+            <li>Baixa o estoque (consumo FIFO de lotes)</li>
+            <li>Registra a movimentação financeira no caixa</li>
+            <li>Atualiza as métricas do cliente</li>
+            <li>Gera o snapshot de auditoria</li>
+            <li>Cria as contas a receber (se houver parcelas)</li>
+            <li>Registra a movimentação SNGPC (se drogaria e produto controlado)</li>
+          </ul>
+        </div>
+
+        <div class="doc-callout info">
+          <span class="doc-callout-icon">ℹ️</span>
+          <div><strong>Medicamento Controlado (Drogaria):</strong> Ao adicionar um controlado, o sistema solicita os dados da receita: nome do paciente, CPF, médico, CRM, UF, número da receita e data. Esses dados são obrigatórios e vinculados à movimentação SNGPC.</div>
+        </div>
+
+        <div class="doc-callout warning">
+          <span class="doc-callout-icon">⚠️</span>
+          <div>Não é possível registrar vendas com o caixa fechado. O sistema bloqueará o acesso ao PDV e exibirá um alerta.</div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════
+           05. VENDAS
+           ══════════════════════════════════ -->
+      <section class="doc-section" id="vendas">
+        <div class="doc-section-header">
+          <div class="doc-section-num">05</div>
+          <h2>Vendas</h2>
+          <p>Consulta, histórico e cancelamento de vendas.</p>
+        </div>
+
+        <p>O módulo de Vendas permite visualizar o histórico completo, consultar detalhes e, quando necessário, cancelar uma venda.</p>
+
+        <h3>Filtros Disponíveis</h3>
+        <table class="doc-table">
+          <thead>
+            <tr><th>Filtro</th><th>Descrição</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Data</strong></td><td>Filtre por período (data inicial e final)</td></tr>
+            <tr><td><strong>Status</strong></td><td>Finalizada, Cancelada</td></tr>
+            <tr><td><strong>Cliente</strong></td><td>Busque pelo nome ou CPF</td></tr>
+            <tr><td><strong>Forma de pagamento</strong></td><td>Dinheiro, cartão, PIX, etc.</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Detalhes da Venda</h3>
+        <ul class="doc-list">
+          <li>Lista completa de itens com quantidade, preço e subtotal</li>
+          <li>Formas de pagamento utilizadas</li>
+          <li>Dados do cliente (se identificado)</li>
+          <li>Dados do operador que realizou a venda</li>
+          <li>Snapshot de auditoria com trilha completa de ações</li>
+        </ul>
+
+        <h3>Cancelando uma Venda</h3>
+        <div class="doc-callout danger">
+          <span class="doc-callout-icon">🚫</span>
+          <div>O cancelamento é <strong>irreversível</strong> e restrito a <strong>Administrador</strong> ou <strong>Gerente</strong>. O sistema reverte estoque, movimentações financeiras e registra a ação na auditoria.</div>
+        </div>
+
+        <p>Ao cancelar, o sistema automaticamente:</p>
+        <ul class="doc-list numbered">
+          <li>Reverte o estoque de todos os itens (estorno de lotes)</li>
+          <li>Exclui as contas a receber associadas</li>
+          <li>Reverte movimentações SNGPC de controlados (se drogaria)</li>
+          <li>Registra o cancelamento no log de auditoria</li>
+        </ul>
+      </section>
+
+      <!-- ══════════════════════════════════
+           06. CAIXA
+           ══════════════════════════════════ -->
+      <section class="doc-section" id="caixa">
+        <div class="doc-section-header">
+          <div class="doc-section-num">06</div>
+          <h2>Caixa</h2>
+          <p>Abertura, fechamento, sangria e suprimento.</p>
+        </div>
+
+        <p>O módulo de Caixa controla o fluxo de dinheiro físico. A abertura é obrigatória antes de qualquer venda no PDV.</p>
+
+        <table class="doc-table">
+          <thead>
+            <tr><th>Operação</th><th>Quem executa</th><th>Descrição</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Abrir Caixa</strong></td><td>Qualquer perfil com acesso ao PDV</td><td>Inicia o turno informando o fundo de troco</td></tr>
+            <tr><td><strong>Fechar Caixa</strong></td><td>Qualquer perfil com acesso ao PDV</td><td>Encerra o turno com conferência por forma de pagamento</td></tr>
+            <tr><td><strong>Sangria</strong></td><td>Administrador, Gerente</td><td>Retirada de dinheiro durante o turno</td></tr>
+            <tr><td><strong>Suprimento</strong></td><td>Administrador, Gerente</td><td>Entrada de dinheiro durante o turno</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Fluxo de Abertura e Fechamento</h3>
+
+        <div class="doc-step">
+          <div class="doc-step-header">
+            <div class="doc-step-num">1</div>
+            <div class="doc-step-title">Abertura</div>
+          </div>
+          <p>Acesse <strong>Caixa</strong> e clique em "Abrir Caixa". Informe o valor do fundo de troco. A partir deste momento as vendas serão vinculadas a este caixa.</p>
+        </div>
+
+        <div class="doc-step">
+          <div class="doc-step-header">
+            <div class="doc-step-num">2</div>
+            <div class="doc-step-title">Durante o Turno</div>
+          </div>
+          <p>Os totais por forma de pagamento são acumulados automaticamente. Sangrias e suprimentos são registrados separadamente.</p>
+        </div>
+
+        <div class="doc-step">
+          <div class="doc-step-header">
+            <div class="doc-step-num">3</div>
+            <div class="doc-step-title">Fechamento</div>
+          </div>
+          <p>Clique em "Fechar Caixa". O sistema exibe o resumo das vendas por forma de pagamento, sangrias e suprimentos. Informe o valor contado — a diferença é calculada automaticamente.</p>
+        </div>
+
+        <h3>Histórico de Caixa</h3>
+        <p>Administradores e gerentes podem acessar o histórico completo de aberturas e fechamentos, incluindo as diferenças apuradas, na aba "Histórico".</p>
+      </section>
+
+      <!-- ══════════════════════════════════
+           07. PRODUTOS
+           ══════════════════════════════════ -->
+      <section class="doc-section" id="produtos">
+        <div class="doc-section-header">
+          <div class="doc-section-num">07</div>
+          <h2>Produtos</h2>
+          <p>Cadastro, consulta e gerenciamento completo de produtos.</p>
+        </div>
+
+        <h3>Campos Principais</h3>
+        <table class="doc-table">
+          <thead>
+            <tr><th>Campo</th><th>Obrigatório</th><th>Descrição</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Nome</td><td>Sim</td><td>Nome completo do produto</td></tr>
+            <tr><td>Categoria</td><td>Sim</td><td>Categoria a qual pertence</td></tr>
+            <tr><td>Preço de Venda</td><td>Sim</td><td>Preço unitário ao consumidor</td></tr>
+            <tr><td>Unidade</td><td>Sim</td><td>Un, cx, kg, etc.</td></tr>
+            <tr><td>Código de Barras</td><td>Não</td><td>EAN/GTIN para leitura no PDV</td></tr>
+            <tr><td>Preço de Custo</td><td>Não</td><td>Calculado automaticamente na entrada de compras</td></tr>
+            <tr><td>Estoque Mínimo</td><td>Não</td><td>Nível mínimo para alerta de reposição</td></tr>
+            <tr><td>Estoque Máximo</td><td>Não</td><td>Nível máximo de estocagem</td></tr>
+            <tr><td>Controlado</td><td>Não</td><td>Ativa campos SNGPC (drogaria)</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Campos Exclusivos para Drogaria</h3>
+        <div class="doc-callout info">
+          <span class="doc-callout-icon">ℹ️</span>
+          <div>Estes campos aparecem apenas quando o negócio é <strong>Drogaria</strong> e o produto está marcado como controlado.</div>
+        </div>
+        <table class="doc-table">
+          <thead>
+            <tr><th>Campo</th><th>Descrição</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Princípio Ativo</td><td>Substância ativa do medicamento</td></tr>
+            <tr><td>Classe Controlado</td><td>A1, A2, B1, B2, C1, C2, etc.</td></tr>
+            <tr><td>Registro ANVISA</td><td>Número de registro na ANVISA</td></tr>
+            <tr><td>Tipo de Receita</td><td>Branca, Azul, Amarela, Especial</td></tr>
+            <tr><td>Necessita Receita</td><td>Se exige retenção de receita na dispensação</td></tr>
+            <tr><td>Laboratório</td><td>Laboratório fabricante</td></tr>
+            <tr><td>Dosagem / Concentração</td><td>Dosagem e concentração do medicamento</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Cadastrando um Produto</h3>
+        <ul class="doc-list numbered">
+          <li>Acesse <strong>Produtos</strong> → clique em "Novo Produto"</li>
+          <li>Preencha os campos obrigatórios: nome, categoria, preço de venda e unidade</li>
+          <li>Configure código de barras, custo e níveis de estoque conforme necessário</li>
+          <li>Para drogaria: marque como "Controlado" e preencha os campos farmacêuticos</li>
+          <li>Clique em "Salvar"</li>
+        </ul>
+
+        <h3>Gestão de Lotes</h3>
+        <p>Cada produto pode ter múltiplos lotes com número, validade e quantidade. Os lotes são consumidos na ordem FIFO (mais antigo primeiro). São criados automaticamente ao finalizar uma compra ou manualmente no detalhe do produto.</p>
+
+        <h3>Histórico de Preços</h3>
+        <p>Toda alteração de preço de venda gera um registro histórico automático. Clique em "Histórico de Preços" no detalhe do produto para ver todas as alterações.</p>
+
+        <h3>Mini-Dashboard do Produto</h3>
+        <p>Nos detalhes do produto há um painel com indicadores: vendas nos últimos 30 dias, margem atual, giro e curva ABC.</p>
+      </section>
+
+      <!-- ══════════════════════════════════
+           08. CATEGORIAS
+           ══════════════════════════════════ -->
+      <section class="doc-section" id="categorias">
+        <div class="doc-section-header">
+          <div class="doc-section-num">08</div>
+          <h2>Categorias</h2>
+          <p>Organização do catálogo de produtos.</p>
+        </div>
+
+        <p>As categorias organizam os produtos em grupos. Todo produto deve pertencer a uma categoria.</p>
+
+        <ul class="doc-list numbered">
+          <li>Acesse o módulo <strong>Cadastros</strong></li>
+          <li>Para criar: clique em "Nova Categoria" e informe o nome</li>
+          <li>Para editar: clique na categoria e altere o nome</li>
+          <li>Para excluir: clique no ícone de exclusão (somente Administradores)</li>
+        </ul>
+
+        <div class="doc-callout warning">
+          <span class="doc-callout-icon">⚠️</span>
+          <div>Não é possível excluir uma categoria com produtos vinculados. Reclassifique os produtos antes de excluir.</div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════
+           09. FORNECEDORES
+           ══════════════════════════════════ -->
+      <section class="doc-section" id="fornecedores">
+        <div class="doc-section-header">
+          <div class="doc-section-num">09</div>
+          <h2>Fornecedores</h2>
+          <p>Cadastro, ranking e relacionamento com fornecedores.</p>
+        </div>
+
+        <p>O módulo centraliza os dados dos parceiros comerciais. Cada fornecedor possui métricas automáticas baseadas no histórico de compras.</p>
+
+        <h3>Cadastrando um Fornecedor</h3>
+        <ul class="doc-list numbered">
+          <li>Acesse <strong>Fornecedores</strong> → clique em "Novo Fornecedor"</li>
+          <li>Preencha: nome, CNPJ, telefone, e-mail e endereço</li>
+          <li>Clique em "Salvar"</li>
+        </ul>
+
+        <h3>Ranking Estratégico e Métricas</h3>
+        <p>Cada fornecedor pode receber de 1 a 5 estrelas (atribuídas manualmente pelo gerente). Nos detalhes do fornecedor você encontra: total de compras realizadas, prazo médio de entrega, produtos vinculados e contas a pagar pendentes.</p>
+      </section>
+
+      <!-- ══════════════════════════════════
+           10. ESTOQUE
+           ══════════════════════════════════ -->
+      <section class="doc-section" id="estoque">
+        <div class="doc-section-header">
+          <div class="doc-section-num">10</div>
+          <h2>Estoque</h2>
+          <p>Controle de movimentações, inventário e reposição.</p>
+        </div>
+
+        <h3>Tipos de Movimentação</h3>
+        <table class="doc-table">
+          <thead>
+            <tr><th>Tipo</th><th>Quem executa</th><th>Descrição</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Entrada (Compra)</strong></td><td>Automático</td><td>Gerada ao finalizar uma nota de compra</td></tr>
+            <tr><td><strong>Saída (Venda)</strong></td><td>Automático</td><td>Gerada ao concluir uma venda no PDV</td></tr>
+            <tr><td><strong>Ajuste</strong></td><td>Administrador, Gerente</td><td>Correção manual de contagem</td></tr>
+            <tr><td><strong>Perda / Avaria</strong></td><td>Administrador, Gerente</td><td>Quebra, vencimento, roubo</td></tr>
+            <tr><td><strong>Inventário</strong></td><td>Administrador</td><td>Contagem física completa</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Inventário Físico</h3>
+        <ul class="doc-list numbered">
+          <li>Acesse <strong>Estoque</strong> → clique em "Inventário"</li>
+          <li>Informe a quantidade real de cada produto</li>
+          <li>O sistema calcula as diferenças e gera movimentações de ajuste automaticamente</li>
+        </ul>
+
+        <h3>Sugestão de Compra</h3>
+        <table class="doc-table">
+          <thead>
+            <tr><th>Nível</th><th>Critério</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>URGENTE</strong></td><td>Estoque zerado ou negativo</td></tr>
+            <tr><td><strong>ALTO</strong></td><td>Abaixo de 25% do estoque mínimo</td></tr>
+            <tr><td><strong>MÉDIO</strong></td><td>Abaixo de 50% do estoque mínimo</td></tr>
+            <tr><td><strong>BAIXO</strong></td><td>Próximo ao estoque mínimo</td></tr>
+            <tr><td><strong>OK</strong></td><td>Estoque dentro dos níveis adequados</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Controle de Lotes e Validade</h3>
+        <p>O sistema monitora a validade dos lotes e alerta sobre produtos próximos ao vencimento. Consulte a aba "Lotes" para ver todos os lotes ativos com suas datas de validade.</p>
+      </section>
+
+      <!-- ══════════════════════════════════
+           11. COMPRAS
+           ══════════════════════════════════ -->
+      <section class="doc-section" id="compras">
+        <div class="doc-section-header">
+          <div class="doc-section-num">11</div>
+          <h2>Compras</h2>
+          <p>Notas de compra, importação de XML e entrada de estoque.</p>
+        </div>
+
+        <h3>Criando uma Nota de Compra</h3>
+        <ul class="doc-list numbered">
+          <li>Acesse <strong>Compras</strong> → clique em "Nova Compra"</li>
+          <li>Selecione o fornecedor</li>
+          <li>Informe número da NF, data de emissão e condições de pagamento</li>
+          <li>Adicione os itens: produto, quantidade e valor unitário</li>
+          <li>Confira frete, desconto e impostos → clique em "Salvar"</li>
+        </ul>
+
+        <h3>Importação de XML NF-e</h3>
+        <ul class="doc-list numbered">
+          <li>Clique em "Importar XML" e selecione o arquivo XML da NF-e</li>
+          <li>O sistema extrai fornecedor, produtos, quantidades, valores e impostos automaticamente</li>
+          <li>Revise os dados e confirme a importação</li>
+        </ul>
+
+        <h3>Ao Finalizar a Compra o sistema executa:</h3>
+        <ul class="doc-list check">
+          <li>Entrada de estoque de todos os itens (criação de lotes FIFO)</li>
+          <li>Atualização do custo médio ponderado dos produtos</li>
+          <li>Rateio de custos adicionais (frete, desconto, impostos) por item</li>
+          <li>Criação de contas a pagar (parcelas conforme condição de pagamento)</li>
+          <li>Movimentação SNGPC automática para controlados (drogaria)</li>
+        </ul>
+
+        <div class="doc-callout info">
+          <span class="doc-callout-icon">ℹ️</span>
+          <div><strong>Custo Médio Ponderado:</strong> A cada compra o sistema recalcula o custo pela fórmula (estoque_atual × custo_atual + quantidade_entrada × custo_unitário) ÷ estoque_total.</div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════
+           12. CLIENTES
+           ══════════════════════════════════ -->
+      <section class="doc-section" id="clientes">
+        <div class="doc-section-header">
+          <div class="doc-section-num">12</div>
+          <h2>Clientes</h2>
+          <p>Cadastro, histórico e programas de fidelidade.</p>
+        </div>
+
+        <h3>Cadastrando um Cliente</h3>
+        <ul class="doc-list numbered">
+          <li>Acesse <strong>Clientes</strong> → clique em "Novo Cliente"</li>
+          <li>Preencha: nome, CPF, telefone, e-mail</li>
+          <li>Clique em "Salvar"</li>
+        </ul>
+
+        <div class="doc-callout success">
+          <span class="doc-callout-icon">✅</span>
+          <div><strong>Inscrição automática:</strong> Se houver um programa comercial marcado como "padrão", o cliente será inscrito automaticamente ao ser cadastrado.</div>
+        </div>
+
+        <h3>Perfil do Cliente</h3>
+        <ul class="doc-list">
+          <li>Total de compras e valor gasto</li>
+          <li>Ticket médio e data da última compra</li>
+          <li>Produtos mais comprados</li>
+          <li>Programas comerciais vinculados</li>
+        </ul>
+      </section>
+
+      <!-- ══════════════════════════════════
+           13. PROGRAMAS COMERCIAIS
+           ══════════════════════════════════ -->
+      <section class="doc-section" id="programas">
+        <div class="doc-section-header">
+          <div class="doc-section-num">13</div>
+          <h2>Programas Comerciais</h2>
+          <p>Clubes de fidelidade, convênios, campanhas e tabelas de desconto.</p>
+        </div>
+
+        <table class="doc-table">
+          <thead>
+            <tr><th>Tipo</th><th>Descrição</th><th>Exemplo</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Clube</strong></td><td>Fidelidade permanente para clientes cadastrados</td><td>Clube: 10% em medicamentos</td></tr>
+            <tr><td><strong>Convênio</strong></td><td>Parceria com empresas para desconto a funcionários</td><td>Convênio Empresa X: 15%</td></tr>
+            <tr><td><strong>Campanha</strong></td><td>Promoção temporária com data de início e fim</td><td>Semana do Consumidor: 20%</td></tr>
+            <tr><td><strong>Tabela</strong></td><td>Preços especiais para um grupo de clientes</td><td>Tabela Atacado: preços fixos</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Regras de Desconto</h3>
+        <table class="doc-table">
+          <thead>
+            <tr><th>Parâmetro</th><th>Opções</th><th>Descrição</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Tipo</strong></td><td>Percentual, Valor Fixo, Preço Especial</td><td>Como o desconto é calculado</td></tr>
+            <tr><td><strong>Escopo</strong></td><td>Produto, Categoria, Geral</td><td>Onde a regra se aplica</td></tr>
+            <tr><td><strong>Acumulativa</strong></td><td>Sim / Não</td><td>Se pode somar com outras regras</td></tr>
+            <tr><td><strong>Prioridade</strong></td><td>Número</td><td>Ordem de avaliação (maior = primeiro)</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Como o Motor de Descontos Funciona</h3>
+        <ul class="doc-list numbered">
+          <li>Coleta todas as regras aplicáveis (por produto, categoria ou geral)</li>
+          <li>Ordena por especificidade: produto > categoria > geral</li>
+          <li>Seleciona a melhor regra não-acumulativa (maior desconto em R$)</li>
+          <li>Soma todas as regras acumulativas ao resultado</li>
+          <li>Aplica o desconto total, limitado ao preço original</li>
+        </ul>
+
+        <div class="doc-callout info">
+          <span class="doc-callout-icon">ℹ️</span>
+          <div><strong>Prioridade de tipos:</strong> Convênio > Campanha > Clube > Regra geral.</div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════
+           14. GESTÃO FINANCEIRA
+           ══════════════════════════════════ -->
+      <section class="doc-section" id="financeiro">
+        <div class="doc-section-header">
+          <div class="doc-section-num">14</div>
+          <h2>Gestão Financeira</h2>
+          <p>Contas a pagar, contas a receber e fluxo de caixa.</p>
+        </div>
+
+        <h3>Contas a Pagar</h3>
+        <p>Criadas automaticamente ao finalizar compras parceladas, ou manualmente para despesas diversas.</p>
+        <ul class="doc-list numbered">
+          <li>Acesse <strong>Gestão Financeira</strong> → aba "Contas a Pagar"</li>
+          <li>Para criar manualmente: clique em "Nova Conta" e preencha descrição, fornecedor, valor, vencimento</li>
+          <li>Para quitar: clique na conta → "Quitar" e informe a data de pagamento</li>
+        </ul>
+
+        <h3>Contas a Receber</h3>
+        <p>Criadas automaticamente em vendas parceladas — uma entrada por parcela.</p>
+        <ul class="doc-list numbered">
+          <li>Acesse <strong>Gestão Financeira</strong> → aba "Contas a Receber"</li>
+          <li>Para quitar: clique na conta → "Quitar"</li>
+        </ul>
+
+        <h3>Fluxo de Caixa</h3>
+        <p>A aba "Fluxo de Caixa" apresenta uma visão consolidada de entradas e saídas por período, com gráfico e totais.</p>
+      </section>
+
+      <!-- ══════════════════════════════════
+           15. ETIQUETAS
+           ══════════════════════════════════ -->
+      <section class="doc-section" id="etiquetas">
+        <div class="doc-section-header">
+          <div class="doc-section-num">15</div>
+          <h2>Etiquetas</h2>
+          <p>Impressão de etiquetas de preço.</p>
+        </div>
+
+        <table class="doc-table">
+          <thead>
+            <tr><th>Tipo</th><th>Descrição</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Padrão</strong></td><td>Nome do produto, preço e código de barras</td></tr>
+            <tr><td><strong>Promocional</strong></td><td>Destaque para preço promocional (De/Por)</td></tr>
+            <tr><td><strong>Clube</strong></td><td>Preço de clube com desconto visível para membros</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Gerando Etiquetas</h3>
+        <ul class="doc-list numbered">
+          <li>Acesse <strong>Etiquetas</strong> e selecione o modelo desejado</li>
+          <li>Adicione os produtos que deseja imprimir e defina a quantidade por produto</li>
+          <li>Clique em "Imprimir"</li>
+        </ul>
+
+        <h3>Configuração de Impressão</h3>
+        <p>Acesse "Configurações de Impressão" para definir o tipo de impressora (térmica ou laser) e os parâmetros de layout: largura do papel, margens e DPI.</p>
+      </section>
+
+      <!-- ══════════════════════════════════
+           16. FISCAL
+           ══════════════════════════════════ -->
+      <section class="doc-section" id="fiscal">
+        <div class="doc-section-header">
+          <div class="doc-section-num">16</div>
+          <h2>Fiscal</h2>
+          <p>Notas fiscais NFC-e e NF-e.</p>
+        </div>
+
+        <table class="doc-table">
+          <thead>
+            <tr><th>Tipo</th><th>Descrição</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>NFC-e</strong></td><td>Nota Fiscal de Consumidor Eletrônica (cupom fiscal para consumidor final)</td></tr>
+            <tr><td><strong>NF-e</strong></td><td>Nota Fiscal Eletrônica (vendas entre empresas)</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Gerando uma Nota Fiscal</h3>
+        <ul class="doc-list numbered">
+          <li>Acesse <strong>Fiscal</strong> → clique em "Gerar Nota"</li>
+          <li>Selecione a venda de referência</li>
+          <li>Confira emitente, destinatário, itens e impostos</li>
+          <li>Clique em "Emitir"</li>
+        </ul>
+
+        <h3>Cancelamento e Carta de Correção</h3>
+        <ul class="doc-list">
+          <li><strong>Cancelamento:</strong> Cancela uma nota dentro do prazo legal (restrito a Administradores)</li>
+          <li><strong>Carta de Correção:</strong> Corrige informações sem cancelar a nota</li>
+        </ul>
+      </section>
+
+      <!-- ══════════════════════════════════
+           17. SNGPC
+           ══════════════════════════════════ -->
+      <section class="doc-section" id="sngpc">
+        <div class="doc-section-header">
+          <div class="doc-section-num">17</div>
+          <h2>SNGPC <span class="badge-drog">Exclusivo Drogaria</span></h2>
+          <p>Controle regulatório de medicamentos controlados — Portaria 344/98 / ANVISA.</p>
+        </div>
+
+        <h3>Configuração Inicial</h3>
+        <ul class="doc-list numbered">
+          <li>Acesse <strong>SNGPC</strong> → aba "Configuração"</li>
+          <li>Preencha: CNPJ da farmácia, razão social, responsável técnico (nome, CRF, UF) e data de início do controle</li>
+          <li>Clique em "Salvar"</li>
+        </ul>
+
+        <h3>Conceitos Fundamentais</h3>
+        <table class="doc-table">
+          <thead>
+            <tr><th>Conceito</th><th>Descrição</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Movimentação</strong></td><td>Entrada, dispensação, perda ou ajuste de controlado. São <strong>imutáveis</strong>.</td></tr>
+            <tr><td><strong>Período</strong></td><td>Intervalo de tempo que agrupa movimentações para envio à ANVISA</td></tr>
+            <tr><td><strong>Estoque Regulatório</strong></td><td>Estoque separado do comercial — nunca pode ser negativo</td></tr>
+            <tr><td><strong>Transmissão</strong></td><td>Envio do relatório à ANVISA. Após aceita, o período se torna imutável.</td></tr>
+            <tr><td><strong>Auditoria</strong></td><td>Registro permanente de todas as ações para rastreabilidade regulatória</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Fluxo Operacional</h3>
+        <div class="doc-flow">
+          <div class="doc-flow-step">Abrir Período</div>
+          <div class="doc-flow-arrow">→</div>
+          <div class="doc-flow-step">Movimentações</div>
+          <div class="doc-flow-arrow">→</div>
+          <div class="doc-flow-step">Fechar Período</div>
+          <div class="doc-flow-arrow">→</div>
+          <div class="doc-flow-step">Gerar Arquivo</div>
+          <div class="doc-flow-arrow">→</div>
+          <div class="doc-flow-step active">Transmitir</div>
+        </div>
+
+        <h3>Tipos de Movimentação</h3>
+        <table class="doc-table">
+          <thead>
+            <tr><th>Tipo</th><th>Descrição</th><th>Origem</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Entrada</strong></td><td>Recebimento de medicamento controlado</td><td>Automática (via Compras) ou manual</td></tr>
+            <tr><td><strong>Dispensação</strong></td><td>Venda com retenção de receita</td><td>Automática (via PDV) ou manual</td></tr>
+            <tr><td><strong>Perda</strong></td><td>Vencimento, quebra, roubo, incineração</td><td>Manual</td></tr>
+            <tr><td><strong>Ajuste</strong></td><td>Correção de saldo positivo ou negativo</td><td>Manual</td></tr>
+          </tbody>
+        </table>
+
+        <div class="doc-callout danger">
+          <span class="doc-callout-icon">🚫</span>
+          <div><strong>Regra regulatória:</strong> Movimentações são <strong>imutáveis</strong>. Em caso de erro, registre um ajuste para corrigir o saldo.</div>
+        </div>
+
+        <h3>Períodos</h3>
+        <ul class="doc-list">
+          <li><strong>Abrir:</strong> Crie um período informando data de início e fim. Apenas um período pode estar aberto por vez.</li>
+          <li><strong>Fechar:</strong> Após registrar todas as movimentações, feche o período. O sistema gera hash SHA-256 de integridade.</li>
+          <li><strong>Transmitir:</strong> Após gerar o arquivo oficial, registre a transmissão com o protocolo da ANVISA.</li>
+        </ul>
+
+        <h3>Arquivo Oficial</h3>
+        <ul class="doc-list numbered">
+          <li>Acesse "Arquivos" → clique em "Gerar Arquivo" para o período fechado</li>
+          <li>O sistema gera um TXT no formato oficial: cabeçalho, movimentações, saldos e hash de integridade</li>
+          <li>Faça o download e envie pela plataforma da ANVISA</li>
+        </ul>
+
+        <h3>Transmissão</h3>
+        <ul class="doc-list numbered">
+          <li>Acesse "Transmissões" → clique em "Registrar Transmissão"</li>
+          <li>Informe o protocolo fornecido pela ANVISA</li>
+          <li>Aguarde o retorno e atualize o status para "Aceito" ou "Rejeitado"</li>
+        </ul>
+
+        <div class="doc-callout info">
+          <span class="doc-callout-icon">ℹ️</span>
+          <div>Quando uma transmissão é <strong>aceita</strong>, o período e todas as movimentações se tornam permanentemente imutáveis. Não é possível reeditar, regenerar o arquivo ou registrar nova transmissão.</div>
+        </div>
+
+        <h3>Rejeição</h3>
+        <p>Se a ANVISA rejeitar, atualize o status com a mensagem de retorno. O arquivo será excluído automaticamente e você poderá regenerar e retransmitir.</p>
+
+        <h3>Relatórios SNGPC</h3>
+        <ul class="doc-list">
+          <li><strong>Estoque Controlado:</strong> Saldo atual de todos os medicamentos controlados</li>
+          <li><strong>Estoque por Lote:</strong> Detalhamento por lote de cada produto</li>
+          <li><strong>Movimentações:</strong> Listagem filtrada por período</li>
+          <li><strong>Transmissões:</strong> Histórico de transmissões à ANVISA</li>
+          <li><strong>Produtos Vencidos:</strong> Lotes vencidos ou próximos ao vencimento</li>
+        </ul>
+      </section>
+
+      <!-- ══════════════════════════════════
+           18. USUÁRIOS E PERMISSÕES
+           ══════════════════════════════════ -->
+      <section class="doc-section" id="usuarios">
+        <div class="doc-section-header">
+          <div class="doc-section-num">18</div>
+          <h2>Usuários e Permissões</h2>
+          <p>Gerenciamento de acessos e perfis.</p>
+        </div>
+
+        <h3>Criando um Usuário</h3>
+        <ul class="doc-list numbered">
+          <li>Acesse <strong>Usuários</strong> → clique em "Novo Usuário"</li>
+          <li>Preencha: nome, e-mail, senha e perfil</li>
+          <li>Clique em "Salvar"</li>
+        </ul>
+
+        <div class="doc-callout warning">
+          <span class="doc-callout-icon">⚠️</span>
+          <div>O módulo de Usuários é acessível exclusivamente por <strong>Administradores</strong>.</div>
+        </div>
+
+        <h3>Alteração de Senha</h3>
+        <p>Cada usuário pode alterar sua própria senha pelo menu do usuário (canto superior direito). O administrador pode redefinir a senha de qualquer usuário pelo painel de gerenciamento.</p>
+      </section>
+
+      <!-- ══════════════════════════════════
+           19. CONFIGURAÇÕES
+           ══════════════════════════════════ -->
+      <section class="doc-section" id="config">
+        <div class="doc-section-header">
+          <div class="doc-section-num">19</div>
+          <h2>Configurações</h2>
+          <p>Dados da empresa e parâmetros do sistema.</p>
+        </div>
+
+        <table class="doc-table">
+          <thead>
+            <tr><th>Campo</th><th>Descrição</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Nome / Razão Social</td><td>Nome da empresa exibido no sistema</td></tr>
+            <tr><td>CNPJ</td><td>Cadastro Nacional de Pessoa Jurídica</td></tr>
+            <tr><td>Endereço</td><td>Endereço completo</td></tr>
+            <tr><td>Telefone</td><td>Telefone de contato</td></tr>
+            <tr><td>E-mail</td><td>E-mail institucional</td></tr>
+            <tr><td>Tipo de Negócio</td><td>Mercado ou Drogaria (define os módulos disponíveis)</td></tr>
+          </tbody>
+        </table>
+
+        <div class="doc-callout danger">
+          <span class="doc-callout-icon">🚫</span>
+          <div>O <strong>Tipo de Negócio</strong> define os módulos disponíveis. Alterar para "Mercado" ocultará o SNGPC e outros recursos exclusivos de drogaria. Consulte o suporte antes de alterar.</div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════════════
+           20. PERFIS DE ACESSO
+           ══════════════════════════════════ -->
+      <section class="doc-section" id="perfis">
+        <div class="doc-section-header">
+          <div class="doc-section-num">20</div>
+          <h2>Perfis de Acesso</h2>
+          <p>Níveis de permissão por função dentro da empresa.</p>
+        </div>
+
+        <p>O SGC possui 7 perfis. Cada um determina quais módulos e operações o usuário pode acessar.</p>
+
+        <table class="doc-table">
+          <thead>
+            <tr><th>Perfil</th><th>Descrição</th><th>Acesso aos Módulos</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Administrador</strong></td><td>Acesso total</td><td>Todos os módulos</td></tr>
+            <tr><td><strong>Gerente</strong></td><td>Gestão operacional completa</td><td>PDV, Vendas, Caixa, Produtos, Estoque, Clientes, Programas, Cadastros, Fornecedores, Compras, Etiquetas</td></tr>
+            <tr><td><strong>Vendedor</strong></td><td>Atendimento ao cliente</td><td>PDV, Vendas, Caixa, Clientes</td></tr>
+            <tr><td><strong>Caixa</strong></td><td>Operação do caixa</td><td>PDV, Caixa</td></tr>
+            <tr><td><strong>Estoquista</strong></td><td>Controle de estoque</td><td>Produtos, Estoque, Compras, Etiquetas</td></tr>
+            <tr><td><strong>Financeiro</strong></td><td>Gestão financeira</td><td>Gestão Financeira, Fornecedores, Fiscal</td></tr>
+            <tr><td><strong>Farmacêutico</strong></td><td>Gestão de medicamentos (drogaria)</td><td>PDV, Vendas, Caixa, Clientes, SNGPC</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Operações Restritas</h3>
+        <table class="doc-table">
+          <thead>
+            <tr><th>Operação</th><th>Perfis Autorizados</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Cancelar venda</td><td>Administrador, Gerente</td></tr>
+            <tr><td>Sangria / Suprimento</td><td>Administrador, Gerente</td></tr>
+            <tr><td>Ajuste de estoque</td><td>Administrador, Gerente</td></tr>
+            <tr><td>Inventário físico</td><td>Administrador</td></tr>
+            <tr><td>Excluir produto</td><td>Administrador</td></tr>
+            <tr><td>Gerenciar usuários</td><td>Administrador</td></tr>
+            <tr><td>Alterar configurações</td><td>Administrador</td></tr>
+            <tr><td>Autorizar desconto acima do limite</td><td>Gerente (via senha)</td></tr>
+            <tr><td>Movimentações SNGPC</td><td>Administrador, Farmacêutico</td></tr>
+          </tbody>
+        </table>
+
+        <div class="doc-callout info">
+          <span class="doc-callout-icon">ℹ️</span>
+          <div><strong>Desconto com autorização:</strong> Quando um vendedor tenta aplicar desconto acima do limite do seu perfil, o sistema solicita a senha de um gerente. A operação é registrada no log de auditoria antifraude.</div>
+        </div>
+
+        <hr class="doc-divider">
+
+        <p style="text-align:center;color:var(--text-muted);font-size:0.85rem">
+          &copy; 2026 SGC — Sistema de Gestão Comercial | Central de Ajuda v3.0 | Fevereiro 2026
+        </p>
+      </section>
+
+    </div><!-- /doc-content -->
+  </main>
+</div><!-- /doc-layout -->
+
+<script src="/tutorial-nav.js"></script>
+</body>
+</html>

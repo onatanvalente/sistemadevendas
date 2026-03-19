@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const { body, validationResult } = require('express-validator');
 const { Categoria } = require('../models');
 const { auth, perfil } = require('../middleware/auth');
 
@@ -16,8 +17,13 @@ router.get('/', auth, async (req, res) => {
 });
 
 // Criar categoria
-router.post('/', auth, perfil('administrador'), async (req, res) => {
+router.post('/', auth, perfil('administrador'), [
+  body('nome').trim().notEmpty().withMessage('Nome é obrigatório').isLength({ max: 100 }).escape()
+], async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ error: errors.array()[0].msg });
+
     const categoria = await Categoria.create({
       empresa_id: req.empresa_id,
       nome: req.body.nome,
@@ -30,8 +36,13 @@ router.post('/', auth, perfil('administrador'), async (req, res) => {
 });
 
 // Atualizar
-router.put('/:id', auth, perfil('administrador'), async (req, res) => {
+router.put('/:id', auth, perfil('administrador'), [
+  body('nome').trim().notEmpty().withMessage('Nome é obrigatório').isLength({ max: 100 }).escape()
+], async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ error: errors.array()[0].msg });
+
     const cat = await Categoria.findOne({ where: { id: req.params.id, empresa_id: req.empresa_id } });
     if (!cat) return res.status(404).json({ error: 'Categoria não encontrada' });
     

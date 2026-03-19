@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SGC — Documento Mestre do Sistema</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #22263a;
+      --border: #2e3250;
+      --accent: #6366f1;
+      --accent2: #818cf8;
+      --green: #22c55e;
+      --red: #ef4444;
+      --yellow: #eab308;
+      --orange: #f97316;
+      --blue: #3b82f6;
+      --purple: #a855f7;
+      --pink: #ec4899;
+      --text: #e2e8f0;
+      --text2: #94a3b8;
+      --text3: #64748b;
+      --radius: 10px;
+      --mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      display: flex;
+    }
+
+    /* ── Sidebar ── */
+    nav {
+      width: 280px;
+      min-width: 280px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      overflow-y: auto;
+      padding: 24px 0;
+    }
+
+    nav .logo {
+      padding: 0 24px 24px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+
+    nav .logo h1 {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--accent2);
+      letter-spacing: -0.5px;
+    }
+
+    nav .logo p {
+      font-size: 11px;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 2px;
+    }
+
+    nav ul { list-style: none; padding: 0 12px; }
+
+    nav ul li a {
+      display: block;
+      padding: 7px 12px;
+      color: var(--text2);
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 13px;
+      transition: all 0.15s;
+    }
+
+    nav ul li a:hover { background: var(--surface2); color: var(--text); }
+    nav ul li a.active { background: var(--accent); color: #fff; font-weight: 600; }
+
+    nav .nav-section {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text3);
+      padding: 16px 24px 6px;
+    }
+
+    /* ── Main ── */
+    main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 48px 64px;
+      max-width: 1100px;
+    }
+
+    /* ── Typography ── */
+    h1 { font-size: 32px; font-weight: 800; color: #fff; letter-spacing: -1px; margin-bottom: 8px; }
+    h2 { font-size: 22px; font-weight: 700; color: #fff; margin: 48px 0 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+    h3 { font-size: 17px; font-weight: 700; color: var(--accent2); margin: 32px 0 14px; }
+    h4 { font-size: 14px; font-weight: 700; color: var(--text); margin: 20px 0 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+    p { margin-bottom: 12px; color: var(--text2); }
+
+    section { margin-bottom: 64px; }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 10px; border-radius: 999px;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.3px;
+    }
+    .badge-green { background: #166534; color: var(--green); }
+    .badge-red { background: #7f1d1d; color: #fca5a5; }
+    .badge-yellow { background: #713f12; color: #fde047; }
+    .badge-blue { background: #1e3a5f; color: #93c5fd; }
+    .badge-purple { background: #3b0764; color: #d8b4fe; }
+    .badge-orange { background: #7c2d12; color: #fdba74; }
+    .badge-gray { background: var(--surface2); color: var(--text2); }
+
+    /* ── Cards Grid ── */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+      margin: 20px 0;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      transition: border-color 0.15s;
+    }
+    .card:hover { border-color: var(--accent); }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 6px;
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .card-desc { font-size: 13px; color: var(--text2); line-height: 1.5; }
+
+    /* ── Tables ── */
+    .table-wrap { overflow-x: auto; margin: 16px 0; border-radius: var(--radius); border: 1px solid var(--border); }
+
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+
+    thead { background: var(--surface2); }
+    thead th {
+      padding: 12px 16px;
+      text-align: left;
+      font-weight: 700;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text3);
+      white-space: nowrap;
+    }
+
+    tbody tr { border-top: 1px solid var(--border); }
+    tbody tr:hover { background: var(--surface2); }
+    tbody td { padding: 10px 16px; color: var(--text2); vertical-align: top; }
+    tbody td:first-child { color: var(--text); font-weight: 500; }
+
+    /* ── Code blocks ── */
+    pre {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      overflow-x: auto;
+      font-family: var(--mono);
+      font-size: 12.5px;
+      line-height: 1.6;
+      color: #a5f3fc;
+      margin: 12px 0;
+    }
+
+    code {
+      font-family: var(--mono);
+      font-size: 12px;
+      background: var(--surface2);
+      color: var(--accent2);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
+
+    /* ── Callouts ── */
+    .callout {
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin: 16px 0;
+      border-left: 3px solid;
+      font-size: 13.5px;
+    }
+    .callout p { margin: 0; }
+    .callout-info { background: #1e3a5f22; border-color: var(--blue); }
+    .callout-warn { background: #7c2d1222; border-color: var(--orange); }
+    .callout-danger { background: #7f1d1d22; border-color: var(--red); }
+    .callout-success { background: #14532d22; border-color: var(--green); }
+
+    /* ── Status List ── */
+    .status-list { list-style: none; padding: 0; margin: 12px 0; }
+    .status-list li {
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13.5px;
+      color: var(--text2);
+      display: flex; align-items: flex-start; gap: 10px;
+    }
+    .status-list li:last-child { border-bottom: none; }
+    .status-list li .icon { font-size: 16px; min-width: 20px; }
+
+    /* ── Two Columns ── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+    @media (max-width: 800px) { .two-col { grid-template-columns: 1fr; } }
+
+    .col-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+    .col-box h4 { margin-top: 0; }
+
+    /* ── Timeline ── */
+    .timeline { position: relative; padding-left: 28px; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 7px; top: 0; bottom: 0;
+      width: 2px; background: var(--border);
+    }
+    .timeline-item { position: relative; margin-bottom: 24px; }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -21px; top: 6px;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid var(--bg);
+    }
+    .timeline-item h4 { margin: 0 0 6px; font-size: 14px; color: #fff; text-transform: none; letter-spacing: 0; }
+    .timeline-item p { margin: 0; font-size: 13px; }
+
+    /* ── Endpoint list ── */
+    .endpoints { margin: 12px 0; }
+    .endpoint {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      margin-bottom: 4px;
+      font-size: 13px;
+      font-family: var(--mono);
+    }
+    .endpoint:hover { background: var(--surface2); }
+    .method {
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      min-width: 42px;
+      text-align: center;
+      letter-spacing: 0.5px;
+    }
+    .method-get { background: #1a3a1a; color: var(--green); }
+    .method-post { background: #1e3a5f; color: #93c5fd; }
+    .method-put { background: #3b2800; color: var(--yellow); }
+    .method-delete { background: #3b0000; color: #fca5a5; }
+    .endpoint-path { color: var(--text); flex: 1; }
+    .endpoint-desc { color: var(--text3); font-family: sans-serif; font-size: 12px; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--surface); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+    /* ── TOC Scroll Spy ── */
+    .toc-sub { padding-left: 12px; }
+    .toc-sub a { font-size: 12px; }
+
+    /* ── Cover ── */
+    .cover {
+      background: linear-gradient(135deg, #0f1117 0%, #1a1040 100%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 40px;
+      margin-bottom: 48px;
+    }
+    .cover-tag {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 12px;
+    }
+    .cover h1 { font-size: 42px; margin-bottom: 12px; }
+    .cover p { font-size: 16px; color: var(--text2); max-width: 600px; }
+    .cover-meta {
+      display: flex; gap: 24px; margin-top: 24px;
+      flex-wrap: wrap;
+    }
+    .cover-meta-item { }
+    .cover-meta-item span { display: block; font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; }
+    .cover-meta-item strong { font-size: 16px; color: var(--text); }
+
+    /* ── Flow ── */
+    .flow {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+      margin: 12px 0;
+    }
+    .flow-step {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 6px; padding: 6px 14px;
+      font-size: 12px; font-weight: 600; color: var(--text);
+    }
+    .flow-arrow { color: var(--text3); font-size: 14px; }
+
+    /* ── Print ── */
+    @media print {
+      nav { display: none; }
+      main { max-width: 100%; padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════ SIDEBAR ═══ -->
+<nav id="sidebar">
+  <div class="logo">
+    <h1>SGC</h1>
+    <p>Documento Mestre v1.0</p>
+  </div>
+
+  <div class="nav-section">Visao Geral</div>
+  <ul>
+    <li><a href="#overview">O que e o SGC</a></li>
+    <li><a href="#business-types">Tipos de Negocio</a></li>
+    <li><a href="#architecture">Arquitetura</a></li>
+    <li><a href="#security">Seguranca</a></li>
+    <li><a href="#status">Status Atual</a></li>
+  </ul>
+
+  <div class="nav-section">Frontend</div>
+  <ul>
+    <li><a href="#frontend">SPA &amp; Paginas</a></li>
+    <li><a href="#pdv-frontend">PDV - Interface</a></li>
+    <li><a href="#feature-flags">Feature Flags</a></li>
+  </ul>
+
+  <div class="nav-section">Modulos Backend</div>
+  <ul>
+    <li><a href="#mod-auth">Auth &amp; Usuarios</a></li>
+    <li><a href="#mod-pdv">PDV</a></li>
+    <li><a href="#mod-vendas">Vendas</a></li>
+    <li><a href="#mod-caixa">Caixa</a></li>
+    <li><a href="#mod-produtos">Produtos</a></li>
+    <li><a href="#mod-estoque">Estoque</a></li>
+    <li><a href="#mod-clientes">Clientes</a></li>
+    <li><a href="#mod-programas">Programas Comerciais</a></li>
+    <li><a href="#mod-compras">Compras</a></li>
+    <li><a href="#mod-financeiro">Financeiro</a></li>
+    <li><a href="#mod-sngpc">SNGPC</a></li>
+    <li><a href="#mod-fiscal">Fiscal NF-e</a></li>
+    <li><a href="#mod-etiquetas">Etiquetas</a></li>
+    <li><a href="#mod-dashboard">Dashboard</a></li>
+    <li><a href="#mod-audit">Auditoria</a></li>
+    <li><a href="#mod-master">Painel Master</a></li>
+  </ul>
+
+  <div class="nav-section">Motores</div>
+  <ul>
+    <li><a href="#engine-descontos">Motor de Descontos</a></li>
+  </ul>
+
+  <div class="nav-section">Dados</div>
+  <ul>
+    <li><a href="#models">Modelos (44 tabelas)</a></li>
+    <li><a href="#rls">RLS &amp; Multi-Tenant</a></li>
+  </ul>
+
+  <div class="nav-section">Roadmap</div>
+  <ul>
+    <li><a href="#gaps">Gaps Identificados</a></li>
+    <li><a href="#roadmap">Proximos Passos</a></li>
+    <li><a href="#regras">Regras do Sistema</a></li>
+  </ul>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════ MAIN ═══ -->
+<main>
+
+  <!-- COVER -->
+  <div class="cover">
+    <div class="cover-tag">Documento Mestre &bull; Versao 1.0 &bull; Marco 2026</div>
+    <h1>SGC</h1>
+    <p>Sistema de Gestao Comercial — plataforma SaaS multi-tenant para varejo (mercado e drogaria), com PDV, gestao financeira, estoque, compras e conformidade regulatoria (SNGPC/NF-e).</p>
+    <div class="cover-meta">
+      <div class="cover-meta-item"><span>Versao</span><strong>3.0 MVP</strong></div>
+      <div class="cover-meta-item"><span>Runtime</span><strong>Node.js 18+</strong></div>
+      <div class="cover-meta-item"><span>Banco</span><strong>PostgreSQL + RLS</strong></div>
+      <div class="cover-meta-item"><span>Tabelas</span><strong>44</strong></div>
+      <div class="cover-meta-item"><span>Endpoints</span><strong>~180</strong></div>
+      <div class="cover-meta-item"><span>Tipos de Negocio</span><strong>Mercado / Drogaria</strong></div>
+    </div>
+  </div>
+
+  <!-- ═══ 1. VISAO GERAL ═══ -->
+  <section id="overview">
+    <h2>1. O que e o SGC</h2>
+
+    <p>O SGC e um ERP de varejo construido como SaaS multi-tenant. Cada empresa cliente (tenant) tem seu proprio ambiente isolado dentro de um banco de dados compartilhado, com seguranca em nivel de linha (RLS) do PostgreSQL.</p>
+
+    <p>O sistema e dividido em duas grandes frentes:</p>
+
+    <div class="cards">
+      <div class="card">
+        <div class="card-title">Gestao Comercial</div>
+        <div class="card-desc">PDV, vendas, estoque, compras, fornecedores, clientes, programas de fidelidade, etiquetas e dashboard de negocio.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Gestao Financeira</div>
+        <div class="card-desc">Contas a pagar e receber, controle de caixa, fluxo de caixa e base para DRE e conciliacao bancaria.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Conformidade Regulatoria</div>
+        <div class="card-desc">SNGPC (controlados ANVISA) completo com trilha imutavel, periodos, transmissao e arquivo TXT oficial.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Emissao Fiscal</div>
+        <div class="card-desc">NFC-e e NF-e com engine de calculos tributarios, gerenciamento de certificado e camada de provedor plugavel (DevNota/TecnoSpeed/Focus).</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Painel SaaS Master</div>
+        <div class="card-desc">Administracao global de tenants, impersonacao, dashboard de receita e controle de planos.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Auditoria Total</div>
+        <div class="card-desc">Log imutavel de cada acao no PDV, cada desconto concedido, trilha SNGPC, SecurityLog e AuditLog geral.</div>
+      </div>
+    </div>
+
+    <h3>Stack Tecnica</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Camada</th><th>Tecnologia</th><th>Notas</th></tr></thead>
+        <tbody>
+          <tr><td>Backend</td><td>Node.js 18+ / Express.js</td><td>REST API, middlewares, rotas modulares</td></tr>
+          <tr><td>Banco de Dados</td><td>PostgreSQL (RLS ativo)</td><td>44 tabelas, isolamento por empresa_id</td></tr>
+          <tr><td>ORM</td><td>Sequelize v6</td><td>AsyncLocalStorage para contexto RLS</td></tr>
+          <tr><td>Auth</td><td>JWT RS256 + bcrypt 12 rounds</td><td>2h access + 7d refresh, tenant e master separados</td></tr>
+          <tr><td>Frontend</td><td>Vanilla JS (sem framework)</td><td>SPA hash-based, 3 arquivos principais</td></tr>
+          <tr><td>Icons</td><td>Lucide SVG</td><td>Sem emoji, sem dependencias extras</td></tr>
+          <tr><td>Seguranca</td><td>Helmet, CORS whitelist, rate limit</td><td>CSP, HSTS, X-Frame-Options</td></tr>
+          <tr><td>Logs</td><td>Structured JSON (config/logger.js)</td><td>Niveis: error, warn, info, debug</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══ 2. TIPOS DE NEGOCIO ═══ -->
+  <section id="business-types">
+    <h2>2. Tipos de Negocio</h2>
+
+    <p>O campo <code>tipo_negocio</code> na empresa define quais modulos, campos e fluxos ficam ativos. Cada tenant escolhe seu tipo no cadastro e nao pode trocar sem migracao manual.</p>
+
+    <div class="two-col">
+      <div class="col-box">
+        <h4>Mercado / Supermercado</h4>
+        <ul class="status-list">
+          <li><span class="icon">&#10003;</span> PDV focado em agilidade e throughput</li>
+          <li><span class="icon">&#10003;</span> Produtos: campos fiscais (NCM, CEST) + curva ABC</li>
+          <li><span class="icon">&#10003;</span> Combos e ofertas</li>
+          <li><span class="icon">&#10003;</span> Clube de fidelidade e campanhas</li>
+          <li><span class="icon">&#10003;</span> Balanca e leitor de codigo de barras</li>
+          <li><span class="icon">&#10007;</span> SNGPC desabilitado</li>
+          <li><span class="icon">&#10007;</span> Sugestoes inteligentes no PDV desabilitadas</li>
+          <li><span class="icon">&#10007;</span> Campos de medicamento ausentes</li>
+        </ul>
+      </div>
+      <div class="col-box">
+        <h4>Drogaria / Farmacia</h4>
+        <ul class="status-list">
+          <li><span class="icon">&#10003;</span> PDV focado em vender mais (sugestoes, historico do cliente)</li>
+          <li><span class="icon">&#10003;</span> Produtos: todos os campos farmaceuticos (principio ativo, classe controlado, receita, etc.)</li>
+          <li><span class="icon">&#10003;</span> SNGPC completo (fase 1-2-3)</li>
+          <li><span class="icon">&#10003;</span> Controle de lote obrigatorio</li>
+          <li><span class="icon">&#10003;</span> Dispensacao de controlados com receita digital</li>
+          <li><span class="icon">&#10003;</span> Sugestoes automaticas no PDV</li>
+          <li><span class="icon">&#10003;</span> Historico do cliente no PDV</li>
+          <li><span class="icon">&#10003;</span> Perfil farmaceutico com acoes proprias</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout callout-info">
+      <p><strong>Filosofia do PDV por tipo:</strong> No mercado, o PDV e uma caixa registradora — passe rapido, cobre e fecha. Na drogaria, o PDV e um consultor de vendas — identifica o cliente, sugere produtos complementares, verifica historico de compras e aumenta o ticket medio.</p>
+    </div>
+  </section>
+
+  <!-- ═══ 3. ARQUITETURA ═══ -->
+  <section id="architecture">
+    <h2>3. Arquitetura do Sistema</h2>
+
+    <h3>Estrutura de URLs</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Padrao</th><th>Proposito</th><th>Auth</th></tr></thead>
+        <tbody>
+          <tr><td><code>/</code></td><td>Landing page publica</td><td>Nenhuma</td></tr>
+          <tr><td><code>/app/:slug</code></td><td>SPA do tenant (cliente)</td><td>JWT tenant</td></tr>
+          <tr><td><code>/master</code></td><td>Painel SaaS admin</td><td>JWT master (secret diferente)</td></tr>
+          <tr><td><code>/api/landing/*</code></td><td>API publica (cadastro, check-slug)</td><td>Rate limit apenas</td></tr>
+          <tr><td><code>/api/auth/*</code></td><td>Autenticacao de tenant</td><td>Rate limit 20/15min</td></tr>
+          <tr><td><code>/api/[modulo]/*</code></td><td>APIs de tenant</td><td>Auth + Tenant Guard</td></tr>
+          <tr><td><code>/api/master/*</code></td><td>APIs de admin SaaS</td><td>Master Auth</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Multi-Tenant: Como Funciona</h3>
+    <p>Todo request de tenant carrega o header <code>X-Tenant-Slug</code>. O middleware <code>tenantResolver</code> carrega a empresa, o middleware <code>auth</code> valida o JWT e compara o <code>empresa_id</code> do token com o da empresa. Qualquer divergencia retorna <strong>404</strong> (nunca 403, para nao vazar informacao de existencia).</p>
+
+    <p>O contexto do tenant e propagado via <code>AsyncLocalStorage</code> para o hook <code>beforeQuery</code> do Sequelize, que define <code>app.current_empresa_id</code> na sessao PostgreSQL — ativando as policies de RLS automaticamente em cada query.</p>
+
+    <h3>Fluxo de Request Tipico</h3>
+    <div class="flow">
+      <div class="flow-step">Browser</div><div class="flow-arrow">→</div>
+      <div class="flow-step">Helmet / CORS</div><div class="flow-arrow">→</div>
+      <div class="flow-step">Rate Limit</div><div class="flow-arrow">→</div>
+      <div class="flow-step">Tenant Resolver</div><div class="flow-arrow">→</div>
+      <div class="flow-step">JWT Auth</div><div class="flow-arrow">→</div>
+      <div class="flow-step">RBAC (perfil)</div><div class="flow-arrow">→</div>
+      <div class="flow-step">Feature Flag</div><div class="flow-arrow">→</div>
+      <div class="flow-step">Route Handler</div><div class="flow-arrow">→</div>
+      <div class="flow-step">Sequelize + RLS</div><div class="flow-arrow">→</div>
+      <div class="flow-step">PostgreSQL</div>
+    </div>
+
+    <h3>Perfis de Usuario (RBAC)</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Perfil</th><th>Acesso Principal</th><th>Drogaria Only</th></tr></thead>
+        <tbody>
+          <tr><td>administrador</td><td>Acesso total ao sistema</td><td>—</td></tr>
+          <tr><td>gerente</td><td>PDV, vendas, estoque, compras, clientes, programas, relatorios</td><td>—</td></tr>
+          <tr><td>vendedor</td><td>PDV, vendas, clientes</td><td>—</td></tr>
+          <tr><td>caixa</td><td>PDV, caixa</td><td>—</td></tr>
+          <tr><td>estoquista</td><td>Produtos, estoque, compras, etiquetas</td><td>—</td></tr>
+          <tr><td>financeiro</td><td>Financeiro, fornecedores, fiscal</td><td>—</td></tr>
+          <tr><td>farmaceutico</td><td>PDV, vendas, clientes, SNGPC</td><td>Sim</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══ 4. SEGURANCA ═══ -->
+  <section id="security">
+    <h2>4. Seguranca</h2>
+
+    <div class="cards">
+      <div class="card">
+        <div class="card-title">Helmet.js</div>
+        <div class="card-desc">CSP, HSTS, referrer policy, X-Frame-Options. CSP violations reportadas em endpoint proprio.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">CORS Whitelist</div>
+        <div class="card-desc">Origens validadas. Producao nunca aceita wildcard. Configurado por variavel de ambiente.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Rate Limiting</div>
+        <div class="card-desc">Global 1000/15min. Auth 20/15min. Registro 5/hora. Protege contra brute-force e DDoS.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">JWT RS256</div>
+        <div class="card-desc">Access token 2h + refresh token 7d. Tenant e master usam secrets diferentes. Auto-refresh no 401.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">bcrypt 12 rounds</div>
+        <div class="card-desc">Todas as senhas hasheadas com 12 rounds. Nunca armazenadas em texto plano.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">IDOR Protection</div>
+        <div class="card-desc">Toda query filtra por empresa_id. Tentativa cross-tenant retorna 404, nunca 403.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">RLS PostgreSQL</div>
+        <div class="card-desc">22 tabelas sensiveis com policies de row-level security ativas. Isolamento em nivel de banco.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Audit Trail</div>
+        <div class="card-desc">AuditLog, SecurityLog, LogPdv, LogDesconto, SngpcAuditoria. Imutavel para SNGPC.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 5. STATUS ATUAL ═══ -->
+  <section id="status">
+    <h2>5. Status Atual do Sistema</h2>
+
+    <div class="callout callout-success">
+      <p><strong>MVP Completo (v3.0)</strong> — O sistema esta pronto para uso em producao nos fluxos core. Os gaps listados abaixo sao melhorias e automacoes que nao impedem a operacao diaria.</p>
+    </div>
+
+    <h3>O que esta completo e funcionando</h3>
+    <ul class="status-list">
+      <li><span class="icon">&#9989;</span> Arquitetura multi-tenant SaaS com RLS</li>
+      <li><span class="icon">&#9989;</span> Autenticacao completa (login, refresh, RBAC, 7 perfis)</li>
+      <li><span class="icon">&#9989;</span> PDV com UI fullscreen, atalhos de teclado, pagamentos multiplos</li>
+      <li><span class="icon">&#9989;</span> Vendas com cancelamento, snapshot de auditoria e multi-pagamento</li>
+      <li><span class="icon">&#9989;</span> Controle de estoque com lotes FIFO, alertas e sugestao de compra</li>
+      <li><span class="icon">&#9989;</span> Gestao de compras com rateio de custo e custo medio ponderado</li>
+      <li><span class="icon">&#9989;</span> Motor de descontos determinista e auditavel (programas comerciais)</li>
+      <li><span class="icon">&#9989;</span> Controle de caixa (abrir/fechar/sangria/suprimento/conferencia)</li>
+      <li><span class="icon">&#9989;</span> Clientes com metricas automaticas e historico de compras</li>
+      <li><span class="icon">&#9989;</span> Programas comerciais (clube, convenio, campanha, tabela de precos)</li>
+      <li><span class="icon">&#9989;</span> SNGPC completo (fases 1, 2 e 3) — controlados, periodos, XML, transmissao</li>
+      <li><span class="icon">&#9989;</span> Fiscal NFC-e/NF-e (engine pronto, provider pattern, DevNota para dev)</li>
+      <li><span class="icon">&#9989;</span> Financeiro basico (contas a pagar e receber, fluxo de caixa)</li>
+      <li><span class="icon">&#9989;</span> Etiquetas configuradas por template e tipo de impressora</li>
+      <li><span class="icon">&#9989;</span> Dashboard com KPIs de negocio</li>
+      <li><span class="icon">&#9989;</span> Painel master SaaS com impersonacao de tenant</li>
+      <li><span class="icon">&#9989;</span> Seguranca multicamadas implementada</li>
+    </ul>
+
+    <h3>Gaps — O que ainda nao existe</h3>
+    <ul class="status-list">
+      <li><span class="icon">&#10060;</span> <strong>Financeiro avancado:</strong> DRE, lancamentos livres, previsao de fluxo (30/60/90d), recorrencia automatica, conciliacao bancaria</li>
+      <li><span class="icon">&#10060;</span> <strong>Exportacoes:</strong> PDF e Excel em qualquer modulo</li>
+      <li><span class="icon">&#10060;</span> <strong>Jobs/Cron:</strong> vencimento automatico de contas, recalculo da curva ABC, marcacao de lotes vencidos, geracao de recorrencias</li>
+      <li><span class="icon">&#10060;</span> <strong>PDV avancado:</strong> devolucao parcial, fiado, PIX QR code dinamico</li>
+      <li><span class="icon">&#10060;</span> <strong>Estoque avancado:</strong> importacao XML completa, importacao CSV, rastreabilidade SN/IMEI</li>
+      <li><span class="icon">&#10060;</span> <strong>Farmacia avancada:</strong> integracao PBM, receita digital, intercambio de medicamentos</li>
+      <li><span class="icon">&#10060;</span> <strong>Fidelidade:</strong> sistema de pontos, resgate, historico de pontos</li>
+      <li><span class="icon">&#10060;</span> <strong>Infra:</strong> notificacoes push, armazenamento S3, WebSocket tempo real, modo offline</li>
+    </ul>
+  </section>
+
+  <!-- ═══ 6. FRONTEND ═══ -->
+  <section id="frontend">
+    <h2>6. Frontend — SPA</h2>
+
+    <p>O frontend e uma Single Page Application em Vanilla JS puro (sem React, Vue ou Angular). Roteamento via hash (<code>#/home</code>, <code>#/pdv</code>, etc.), autenticacao por LocalStorage, tema claro/escuro.</p>
+
+    <h3>Arquivos Principais</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Arquivo</th><th>Linhas</th><th>Responsabilidade</th></tr></thead>
+        <tbody>
+          <tr><td><code>public/index.html</code></td><td>36</td><td>Container raiz da SPA</td></tr>
+          <tr><td><code>public/js/app.js</code></td><td>933</td><td>Router, cliente API, auth, gerenciamento de tema, Lucide</td></tr>
+          <tr><td><code>public/js/pages.js</code></td><td>6.242</td><td>Todas as UIs de modulo (Produtos, Estoque, Financeiro, etc.)</td></tr>
+          <tr><td><code>public/js/pdv.js</code></td><td>2.870</td><td>Terminal PDV fullscreen dedicado</td></tr>
+          <tr><td><code>public/js/master.js</code></td><td>456</td><td>UI do painel SaaS admin</td></tr>
+          <tr><td><code>public/landing.html</code></td><td>—</td><td>Landing publica de captacao de leads</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Modulos do Home (16 cards)</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Modulo</th><th>Mercado</th><th>Drogaria</th><th>Perfis</th></tr></thead>
+        <tbody>
+          <tr><td>PDV</td><td><span class="badge badge-green">Sim</span></td><td><span class="badge badge-green">Sim</span></td><td>admin, gerente, vendedor, caixa, farmaceutico</td></tr>
+          <tr><td>Vendas</td><td><span class="badge badge-green">Sim</span></td><td><span class="badge badge-green">Sim</span></td><td>admin, gerente, vendedor, farmaceutico</td></tr>
+          <tr><td>Caixa</td><td><span class="badge badge-green">Sim</span></td><td><span class="badge badge-green">Sim</span></td><td>admin, gerente, vendedor, caixa, farmaceutico</td></tr>
+          <tr><td>Produtos</td><td><span class="badge badge-green">Sim</span></td><td><span class="badge badge-green">Sim</span></td><td>admin, gerente, estoquista</td></tr>
+          <tr><td>Estoque</td><td><span class="badge badge-green">Sim</span></td><td><span class="badge badge-green">Sim</span></td><td>admin, gerente, estoquista</td></tr>
+          <tr><td>Clientes</td><td><span class="badge badge-green">Sim</span></td><td><span class="badge badge-green">Sim</span></td><td>admin, gerente, vendedor, farmaceutico</td></tr>
+          <tr><td>Programas</td><td><span class="badge badge-green">Sim</span></td><td><span class="badge badge-green">Sim</span></td><td>admin, gerente</td></tr>
+          <tr><td>Categorias</td><td><span class="badge badge-green">Sim</span></td><td><span class="badge badge-green">Sim</span></td><td>admin, gerente</td></tr>
+          <tr><td>Fornecedores</td><td><span class="badge badge-green">Sim</span></td><td><span class="badge badge-green">Sim</span></td><td>admin, gerente, financeiro</td></tr>
+          <tr><td>Compras</td><td><span class="badge badge-green">Sim</span></td><td><span class="badge badge-green">Sim</span></td><td>admin, gerente, estoquista</td></tr>
+          <tr><td>Financeiro</td><td><span class="badge badge-green">Sim</span></td><td><span class="badge badge-green">Sim</span></td><td>admin, financeiro</td></tr>
+          <tr><td>Etiquetas</td><td><span class="badge badge-green">Sim</span></td><td><span class="badge badge-green">Sim</span></td><td>admin, gerente, estoquista</td></tr>
+          <tr><td>SNGPC</td><td><span class="badge badge-red">Nao</span></td><td><span class="badge badge-green">Sim</span></td><td>admin, farmaceutico</td></tr>
+          <tr><td>Fiscal</td><td><span class="badge badge-green">Sim</span></td><td><span class="badge badge-green">Sim</span></td><td>admin, financeiro</td></tr>
+          <tr><td>Usuarios</td><td><span class="badge badge-green">Sim</span></td><td><span class="badge badge-green">Sim</span></td><td>admin</td></tr>
+          <tr><td>Configuracoes</td><td><span class="badge badge-green">Sim</span></td><td><span class="badge badge-green">Sim</span></td><td>admin</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══ 7. PDV FRONTEND ═══ -->
+  <section id="pdv-frontend">
+    <h2>7. PDV — Interface e Fluxo</h2>
+
+    <p>O PDV e uma tela fullscreen separada do app principal, sem sidebar. Todo o codigo esta em <code>public/js/pdv.js</code> (2.870 linhas).</p>
+
+    <h3>Fluxo Completo de uma Venda</h3>
+    <div class="timeline">
+      <div class="timeline-item">
+        <h4>1. Abrir Caixa</h4>
+        <p>Operador informa o valor inicial em dinheiro. POST /caixa/abrir. Sem caixa aberto o PDV bloqueia.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>2. Identificar Cliente (opcional)</h4>
+        <p>Busca por CPF. GET /clientes/buscar-cpf/:cpf. O cliente identificado habilita programas de desconto e historico de compras (drogaria).</p>
+      </div>
+      <div class="timeline-item">
+        <h4>3. Adicionar Produtos</h4>
+        <p>Numeros = busca por codigo de barras. Letras = autocomplete por nome. Mostra estoque disponivel, lote e validade.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>4. Motor de Descontos</h4>
+        <p>Apos adicionar cada item, o motor avalia regras de programas aplicaveis (por produto &gt; categoria &gt; geral). Desconto automatico aplicado e exibido.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>5. Desconto Manual</h4>
+        <p>Operador pode digitar desconto adicional. Se superar o limite_desconto_percentual do usuario, o sistema pede senha do gerente (POST /audit/validar-gerente).</p>
+      </div>
+      <div class="timeline-item">
+        <h4>6. Medicamento Controlado (drogaria)</h4>
+        <p>Item controlado abre modal para dados da receita (numero, medico, CRM, data). Farmaceutico obrigatorio para dispensacao.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>7. Pagamento</h4>
+        <p>Multiplos meios aceitos (dinheiro, debito, credito, PIX). Parcelas configuradas para credito. Sistema calcula troco automaticamente.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>8. Finalizar Venda</h4>
+        <p>POST /vendas. Cria: Venda + VendaItems, EstoqueMovimentacao (FIFO), ContaReceber (se parcelado), SngpcMovimentacao (se controlado), LogPdv, LogDesconto.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>9. Cupom</h4>
+        <p>Impressao de cupom nao-fiscal. Mostra itens, descontos, pagamentos e troco.</p>
+      </div>
+    </div>
+
+    <h3>Atalhos de Teclado do PDV</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Tecla</th><th>Acao</th></tr></thead>
+        <tbody>
+          <tr><td><code>F1</code></td><td>Ajuda / atalhos</td></tr>
+          <tr><td><code>F2</code></td><td>Identificar cliente</td></tr>
+          <tr><td><code>F3</code></td><td>Buscar produto</td></tr>
+          <tr><td><code>F4</code></td><td>Aplicar desconto</td></tr>
+          <tr><td><code>F10</code></td><td>Finalizar / pagamento</td></tr>
+          <tr><td><code>F12</code></td><td>Cancelar venda</td></tr>
+          <tr><td><code>Ctrl+S</code></td><td>Sangria de caixa</td></tr>
+          <tr><td><code>Ctrl+H</code></td><td>Colocar venda em espera (hold)</td></tr>
+          <tr><td><code>Esc</code></td><td>Fechar modal / cancelar acao</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Diferencas PDV Mercado vs Drogaria</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Feature</th><th>Mercado</th><th>Drogaria</th></tr></thead>
+        <tbody>
+          <tr><td>Sugestoes de produto no PDV</td><td><span class="badge badge-red">Nao</span></td><td><span class="badge badge-green">Sim</span></td></tr>
+          <tr><td>Historico de compras do cliente</td><td><span class="badge badge-red">Nao</span></td><td><span class="badge badge-green">Sim</span></td></tr>
+          <tr><td>Modal de receita para controlados</td><td><span class="badge badge-red">Nao</span></td><td><span class="badge badge-green">Sim</span></td></tr>
+          <tr><td>Geracao automatica de SNGPC</td><td><span class="badge badge-red">Nao</span></td><td><span class="badge badge-green">Sim</span></td></tr>
+          <tr><td>Alerta de controlados no dashboard</td><td><span class="badge badge-red">Nao</span></td><td><span class="badge badge-green">Sim</span></td></tr>
+          <tr><td>Pagamentos multiplos</td><td><span class="badge badge-green">Sim</span></td><td><span class="badge badge-green">Sim</span></td></tr>
+          <tr><td>Descontos de programa</td><td><span class="badge badge-green">Sim</span></td><td><span class="badge badge-green">Sim</span></td></tr>
+          <tr><td>Venda em espera (hold)</td><td><span class="badge badge-green">Sim</span></td><td><span class="badge badge-green">Sim</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══ 8. FEATURE FLAGS ═══ -->
+  <section id="feature-flags">
+    <h2>8. Feature Flags por Tipo de Negocio</h2>
+
+    <p>Definidas em <code>config/features.js</code>. O middleware <code>requireFeature(modulo)</code> bloqueia endpoints proibidos para o tipo de negocio com 403.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Feature</th><th>Mercado</th><th>Drogaria</th></tr></thead>
+        <tbody>
+          <tr><td>vendas, caixa, produtos, estoque</td><td><span class="badge badge-green">Ativo</span></td><td><span class="badge badge-green">Ativo</span></td></tr>
+          <tr><td>financeiro, fornecedores, clientes, usuarios</td><td><span class="badge badge-green">Ativo</span></td><td><span class="badge badge-green">Ativo</span></td></tr>
+          <tr><td>dashboard, fiscal, configuracoes</td><td><span class="badge badge-green">Ativo</span></td><td><span class="badge badge-green">Ativo</span></td></tr>
+          <tr><td>combos, metas, centros_custo</td><td><span class="badge badge-green">Ativo</span></td><td><span class="badge badge-green">Ativo</span></td></tr>
+          <tr><td>audit_log, contas_bancarias</td><td><span class="badge badge-green">Ativo</span></td><td><span class="badge badge-green">Ativo</span></td></tr>
+          <tr><td>sngpc</td><td><span class="badge badge-red">Inativo</span></td><td><span class="badge badge-green">Ativo</span></td></tr>
+          <tr><td>medicamentos_controlados</td><td><span class="badge badge-red">Inativo</span></td><td><span class="badge badge-green">Ativo</span></td></tr>
+          <tr><td>receitas</td><td><span class="badge badge-red">Inativo</span></td><td><span class="badge badge-green">Ativo</span></td></tr>
+          <tr><td>sugestoes (PDV)</td><td><span class="badge badge-red">Inativo</span></td><td><span class="badge badge-green">Ativo</span></td></tr>
+          <tr><td>campos_farmacia (produto)</td><td><span class="badge badge-red">Inativo</span></td><td><span class="badge badge-green">Ativo</span></td></tr>
+          <tr><td>controla_lote obrigatorio</td><td><span class="badge badge-red">Inativo</span></td><td><span class="badge badge-green">Ativo</span></td></tr>
+          <tr><td>historico_cliente (PDV)</td><td><span class="badge badge-red">Inativo</span></td><td><span class="badge badge-green">Ativo</span></td></tr>
+          <tr><td>sugestoes_automaticas (PDV)</td><td><span class="badge badge-red">Inativo</span></td><td><span class="badge badge-green">Ativo</span></td></tr>
+          <tr><td>venda_controlado</td><td><span class="badge badge-red">Inativo</span></td><td><span class="badge badge-green">Ativo</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══ MODULOS BACKEND ═══ -->
+
+  <section id="mod-auth">
+    <h2>9. Modulo: Auth &amp; Usuarios</h2>
+
+    <h3>Autenticacao (routes/auth.js)</h3>
+    <div class="endpoints">
+      <div class="endpoint"><span class="method method-post">POST</span><span class="endpoint-path">/auth/login</span><span class="endpoint-desc">JWT login. Retorna access (2h) + refresh (7d)</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="endpoint-path">/auth/refresh</span><span class="endpoint-desc">Troca refresh token por novo access token</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/auth/me</span><span class="endpoint-desc">Usuario atual + empresa + features habilitadas</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="endpoint-path">/auth/registro</span><span class="endpoint-desc">Auto-cadastro de usuario no tenant</span></div>
+      <div class="endpoint"><span class="method method-put">PUT</span><span class="endpoint-path">/auth/perfil</span><span class="endpoint-desc">Atualizar nome e email proprios</span></div>
+      <div class="endpoint"><span class="method method-put">PUT</span><span class="endpoint-path">/auth/senha</span><span class="endpoint-desc">Trocar senha (exige senha atual)</span></div>
+    </div>
+
+    <h3>Usuarios (routes/usuarios.js)</h3>
+    <div class="endpoints">
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/usuarios</span><span class="endpoint-desc">Listar usuarios do tenant (admin)</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="endpoint-path">/usuarios</span><span class="endpoint-desc">Criar usuario (admin). Limite por plano</span></div>
+      <div class="endpoint"><span class="method method-put">PUT</span><span class="endpoint-path">/usuarios/:id</span><span class="endpoint-desc">Editar nome, email, perfil, limite_desconto</span></div>
+      <div class="endpoint"><span class="method method-delete">DEL</span><span class="endpoint-path">/usuarios/:id</span><span class="endpoint-desc">Desativar usuario (soft delete)</span></div>
+    </div>
+  </section>
+
+  <section id="mod-pdv">
+    <h2>10. Modulo: PDV (Ponto de Venda)</h2>
+
+    <p>O PDV nao tem rota propria — usa os endpoints de <code>/vendas</code>, <code>/caixa</code>, <code>/produtos</code>, <code>/clientes</code> e <code>/audit</code>. O fluxo esta na secao 7.</p>
+
+    <div class="callout callout-warn">
+      <p><strong>Gaps do PDV:</strong> Devolucao parcial, venda fiado e PIX QR code dinamico ainda nao estao implementados.</p>
+    </div>
+  </section>
+
+  <section id="mod-vendas">
+    <h2>11. Modulo: Vendas</h2>
+
+    <div class="endpoints">
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/vendas</span><span class="endpoint-desc">Listar vendas (filtros: data, status, cliente, forma pagamento)</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/vendas/:id</span><span class="endpoint-desc">Detalhes com itens, cliente, pagamentos e snapshot</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="endpoint-path">/vendas</span><span class="endpoint-desc">Criar venda (fluxo completo do PDV)</span></div>
+      <div class="endpoint"><span class="method method-put">PUT</span><span class="endpoint-path">/vendas/:id/cancelar</span><span class="endpoint-desc">Cancelar (admin/gerente). Estorna estoque e financeiro</span></div>
+      <div class="endpoint"><span class="method method-put">PUT</span><span class="endpoint-path">/vendas/:id/snapshot</span><span class="endpoint-desc">Salvar snapshot de auditoria</span></div>
+    </div>
+
+    <h3>O que acontece na criacao de uma venda (POST /vendas)</h3>
+    <ul class="status-list">
+      <li><span class="icon">1</span> Valida caixa aberto do operador</li>
+      <li><span class="icon">2</span> Verifica estoque suficiente para cada item</li>
+      <li><span class="icon">3</span> Cria registro <code>Venda</code> com totais e status PAGA</li>
+      <li><span class="icon">4</span> Cria <code>VendaItem</code> para cada produto com preco, desconto e custo congelados</li>
+      <li><span class="icon">5</span> Consome lotes FIFO com <code>EstoqueMovimentacao (saida_venda)</code></li>
+      <li><span class="icon">6</span> Gera <code>ContaReceber</code> para parcelas de credito</li>
+      <li><span class="icon">7</span> Cria <code>SngpcMovimentacao (dispensacao)</code> para controlados</li>
+      <li><span class="icon">8</span> Atualiza metricas do cliente (total_gasto, ticket_medio, ultima_compra)</li>
+      <li><span class="icon">9</span> Salva <code>LogPdv</code> e <code>LogDesconto</code></li>
+    </ul>
+  </section>
+
+  <section id="mod-caixa">
+    <h2>12. Modulo: Caixa</h2>
+
+    <div class="endpoints">
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/caixa/status</span><span class="endpoint-desc">Status atual do caixa do operador</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="endpoint-path">/caixa/abrir</span><span class="endpoint-desc">Abrir caixa com valor inicial</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="endpoint-path">/caixa/fechar</span><span class="endpoint-desc">Fechar com conferencia. Gera relatorio de diferenca</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="endpoint-path">/caixa/sangria</span><span class="endpoint-desc">Retirada de dinheiro (admin/gerente)</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="endpoint-path">/caixa/suprimento</span><span class="endpoint-desc">Reforco de caixa (admin/gerente)</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/caixa/historico</span><span class="endpoint-desc">Historico de movimentacoes</span></div>
+    </div>
+
+    <h3>Regras do Caixa</h3>
+    <ul class="status-list">
+      <li><span class="icon">&#9679;</span> Apenas um caixa aberto por operador por vez</li>
+      <li><span class="icon">&#9679;</span> PDV bloqueia se nao houver caixa aberto</li>
+      <li><span class="icon">&#9679;</span> Fechamento exige justificativa se houver diferenca</li>
+      <li><span class="icon">&#9679;</span> Relatorio de fechamento: total vendas, breakdown por forma de pagamento, sangrias, suprimentos, diferenca</li>
+    </ul>
+  </section>
+
+  <section id="mod-produtos">
+    <h2>13. Modulo: Produtos</h2>
+
+    <div class="endpoints">
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/produtos</span><span class="endpoint-desc">Listar (filtros: busca, categoria, fornecedor, ativo, controlado)</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/produtos/barcode/:codigo</span><span class="endpoint-desc">Busca por codigo de barras (PDV)</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/produtos/alertas/estoque-baixo</span><span class="endpoint-desc">Produtos abaixo do estoque minimo</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/produtos/alertas/vencendo</span><span class="endpoint-desc">Produtos com lotes vencendo em breve</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/produtos/sugestoes/:id</span><span class="endpoint-desc">Sugestoes inteligentes (drogaria apenas)</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/produtos/:id</span><span class="endpoint-desc">Detalhes completos</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="endpoint-path">/produtos</span><span class="endpoint-desc">Criar produto (calcula margem automaticamente)</span></div>
+      <div class="endpoint"><span class="method method-put">PUT</span><span class="endpoint-path">/produtos/:id</span><span class="endpoint-desc">Editar (registra historico de preco se mudar)</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/produtos/:id/historico-precos</span><span class="endpoint-desc">Historico de alteracoes de preco</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/produtos/:id/dashboard</span><span class="endpoint-desc">Mini dashboard: vendas 30d, margem, giro</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/produtos/:id/lotes</span><span class="endpoint-desc">Lotes do produto</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="endpoint-path">/produtos/:id/lotes</span><span class="endpoint-desc">Criar lote manualmente</span></div>
+      <div class="endpoint"><span class="method method-delete">DEL</span><span class="endpoint-path">/produtos/:id</span><span class="endpoint-desc">Soft delete</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/combos</span><span class="endpoint-desc">Listar combos</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="endpoint-path">/combos</span><span class="endpoint-desc">Criar combo de produtos</span></div>
+    </div>
+
+    <h3>Campos Farmaceuticos (drogaria)</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Campo</th><th>Descricao</th></tr></thead>
+        <tbody>
+          <tr><td>e_medicamento</td><td>Boolean — e um medicamento?</td></tr>
+          <tr><td>principio_ativo</td><td>Substancia ativa (ex: amoxicilina)</td></tr>
+          <tr><td>tipo_medicamento</td><td>generico | referencia | similar</td></tr>
+          <tr><td>laboratorio</td><td>Fabricante</td></tr>
+          <tr><td>registro_anvisa</td><td>Numero de registro ANVISA</td></tr>
+          <tr><td>classe_controlado</td><td>C1 | C2 | C3 | C4 | C5 | A1 | A2 | A3 | B1 | B2</td></tr>
+          <tr><td>tipo_receita</td><td>branca | azul | amarela</td></tr>
+          <tr><td>necessita_receita</td><td>Boolean</td></tr>
+          <tr><td>controlado</td><td>Boolean — aciona fluxo SNGPC</td></tr>
+          <tr><td>controla_lote</td><td>Boolean — obrigatorio na drogaria</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="mod-estoque">
+    <h2>14. Modulo: Estoque</h2>
+
+    <div class="endpoints">
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/estoque</span><span class="endpoint-desc">Listar movimentacoes (tipo, data, qtd, motivo)</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/estoque/visao-geral</span><span class="endpoint-desc">Valor total, produtos criticos, top giro</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/estoque/lotes</span><span class="endpoint-desc">Todos os lotes com status e validade</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="endpoint-path">/estoque/ajuste</span><span class="endpoint-desc">Ajuste manual (positivo ou negativo)</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="endpoint-path">/estoque/perda</span><span class="endpoint-desc">Registrar perda ou avaria</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="endpoint-path">/estoque/inventario</span><span class="endpoint-desc">Inventario fisico completo</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/estoque/sugestao-compra</span><span class="endpoint-desc">Sugestoes: URGENTE / ALTO / MEDIO / BAIXO / OK</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/estoque/lotes/vencimento</span><span class="endpoint-desc">Lotes proximos do vencimento</span></div>
+    </div>
+
+    <h3>Tipos de Movimentacao</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Tipo</th><th>Origem</th></tr></thead>
+        <tbody>
+          <tr><td>entrada_compra</td><td>Finalizacao de compra</td></tr>
+          <tr><td>entrada_devolucao</td><td>Devolucao de cliente</td></tr>
+          <tr><td>entrada_bonificacao</td><td>Bonificacao de fornecedor</td></tr>
+          <tr><td>saida_venda</td><td>Finalizacao de venda (PDV)</td></tr>
+          <tr><td>saida_perda</td><td>Perda ou avaria</td></tr>
+          <tr><td>saida_vencimento</td><td>Produto vencido</td></tr>
+          <tr><td>saida_consumo_interno</td><td>Uso interno</td></tr>
+          <tr><td>saida_devolucao_fornecedor</td><td>Devolucao ao fornecedor</td></tr>
+          <tr><td>ajuste_positivo</td><td>Ajuste manual positivo</td></tr>
+          <tr><td>ajuste_negativo</td><td>Ajuste manual negativo</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>FIFO de Lotes</h3>
+    <p>Ao consumir estoque (venda, ajuste), o sistema sempre consome primeiro o lote mais antigo (menor data de criacao). Cada lote tem <code>quantidade_atual</code> rastreada. Ao zerar, o lote e marcado como esgotado.</p>
+  </section>
+
+  <section id="mod-clientes">
+    <h2>15. Modulo: Clientes</h2>
+
+    <div class="endpoints">
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/clientes</span><span class="endpoint-desc">Listar com filtros</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/clientes/buscar-cpf/:cpf</span><span class="endpoint-desc">Busca rapida por CPF (PDV)</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/clientes/:id</span><span class="endpoint-desc">Perfil completo: metricas, historico, top produtos</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="endpoint-path">/clientes</span><span class="endpoint-desc">Criar. Auto-inscricao no programa padrao</span></div>
+      <div class="endpoint"><span class="method method-put">PUT</span><span class="endpoint-path">/clientes/:id</span><span class="endpoint-desc">Editar</span></div>
+      <div class="endpoint"><span class="method method-delete">DEL</span><span class="endpoint-path">/clientes/:id</span><span class="endpoint-desc">Deletar (admin/gerente)</span></div>
+    </div>
+
+    <h3>Metricas Automaticas</h3>
+    <p>Calculadas e atualizadas a cada venda finalizada: <code>total_compras</code>, <code>quantidade_compras</code>, <code>ticket_medio</code>, <code>ultima_compra</code>. Base preparada para analise RFM (Recencia, Frequencia, Monetario).</p>
+  </section>
+
+  <section id="mod-programas">
+    <h2>16. Modulo: Programas Comerciais</h2>
+
+    <p>Sistema de descontos e fidelidade por regras. Usado tanto pelo motor de descontos quanto para matricula de clientes.</p>
+
+    <div class="endpoints">
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/programas</span><span class="endpoint-desc">Listar todos os programas</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/programas/:id</span><span class="endpoint-desc">Detalhes com regras e clientes matriculados</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="endpoint-path">/programas</span><span class="endpoint-desc">Criar programa</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="endpoint-path">/programas/:id/regras</span><span class="endpoint-desc">Adicionar regra de desconto</span></div>
+      <div class="endpoint"><span class="method method-delete">DEL</span><span class="endpoint-path">/programas/regras/:id</span><span class="endpoint-desc">Remover regra</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="endpoint-path">/programas/:id/clientes</span><span class="endpoint-desc">Matricular cliente</span></div>
+      <div class="endpoint"><span class="method method-delete">DEL</span><span class="endpoint-path">/programas/:id/clientes/:id</span><span class="endpoint-desc">Desmatricular cliente</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/programas/descontos/produto/:id/cliente/:id</span><span class="endpoint-desc">Regras aplicaveis (PDV)</span></div>
+    </div>
+
+    <h3>Tipos de Programa e Regra</h3>
+    <div class="two-col">
+      <div class="col-box">
+        <h4>Tipos de Programa</h4>
+        <ul class="status-list">
+          <li><span class="icon">&#9679;</span> <strong>clube</strong> — Clube de fidelidade (ex: Clube da Saude)</li>
+          <li><span class="icon">&#9679;</span> <strong>convenio</strong> — Convenio empresarial ou plano</li>
+          <li><span class="icon">&#9679;</span> <strong>campanha</strong> — Oferta temporaria com datas de inicio/fim</li>
+          <li><span class="icon">&#9679;</span> <strong>tabela</strong> — Tabela de precos diferenciada</li>
+        </ul>
+      </div>
+      <div class="col-box">
+        <h4>Tipos de Regra (RegraDesconto)</h4>
+        <ul class="status-list">
+          <li><span class="icon">&#9679;</span> <strong>percentual</strong> — % de desconto</li>
+          <li><span class="icon">&#9679;</span> <strong>valor_fixo</strong> — R$ de desconto</li>
+          <li><span class="icon">&#9679;</span> <strong>preco_especial</strong> — Preco fixado diferente</li>
+        </ul>
+        <h4 style="margin-top:16px">Escopo da Regra</h4>
+        <ul class="status-list">
+          <li><span class="icon">&#9679;</span> <strong>produto</strong> — Produto especifico</li>
+          <li><span class="icon">&#9679;</span> <strong>categoria</strong> — Toda a categoria</li>
+          <li><span class="icon">&#9679;</span> <strong>geral</strong> — Todos os produtos</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="mod-compras">
+    <h2>17. Modulo: Compras</h2>
+
+    <div class="endpoints">
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/compras</span><span class="endpoint-desc">Listar (ABERTA / FINALIZADA / CANCELADA)</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/compras/:id</span><span class="endpoint-desc">Detalhes com itens e parcelas</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="endpoint-path">/compras</span><span class="endpoint-desc">Criar ordem de compra</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="endpoint-path">/compras/:id/itens</span><span class="endpoint-desc">Adicionar item</span></div>
+      <div class="endpoint"><span class="method method-delete">DEL</span><span class="endpoint-path">/compras/:id/itens/:id</span><span class="endpoint-desc">Remover item</span></div>
+      <div class="endpoint"><span class="method method-put">PUT</span><span class="endpoint-path">/compras/:id/finalizar</span><span class="endpoint-desc">Finalizar — atualiza estoque, custo e financeiro</span></div>
+      <div class="endpoint"><span class="method method-put">PUT</span><span class="endpoint-path">/compras/:id/cancelar</span><span class="endpoint-desc">Cancelar compra aberta</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="endpoint-path">/compras/xml</span><span class="endpoint-desc">Importar NF-e via XML (pre-preenche formulario)</span></div>
+    </div>
+
+    <h3>Logica de Finalizacao</h3>
+    <ul class="status-list">
+      <li><span class="icon">1</span> Rateio proporcional de frete, desconto e impostos para cada item</li>
+      <li><span class="icon">2</span> Criacao de lotes (FIFO) com custo e validade</li>
+      <li><span class="icon">3</span> Custo medio ponderado: <code>novo = ((estoque * custo_atual) + (qtd * custo_novo)) / total</code></li>
+      <li><span class="icon">4</span> <code>EstoqueMovimentacao (entrada_compra)</code></li>
+      <li><span class="icon">5</span> <code>CompraParcela</code> para cada parcela</li>
+      <li><span class="icon">6</span> <code>ContaPagar</code> para cada parcela</li>
+      <li><span class="icon">7</span> <code>SngpcMovimentacao (entrada)</code> para controlados</li>
+    </ul>
+  </section>
+
+  <section id="mod-financeiro">
+    <h2>18. Modulo: Financeiro</h2>
+
+    <div class="endpoints">
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/financeiro/pagar</span><span class="endpoint-desc">Contas a pagar (filtros: status, vencimento, fornecedor)</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="endpoint-path">/financeiro/pagar</span><span class="endpoint-desc">Criar conta a pagar manual</span></div>
+      <div class="endpoint"><span class="method method-put">PUT</span><span class="endpoint-path">/financeiro/pagar/:id</span><span class="endpoint-desc">Editar conta</span></div>
+      <div class="endpoint"><span class="method method-put">PUT</span><span class="endpoint-path">/financeiro/pagar/:id/quitar</span><span class="endpoint-desc">Quitar conta (data e valor real)</span></div>
+      <div class="endpoint"><span class="method method-delete">DEL</span><span class="endpoint-path">/financeiro/pagar/:id</span><span class="endpoint-desc">Excluir conta</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/financeiro/receber</span><span class="endpoint-desc">Contas a receber (vendas parceladas, manuais)</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="endpoint-path">/financeiro/receber</span><span class="endpoint-desc">Criar conta a receber manual</span></div>
+      <div class="endpoint"><span class="method method-put">PUT</span><span class="endpoint-path">/financeiro/receber/:id/quitar</span><span class="endpoint-desc">Quitar conta a receber</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/financeiro/fluxo</span><span class="endpoint-desc">Fluxo de caixa: entradas vs saidas por dia</span></div>
+    </div>
+
+    <div class="callout callout-warn">
+      <p><strong>Gaps do Financeiro</strong> — Sao os mais criticos para a completude do sistema: DRE, lancamentos livres, previsao de fluxo 30/60/90 dias, recorrencia automatica de contas e conciliacao bancaria. Contas nao vencem automaticamente (campo existe, logica de job nao implementada).</p>
+    </div>
+  </section>
+
+  <section id="mod-sngpc">
+    <h2>19. Modulo: SNGPC (Drogaria)</h2>
+
+    <p>O SNGPC e o modulo mais complexo e critico do sistema. E obrigatorio por lei (ANVISA) para farmacias que dispensam medicamentos controlados. Tem 1.998 linhas de rotas e 5 servicos dedicados.</p>
+
+    <div class="callout callout-danger">
+      <p><strong>Regras Inviolaveis:</strong> Movimentacoes sao IMUTAVEIS (apenas INSERT, nunca UPDATE/DELETE). Estoque regulatorio NUNCA fica negativo. Periodo fechado ou transmitido nao aceita alteracao retroativa. Isolamento SERIALIZABLE nas transacoes. Hash SHA-256 por movimentacao.</p>
+    </div>
+
+    <h3>Fases do SNGPC</h3>
+    <div class="two-col">
+      <div class="col-box">
+        <h4>Fase 1 — Base</h4>
+        <ul class="status-list">
+          <li><span class="icon">&#10003;</span> Configuracao inicial</li>
+          <li><span class="icon">&#10003;</span> Inventario inicial (apenas uma vez)</li>
+          <li><span class="icon">&#10003;</span> Movimentacoes (entrada, dispensacao, perda, ajuste)</li>
+          <li><span class="icon">&#10003;</span> Periodos mensais</li>
+          <li><span class="icon">&#10003;</span> Geracao e download de XML</li>
+        </ul>
+      </div>
+      <div class="col-box">
+        <h4>Fase 2 — Motor Regulatorio</h4>
+        <ul class="status-list">
+          <li><span class="icon">&#10003;</span> Engine com transacao SERIALIZABLE</li>
+          <li><span class="icon">&#10003;</span> Fechamento de periodo com hash SHA-256</li>
+          <li><span class="icon">&#10003;</span> Verificacao de integridade</li>
+          <li><span class="icon">&#10003;</span> Estoque regulatorio separado do comercial</li>
+          <li><span class="icon">&#10003;</span> Validacao de consistencia</li>
+        </ul>
+      </div>
+    </div>
+    <div class="col-box" style="margin-top:16px">
+      <h4>Fase 3 — Gerenciamento de Arquivos e Transmissao</h4>
+      <ul class="status-list">
+        <li><span class="icon">&#10003;</span> Geracao de arquivo TXT oficial</li>
+        <li><span class="icon">&#10003;</span> Regeneracao apos rejeicao ANVISA</li>
+        <li><span class="icon">&#10003;</span> Rastreamento de transmissoes</li>
+        <li><span class="icon">&#10003;</span> Imutabilidade verificavel</li>
+        <li><span class="icon">&#10003;</span> Auditoria regulatoria completa</li>
+      </ul>
+    </div>
+
+    <h3>Servicos Dedicados</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Servico</th><th>Responsabilidade</th></tr></thead>
+        <tbody>
+          <tr><td>SngpcMovimentacaoService</td><td>Movimentacoes reguladas com isolamento SERIALIZABLE</td></tr>
+          <tr><td>SngpcPeriodoService</td><td>Abertura, fechamento (SHA-256), transmissao e cancelamento de periodos</td></tr>
+          <tr><td>SngpcArquivoService</td><td>Geracao e regeneracao do arquivo TXT oficial</td></tr>
+          <tr><td>SngpcTransmissaoService</td><td>Rastreamento de transmissoes e status ANVISA</td></tr>
+          <tr><td>SngpcAuditoriaService</td><td>Logs de auditoria regulatoria</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="mod-fiscal">
+    <h2>20. Modulo: Fiscal (NF-e / NFC-e)</h2>
+
+    <div class="endpoints">
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/fiscal</span><span class="endpoint-desc">Listar notas fiscais</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/fiscal/dashboard</span><span class="endpoint-desc">Painel de status</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/fiscal/:id</span><span class="endpoint-desc">Detalhes da nota</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="endpoint-path">/fiscal/gerar</span><span class="endpoint-desc">Emitir NFC-e ou NF-e</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="endpoint-path">/fiscal/:id/cancelar</span><span class="endpoint-desc">Cancelar nota</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="endpoint-path">/fiscal/:id/carta-correcao</span><span class="endpoint-desc">Emitir carta de correcao</span></div>
+    </div>
+
+    <h3>Arquitetura do Motor Fiscal</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Arquivo (services/)</th><th>Funcao</th></tr></thead>
+        <tbody>
+          <tr><td>FiscalCoreEngine.js</td><td>Preparacao do documento (tags XML, dados do emitente/destinatario)</td></tr>
+          <tr><td>FiscalTaxEngine.js</td><td>Calculo de impostos (ICMS, PIS, COFINS, IPI)</td></tr>
+          <tr><td>FiscalCrypto.js</td><td>Gerenciamento de certificado digital (encrypt/decrypt)</td></tr>
+          <tr><td>FiscalProviderFactory.js</td><td>Instancia o provedor correto (DevNota, TecnoSpeed, Focus)</td></tr>
+          <tr><td>DevNotaProvider.js</td><td>Provedor simulado para desenvolvimento</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-info">
+      <p><strong>Status atual:</strong> Engine de XML e calculo de impostos completo. Integracao com SEFAZ real nao implementada — usa DevNota para simulacao em desenvolvimento.</p>
+    </div>
+  </section>
+
+  <section id="mod-etiquetas">
+    <h2>21. Modulo: Etiquetas</h2>
+
+    <div class="endpoints">
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/etiquetas</span><span class="endpoint-desc">Listar templates</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="endpoint-path">/etiquetas</span><span class="endpoint-desc">Criar template personalizado</span></div>
+      <div class="endpoint"><span class="method method-put">PUT</span><span class="endpoint-path">/etiquetas/:id</span><span class="endpoint-desc">Editar template</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="endpoint-path">/etiquetas/simular-preco</span><span class="endpoint-desc">Simular preco com desconto de programa</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/etiquetas/programa/:id/produtos</span><span class="endpoint-desc">Produtos do programa para impressao em lote</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/etiquetas/config-impressao/atual</span><span class="endpoint-desc">Configuracao da impressora atual</span></div>
+      <div class="endpoint"><span class="method method-put">PUT</span><span class="endpoint-path">/etiquetas/config-impressao/atual</span><span class="endpoint-desc">Atualizar impressora</span></div>
+    </div>
+
+    <h3>Tipos de Etiqueta e Impressora</h3>
+    <div class="two-col">
+      <div class="col-box">
+        <h4>Tipos de Etiqueta</h4>
+        <ul class="status-list">
+          <li><span class="icon">&#9679;</span> padrao — Etiqueta de preco padrao</li>
+          <li><span class="icon">&#9679;</span> promocional — Destaque de oferta</li>
+          <li><span class="icon">&#9679;</span> clube — Preco do programa de fidelidade</li>
+        </ul>
+      </div>
+      <div class="col-box">
+        <h4>Tipos de Impressora</h4>
+        <ul class="status-list">
+          <li><span class="icon">&#9679;</span> termica — Impressora de cupom</li>
+          <li><span class="icon">&#9679;</span> laser — Impressora laser/jato</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="mod-dashboard">
+    <h2>22. Modulo: Dashboard</h2>
+
+    <div class="endpoints">
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/dashboard</span><span class="endpoint-desc">KPIs completos (admin/gerente)</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/dashboard/vendas-por-dia</span><span class="endpoint-desc">Dados para grafico de linha de vendas diarias</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/dashboard/ranking-fornecedores</span><span class="endpoint-desc">Ranking estrategico de fornecedores</span></div>
+    </div>
+
+    <h3>KPIs do Dashboard Principal</h3>
+    <div class="two-col">
+      <div class="col-box">
+        <h4>Todos os Tipos</h4>
+        <ul class="status-list">
+          <li><span class="icon">&#9679;</span> Faturamento hoje e no mes (com variacao %)</li>
+          <li><span class="icon">&#9679;</span> Lucro e margem</li>
+          <li><span class="icon">&#9679;</span> Ticket medio</li>
+          <li><span class="icon">&#9679;</span> Total de vendas</li>
+          <li><span class="icon">&#9679;</span> Estoque critico (contagem)</li>
+          <li><span class="icon">&#9679;</span> Top 5 produtos mais vendidos</li>
+          <li><span class="icon">&#9679;</span> Bottom 5 produtos menos vendidos</li>
+          <li><span class="icon">&#9679;</span> Proximos vencimentos (30d)</li>
+          <li><span class="icon">&#9679;</span> Resumo financeiro (pagar vs receber)</li>
+          <li><span class="icon">&#9679;</span> Meta ativa e % atingido</li>
+        </ul>
+      </div>
+      <div class="col-box">
+        <h4>Somente Drogaria</h4>
+        <ul class="status-list">
+          <li><span class="icon">&#9679;</span> SNGPC: movimentacoes pendentes</li>
+          <li><span class="icon">&#9679;</span> Controlados dispensados hoje</li>
+          <li><span class="icon">&#9679;</span> Alertas de controlados com estoque baixo</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="mod-audit">
+    <h2>23. Modulo: Auditoria</h2>
+
+    <div class="endpoints">
+      <div class="endpoint"><span class="method method-post">POST</span><span class="endpoint-path">/audit/log-pdv</span><span class="endpoint-desc">Registrar acao no PDV</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="endpoint-path">/audit/log-pdv/batch</span><span class="endpoint-desc">Batch de acoes</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="endpoint-path">/audit/log-desconto</span><span class="endpoint-desc">Registrar desconto aplicado</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="endpoint-path">/audit/validar-gerente</span><span class="endpoint-desc">Validar senha do gerente para desconto acima do limite</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/audit/limite-desconto</span><span class="endpoint-desc">Limite de desconto do usuario atual</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/audit/log-descontos</span><span class="endpoint-desc">Listar descontos (anti-fraude)</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/audit/venda/:id/trilha</span><span class="endpoint-desc">Trilha completa de auditoria de uma venda</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/audit/dashboard</span><span class="endpoint-desc">Dashboard anti-fraude</span></div>
+    </div>
+
+    <h3>Acoes Auditadas no PDV</h3>
+    <pre><code>INICIAR_VENDA | IDENTIFICAR_CLIENTE | ADICIONAR_ITEM | REMOVER_ITEM
+APLICAR_DESCONTO_AUTO | APLICAR_DESCONTO_MANUAL | APLICAR_DESCONTO_GERENTE
+APLICAR_PAGAMENTO | FINALIZAR_VENDA | CANCELAR_VENDA | SANGRIA | SUPRIMENTO</code></pre>
+  </section>
+
+  <section id="mod-master">
+    <h2>24. Painel Master (SaaS Admin)</h2>
+
+    <p>Auth separada com secret proprio (<code>MASTER_JWT_SECRET</code>). Acesso via <code>/master</code>.</p>
+
+    <div class="endpoints">
+      <div class="endpoint"><span class="method method-post">POST</span><span class="endpoint-path">/api/master/login</span><span class="endpoint-desc">Login do admin SaaS</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/api/master/clientes</span><span class="endpoint-desc">Todos os tenants</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/api/master/clientes/:id</span><span class="endpoint-desc">Detalhes de um tenant</span></div>
+      <div class="endpoint"><span class="method method-put">PUT</span><span class="endpoint-path">/api/master/clientes/:id/status</span><span class="endpoint-desc">Ativar ou desativar tenant</span></div>
+      <div class="endpoint"><span class="method method-post">POST</span><span class="endpoint-path">/api/master/impersonar/:id</span><span class="endpoint-desc">Gerar JWT do tenant (suporte)</span></div>
+      <div class="endpoint"><span class="method method-get">GET</span><span class="endpoint-path">/api/master/dashboard</span><span class="endpoint-desc">Dashboard global: tenants, MRR, ativos</span></div>
+    </div>
+  </section>
+
+  <!-- ═══ MOTOR DE DESCONTOS ═══ -->
+  <section id="engine-descontos">
+    <h2>25. Motor de Descontos</h2>
+
+    <p>Arquivo: <code>engine/motor-descontos.js</code> (359 linhas). Executado no backend a cada item adicionado no PDV e espelhado no frontend para preview em tempo real.</p>
+
+    <h3>Pipeline de Calculo</h3>
+    <div class="timeline">
+      <div class="timeline-item">
+        <h4>1. Filtrar regras aplicaveis</h4>
+        <p>Seleciona regras cujo escopo bate (produto especifico &gt; categoria do produto &gt; geral). Cliente precisa estar matriculado no programa.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>2. Classificar por escopo</h4>
+        <p>Peso: produto=3, categoria=2, geral=1. Ordenado por escopo DESC, prioridade da regra DESC, prioridade do programa DESC, valor DESC.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>3. Separar acumulativas de nao-acumulativas</h4>
+        <p>O campo <code>programa.acumulativo</code> determina o comportamento. Regras do mesmo programa nao-acumulativo competem entre si.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>4. Selecionar melhor nao-acumulativa</h4>
+        <p>Entre as nao-acumulativas, pega a que da o maior desconto em R$.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>5. Somar acumulativas</h4>
+        <p>Todas as acumulativas sao somadas.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>6. Limitar ao preco original</h4>
+        <p>Total = melhor_nao_acum + soma_acum. Nunca passa do preco cheio.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>7. Retornar objeto de decisao</h4>
+        <p>Retorna: preco_final, desconto_total, percentual, lista_regras_aplicadas. Usado para LogDesconto e para exibicao no PDV.</p>
+      </div>
+    </div>
+
+    <h3>Desconto Manual</h3>
+    <p>Aplicado DEPOIS do desconto automatico, como camada adicional. Se superar o <code>limite_desconto_percentual</code> do usuario, o sistema exige senha do gerente via <code>POST /audit/validar-gerente</code>. Tudo registrado em <code>LogDesconto</code>.</p>
+  </section>
+
+  <!-- ═══ MODELOS ═══ -->
+  <section id="models">
+    <h2>26. Modelos de Dados (44 Tabelas)</h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Grupo</th><th>Tabelas</th></tr></thead>
+        <tbody>
+          <tr><td>Core SaaS</td><td>Empresa, UsuarioMaster, Usuario</td></tr>
+          <tr><td>Catalogo</td><td>Produto, Categoria, Fornecedor, HistoricoPreco, Lote, ProdutoSugestao, Combo, ComboItem</td></tr>
+          <tr><td>Transacoes</td><td>Caixa, CaixaMovimentacao, Venda, VendaItem, EstoqueMovimentacao</td></tr>
+          <tr><td>Financeiro</td><td>ContaPagar, ContaReceber, CentroCusto, ContaBancaria</td></tr>
+          <tr><td>Compras</td><td>Compra, CompraItem, CompraParcela</td></tr>
+          <tr><td>Clientes</td><td>Cliente, ProgramaComercial, ClientePrograma, RegraDesconto, HistoricoAplicacaoPrograma</td></tr>
+          <tr><td>Fiscal</td><td>NotaFiscal</td></tr>
+          <tr><td>Etiquetas</td><td>ModeloEtiqueta, ConfigImpressao</td></tr>
+          <tr><td>Planejamento</td><td>Meta</td></tr>
+          <tr><td>Auditoria</td><td>AuditLog, SecurityLog, LogDesconto, LogPdv</td></tr>
+          <tr><td>SNGPC (drogaria)</td><td>MedicamentoControlado, SngpcConfiguracao, SngpcMovimentacao, SngpcPeriodo, SngpcTransmissao, SngpcEstoque, SngpcArquivo, SngpcAuditoria</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══ RLS ═══ -->
+  <section id="rls">
+    <h2>27. Multi-Tenant: RLS e Isolamento</h2>
+
+    <h3>Como o Isolamento Funciona</h3>
+    <ul class="status-list">
+      <li><span class="icon">1</span> Todo tenant tem um <code>empresa_id</code> unico (UUID)</li>
+      <li><span class="icon">2</span> Todas as queries Sequelize filtram por <code>empresa_id</code></li>
+      <li><span class="icon">3</span> RLS esta ativo em 22 tabelas sensiveis no PostgreSQL</li>
+      <li><span class="icon">4</span> Contexto propagado via <code>AsyncLocalStorage</code> no hook <code>beforeQuery</code></li>
+      <li><span class="icon">5</span> Tentativa de acesso cross-tenant retorna 404 (nunca 403)</li>
+    </ul>
+
+    <h3>Variaveis de Ambiente</h3>
+    <pre><code>DATABASE_URL=postgresql://user:pass@host:5432/sgc_db
+JWT_SECRET=sgc_jwt_secret_TROCAR_EM_PRODUCAO
+MASTER_JWT_SECRET=sgc_master_secret_TROCAR_EM_PRODUCAO
+NODE_ENV=production
+LOG_LEVEL=info
+CORS_ORIGINS=https://seudominio.com.br
+PORT=3000</code></pre>
+
+    <div class="callout callout-danger">
+      <p><strong>SEGURANCA CRITICA:</strong> Os valores default de <code>JWT_SECRET</code> e <code>MASTER_JWT_SECRET</code> no .env.example DEVEM ser substituidos antes de ir para producao.</p>
+    </div>
+  </section>
+
+  <!-- ═══ GAPS ═══ -->
+  <section id="gaps">
+    <h2>28. Gaps Identificados — O que Falta</h2>
+
+    <h3>Prioridade Alta (P0) — Afetam operacao diaria</h3>
+    <ul class="status-list">
+      <li><span class="icon">&#10060;</span> <strong>Jobs automaticos:</strong> Contas nao vencem automaticamente (campo <code>status</code> nao muda sem job). Recorrencia de contas nao gera proxima parcela automaticamente. Curva ABC nao recalcula mensalmente. Lotes nao sao marcados VENCIDO automaticamente.</li>
+      <li><span class="icon">&#10060;</span> <strong>Financeiro — lancamentos livres:</strong> Nao e possivel registrar uma despesa ou receita avulsa sem vinculo com compra ou venda. Necessario para despesas operacionais (agua, luz, aluguel, etc.).</li>
+      <li><span class="icon">&#10060;</span> <strong>DRE basico:</strong> Nao ha demonstrativo de resultados. Sem isso, o gestor nao sabe se o negocio esta dando lucro real.</li>
+    </ul>
+
+    <h3>Prioridade Media (P1) — Completude de produto</h3>
+    <ul class="status-list">
+      <li><span class="icon">&#10060;</span> Exportacao PDF e Excel em todos os modulos</li>
+      <li><span class="icon">&#10060;</span> Previsao de fluxo de caixa (30/60/90 dias)</li>
+      <li><span class="icon">&#10060;</span> Devolucao parcial de venda</li>
+      <li><span class="icon">&#10060;</span> PIX QR Code dinamico</li>
+      <li><span class="icon">&#10060;</span> Venda fiado (conta corrente do cliente)</li>
+      <li><span class="icon">&#10060;</span> Conciliacao bancaria</li>
+      <li><span class="icon">&#10060;</span> Relatorio curva ABC com grafico Pareto</li>
+    </ul>
+
+    <h3>Prioridade Baixa (P2) — Avancado / futuro</h3>
+    <ul class="status-list">
+      <li><span class="icon">&#10060;</span> Sistema de pontos (fidelidade)</li>
+      <li><span class="icon">&#10060;</span> Integracao PBM (plano de saude farmacia)</li>
+      <li><span class="icon">&#10060;</span> Receita digital</li>
+      <li><span class="icon">&#10060;</span> Modo offline do PDV com sync</li>
+      <li><span class="icon">&#10060;</span> Suporte multi-filial</li>
+      <li><span class="icon">&#10060;</span> TEF (Transferencia Eletronica de Fundos)</li>
+      <li><span class="icon">&#10060;</span> WebSocket para updates em tempo real</li>
+      <li><span class="icon">&#10060;</span> Armazenamento S3 para arquivos</li>
+    </ul>
+  </section>
+
+  <!-- ═══ ROADMAP ═══ -->
+  <section id="roadmap">
+    <h2>29. Roadmap de Implementacao</h2>
+
+    <div class="callout callout-info">
+      <p><strong>Principio guia:</strong> O objetivo nao e inventar a roda. E ter um sistema 100% funcional, com todos os fluxos tendo inicio, meio e fim. Nada solto. Cada feature adicionada deve ser completa antes de comecar a proxima.</p>
+    </div>
+
+    <h3>Fase A — Financeiro Completo</h3>
+    <div class="timeline">
+      <div class="timeline-item">
+        <h4>A1. Jobs automaticos (cron)</h4>
+        <p>Vencimento de contas, geracao de recorrencias, marcacao de lotes vencidos, recalculo de curva ABC.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>A2. Lancamentos livres</h4>
+        <p>Despesas e receitas avulsas sem vinculo com compra ou venda. Categorias flexiveis.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>A3. DRE basico</h4>
+        <p>Receita bruta, descontos, custo CMV, margem bruta, despesas operacionais, lucro liquido. Por periodo.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>A4. Previsao de fluxo</h4>
+        <p>Projecao de entradas (contas a receber) vs saidas (contas a pagar) para 30, 60 e 90 dias.</p>
+      </div>
+    </div>
+
+    <h3>Fase B — Exportacoes e Relatorios</h3>
+    <div class="timeline">
+      <div class="timeline-item">
+        <h4>B1. Exportacao PDF</h4>
+        <p>Relatorio de vendas, contas a pagar, contas a receber, DRE, curva ABC.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>B2. Exportacao Excel</h4>
+        <p>Todos os modulos com filtros aplicados. Formato para contador.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>B3. Curva ABC com Pareto</h4>
+        <p>Grafico e tabela de produtos por participacao no faturamento. Recalculo mensal.</p>
+      </div>
+    </div>
+
+    <h3>Fase C — PDV Avancado</h3>
+    <div class="timeline">
+      <div class="timeline-item">
+        <h4>C1. Devolucao de venda (parcial e total)</h4>
+        <p>Fluxo completo: estorna estoque, cria ContaReceber de devolucao, gera cupom.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>C2. PIX QR Code dinamico</h4>
+        <p>Geracao de QR Code via API do banco. Confirmacao de pagamento em tempo real.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>C3. Venda fiado</h4>
+        <p>Conta corrente por cliente. Fechamento periodico. ContaReceber vinculada ao cliente.</p>
+      </div>
+    </div>
+
+    <h3>Fase D — Integracao Fiscal Real</h3>
+    <div class="timeline">
+      <div class="timeline-item">
+        <h4>D1. Provedor real NFC-e / NF-e</h4>
+        <p>Integrar TecnoSpeed ou Focus (provider pattern ja pronto). Homologar ambiente SEFAZ.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ REGRAS DO SISTEMA ═══ -->
+  <section id="regras">
+    <h2>30. Regras Fundamentais do Sistema</h2>
+
+    <div class="callout callout-danger">
+      <p><strong>Estas regras nao podem ser violadas. Qualquer feature nova deve respeita-las.</strong></p>
+    </div>
+
+    <h3>Integridade de Dados</h3>
+    <ul class="status-list">
+      <li><span class="icon">&#9632;</span> Estoque nunca fica negativo. Qualquer operacao que resultaria em estoque negativo e bloqueada com erro claro.</li>
+      <li><span class="icon">&#9632;</span> Caixa fechado nao aceita lancamentos retroativos.</li>
+      <li><span class="icon">&#9632;</span> Venda cancelada estorna tudo: estoque, financeiro e SNGPC (se aplicavel).</li>
+      <li><span class="icon">&#9632;</span> SNGPC: movimentacoes sao imutaveis. Periodo fechado/transmitido e intocavel.</li>
+      <li><span class="icon">&#9632;</span> Toda exclusao e soft delete (campo <code>ativo = false</code>), nunca DELETE fisico em dados de negocio.</li>
+    </ul>
+
+    <h3>Seguranca</h3>
+    <ul class="status-list">
+      <li><span class="icon">&#9632;</span> Cross-tenant sempre retorna 404, nunca 403.</li>
+      <li><span class="icon">&#9632;</span> Desconto acima do limite do operador exige senha de gerente.</li>
+      <li><span class="icon">&#9632;</span> Qualquer acao sensivel e registrada no AuditLog com IP, user-agent e timestamp.</li>
+      <li><span class="icon">&#9632;</span> JWT invalido ou expirado = 401, nunca 403.</li>
+    </ul>
+
+    <h3>Experiencia do Usuario</h3>
+    <ul class="status-list">
+      <li><span class="icon">&#9632;</span> O PDV deve funcionar com teclado apenas (sem mouse obrigatorio).</li>
+      <li><span class="icon">&#9632;</span> Toda acao lenta deve ter feedback visual (loading state).</li>
+      <li><span class="icon">&#9632;</span> Erros de API devem ter mensagens em portugues claras para o usuario final.</li>
+      <li><span class="icon">&#9632;</span> Nenhuma pagina pode ficar sem estado de loading, erro ou vazio adequado.</li>
+    </ul>
+
+    <h3>Arquitetura</h3>
+    <ul class="status-list">
+      <li><span class="icon">&#9632;</span> Feature flags controlam tudo que e especifico por tipo de negocio. Nunca hardcodar tipo de negocio na logica.</li>
+      <li><span class="icon">&#9632;</span> Toda rota nova de tenant deve passar por auth() + perfil() + empresa_id filter.</li>
+      <li><span class="icon">&#9632;</span> Servicos criticos (SNGPC, fiscal) usam transacoes SERIALIZABLE.</li>
+      <li><span class="icon">&#9632;</span> Logs estruturados em JSON para todos os erros de producao.</li>
+    </ul>
+
+    <div style="margin-top:48px; padding: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); text-align: center; color: var(--text3); font-size: 12px;">
+      SGC — Sistema de Gestao Comercial &bull; Documento Mestre v1.0 &bull; Marco 2026<br>
+      Gerado a partir de analise completa do codigo-fonte. Atualizar conforme novas features forem implementadas.
+    </div>
+  </section>
+
+</main>
+
+<script>
+  // Active nav link on scroll
+  const sections = document.querySelectorAll('section[id], div[id]');
+  const navLinks = document.querySelectorAll('nav ul li a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href') === '#' + entry.target.id) {
+            link.classList.add('active');
+          }
+        });
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+
+  // Smooth scroll
+  navLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(link.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+</script>
+</body>
+</html>
