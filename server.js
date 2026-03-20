@@ -55,25 +55,24 @@ app.use(helmet({
   referrerPolicy: { policy: 'strict-origin-when-cross-origin' }
 }));
 
-// CORS restritivo — wildcard proibido em produção
+// CORS — origens permitidas via variável de ambiente
 const allowedOrigins = process.env.CORS_ORIGINS
-  ? process.env.CORS_ORIGINS.split(',').map(o => o.trim()).filter(o => {
-      // Bloquear wildcard em produção
-      if (o === '*' && process.env.NODE_ENV === 'production') {
-        logger.warn('CORS: wildcard * ignorado em produção. Configure CORS_ORIGINS corretamente.');
-        return false;
-      }
-      return true;
-    })
-  : ['http://localhost:3000'];
+  ? process.env.CORS_ORIGINS.split(',').map(o => o.trim()).filter(Boolean)
+  : [];
+
+if (process.env.NODE_ENV === 'production' && allowedOrigins.length === 0) {
+  logger.warn('CORS_ORIGINS não configurado em produção — permitindo todas as origens. Configure a variável para restringir.');
+}
+
 app.use(cors({
   origin: (origin, callback) => {
-    // Permitir requisições sem Origin (navegação direta, server-to-server, Postman)
-    // CORS só protege contra requests cross-origin do browser — que sempre enviam Origin
+    // Sem Origin header → navegação direta, server-to-server, Postman → permitir
     if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
-      return callback(null, true);
-    }
+    // CORS_ORIGINS não configurado → permitir tudo (com aviso acima)
+    if (allowedOrigins.length === 0) return callback(null, true);
+    // Checar lista de origens permitidas
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    logger.warn('CORS bloqueou origem', { origin });
     callback(new Error('Bloqueado pelo CORS'));
   },
   credentials: true,
