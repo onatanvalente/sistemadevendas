@@ -8,7 +8,9 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 const { Empresa, Usuario } = require('../models');
+const { sequelize } = require('../config/database');
 const { gerarSlug } = require('../middleware/tenantResolver');
+const { logger } = require('../config/logger');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'sgc_jwt_secret_default';
 const JWT_EXPIRES = process.env.JWT_EXPIRES_IN || '2h';
@@ -49,49 +51,53 @@ router.post('/registro', [
       slug = slugBase + '-' + tentativa;
     }
 
-    // CNPJ placeholder (será preenchido depois pelo cliente) — formato: XX.XXX.XXX/XXXX-XX (18 chars)
-    const cnpjTemp = '00.000.000/' + String(Date.now()).slice(-4) + '-' + String(Math.floor(Math.random() * 90) + 10);
+    // CNPJ placeholder único — será preenchido pelo cliente depois
+    const cnpjTemp = '00.000.000/' + String(Date.now()).slice(-8, -4) + '-' + String(Date.now()).slice(-2);
 
-    // Criar empresa
-    const novaEmpresa = await Empresa.create({
-      nome: empresa_nome,
-      nome_fantasia: empresa_nome,
-      cnpj: cnpjTemp,
-      tipo_negocio: tipo_negocio || 'mercado',
-      subdominio: slug,
-      telefone: telefone || null,
-      email: email,
-      status: 'ativo',
-      ativo: true,
-      plano: 'basico',
-      origem_cadastro: 'landing_page',
-      cor_primaria: tipo_negocio === 'drogaria' ? '#059669' : '#2563eb',
-      cor_secundaria: tipo_negocio === 'drogaria' ? '#0ea5e9' : '#10b981'
-    });
-
-    // Criar admin
     const senhaHash = await bcrypt.hash(senha, 12);
-    const novoUsuario = await Usuario.create({
-      empresa_id: novaEmpresa.id,
-      nome: nome,
-      email: email,
-      senha: senhaHash,
-      perfil: 'administrador'
+
+    // Transação: empresa + usuario criados juntos ou nenhum
+    const { novaEmpresa, novoUsuario } = await sequelize.transaction(async (t) => {
+      const novaEmpresa = await Empresa.create({
+        nome: empresa_nome,
+        nome_fantasia: empresa_nome,
+        cnpj: cnpjTemp,
+        tipo_negocio: (tipo_negocio === 'drogaria') ? 'drogaria' : 'mercado',
+        subdominio: slug,
+        telefone: telefone || null,
+        email: email,
+        status: 'ativo',
+        ativo: true,
+        plano: 'basico',
+        origem_cadastro: 'landing_page',
+        cor_primaria: tipo_negocio === 'drogaria' ? '#059669' : '#2563eb',
+        cor_secundaria: tipo_negocio === 'drogaria' ? '#0ea5e9' : '#10b981'
+      }, { transaction: t });
+
+      const novoUsuario = await Usuario.create({
+        empresa_id: novaEmpresa.id,
+        nome: nome,
+        email: email,
+        senha: senhaHash,
+        perfil: 'administrador'
+      }, { transaction: t });
+
+      return { novaEmpresa, novoUsuario };
     });
 
-    // Gerar token
     const token = jwt.sign(
       { id: novoUsuario.id, empresa_id: novaEmpresa.id, perfil: 'administrador' },
       JWT_SECRET,
       { expiresIn: JWT_EXPIRES }
     );
 
-    // Gerar refresh token
     const refreshToken = jwt.sign(
       { id: novoUsuario.id, empresa_id: novaEmpresa.id, tipo: 'refresh' },
       REFRESH_SECRET,
       { expiresIn: REFRESH_EXPIRES }
     );
+
+    logger.info('Novo tenant criado via landing', { empresa: novaEmpresa.nome, slug, tipo_negocio: novaEmpresa.tipo_negocio });
 
     res.status(201).json({
       message: 'Conta criada com sucesso!',
@@ -103,8 +109,13 @@ router.post('/registro', [
       empresa: { id: novaEmpresa.id, nome: novaEmpresa.nome, tipo_negocio: novaEmpresa.tipo_negocio }
     });
   } catch (error) {
-    console.error('[Landing Registro]', error);
-    res.status(500).json({ error: 'Erro ao criar conta' });
+    logger.error('[Landing Registro] Erro ao criar conta', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+      sql: error.sql || undefined
+    });
+    res.status(500).json({ error: 'Erro ao criar conta', detail: error.message });
   }
 });
 
