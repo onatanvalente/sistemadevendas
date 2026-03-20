@@ -229,8 +229,9 @@ app.use('/api/etiquetas', require('./routes/etiquetas'));
 app.use('/api/audit', require('./routes/audit'));
 
 // Health check — Railway exige este endpoint para confirmar que o app subiu
+let dbReady = false;
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', version: '3.0', ts: new Date().toISOString() });
+  res.json({ status: 'ok', version: '3.0', db: dbReady ? 'connected' : 'connecting', ts: new Date().toISOString() });
 });
 
 // Endpoint para coleta de violações CSP (Report-Only)
@@ -353,85 +354,96 @@ app.use((err, req, res, next) => {
 });
 
 // ── Iniciar servidor ──
-async function start() {
-  try {
-    // Validar que JWT_SECRET não é o default em produção
-    if (process.env.NODE_ENV === 'production') {
-      const jwtSecret = process.env.JWT_SECRET;
-      const masterSecret = process.env.MASTER_JWT_SECRET;
-      if (!jwtSecret || jwtSecret.includes('default') || jwtSecret.includes('change_this')) {
-        logger.error('JWT_SECRET não configurado para produção! Abortando.');
-        process.exit(1);
-      }
-      if (!masterSecret || masterSecret.includes('change_this')) {
-        logger.error('MASTER_JWT_SECRET não configurado para produção! Abortando.');
-        process.exit(1);
-      }
-    }
+async function connectAndSync() {
+  const rlsTables = [
+    'usuarios', 'clientes', 'categorias', 'fornecedores', 'produtos',
+    'produto_sugestoes', 'combos', 'caixa', 'caixa_movimentacoes',
+    'vendas', 'estoque_movimentacoes', 'contas_pagar', 'contas_receber',
+    'centros_custo', 'contas_bancarias', 'medicamentos_controlados', 'notas_fiscais',
+    'historico_precos', 'lotes', 'security_logs',
+    'compras', 'compra_itens', 'compra_parcelas',
+    'modelos_etiqueta', 'config_impressao',
+    'sngpc_configuracao', 'sngpc_movimentacoes', 'sngpc_periodos', 'sngpc_transmissoes'
+  ];
+  const policyNames = ['tenant_isolation_select', 'tenant_isolation_insert', 'tenant_isolation_update', 'tenant_isolation_delete'];
 
-    await sequelize.authenticate();
-    logger.info('Banco de dados conectado');
+  await sequelize.authenticate();
+  logger.info('Banco de dados conectado');
 
-    // ── RLS: desabilitar e remover policies antes do sync ──
-    const rlsTables = [
-      'usuarios', 'clientes', 'categorias', 'fornecedores', 'produtos',
-      'produto_sugestoes', 'combos', 'caixa', 'caixa_movimentacoes',
-      'vendas', 'estoque_movimentacoes', 'contas_pagar', 'contas_receber',
-      'centros_custo', 'contas_bancarias', 'medicamentos_controlados', 'notas_fiscais',
-      'historico_precos', 'lotes', 'security_logs',
-      'compras', 'compra_itens', 'compra_parcelas',
-      'modelos_etiqueta', 'config_impressao',
-      'sngpc_configuracao', 'sngpc_movimentacoes', 'sngpc_periodos', 'sngpc_transmissoes'
-    ];
-    const policyNames = ['tenant_isolation_select', 'tenant_isolation_insert', 'tenant_isolation_update', 'tenant_isolation_delete'];
-    for (const t of rlsTables) {
-      try {
-        for (const p of policyNames) {
-          await sequelize.query(`DROP POLICY IF EXISTS "${p}" ON "${t}"`);
-        }
-        await sequelize.query(`ALTER TABLE "${t}" NO FORCE ROW LEVEL SECURITY`);
-        await sequelize.query(`ALTER TABLE "${t}" DISABLE ROW LEVEL SECURITY`);
-      } catch(e) { /* tabela pode não existir ainda */ }
-    }
-
-    // ── Migração: ENUM → STRING para tipo_medicamento e tipo_receita ──
+  // ── RLS: desabilitar e remover policies antes do sync ──
+  for (const t of rlsTables) {
     try {
-      await sequelize.query(`ALTER TABLE "produtos" ALTER COLUMN "tipo_medicamento" TYPE VARCHAR(30) USING "tipo_medicamento"::TEXT`);
-      await sequelize.query(`ALTER TABLE "produtos" ALTER COLUMN "tipo_receita" TYPE VARCHAR(30) USING "tipo_receita"::TEXT`);
-      // Limpar tipos ENUM órfãos
-      await sequelize.query(`DROP TYPE IF EXISTS "enum_produtos_tipo_medicamento" CASCADE`);
-      await sequelize.query(`DROP TYPE IF EXISTS "enum_produtos_tipo_receita" CASCADE`);
-      logger.info('Migração ENUM → STRING concluída');
-    } catch(e) { /* tabela/coluna pode não existir ainda ou já ser STRING */ }
-
-    await sequelize.sync({ alter: true });
-    logger.info('Modelos sincronizados (v3.0 — SaaS Multi-Tenant)');
-
-    // ── RLS: recriar policies e reativar após sync ──
-    for (const t of rlsTables) {
-      try {
-        await sequelize.query(`ALTER TABLE "${t}" ENABLE ROW LEVEL SECURITY`);
-        await sequelize.query(`ALTER TABLE "${t}" FORCE ROW LEVEL SECURITY`);
-        const rlsCondition = `empresa_id = NULLIF(current_setting('app.current_empresa_id', true), '')::INTEGER OR current_setting('app.current_empresa_id', true) IS NULL OR current_setting('app.current_empresa_id', true) = ''`;
-        await sequelize.query(`CREATE POLICY tenant_isolation_select ON "${t}" FOR SELECT USING (${rlsCondition})`);
-        await sequelize.query(`CREATE POLICY tenant_isolation_insert ON "${t}" FOR INSERT WITH CHECK (${rlsCondition})`);
-        await sequelize.query(`CREATE POLICY tenant_isolation_update ON "${t}" FOR UPDATE USING (${rlsCondition})`);
-        await sequelize.query(`CREATE POLICY tenant_isolation_delete ON "${t}" FOR DELETE USING (${rlsCondition})`);
-      } catch(e) { /* ignora se alguma tabela falhar */ }
-    }
-    logger.info('RLS reativado em ' + rlsTables.length + ' tabelas');
-
-    app.listen(PORT, () => {
-      logger.info(`SGC v3.0 SaaS rodando na porta ${PORT}`, {
-        landing: `http://localhost:${PORT}`,
-        master: `http://localhost:${PORT}/master`,
-        clientes: `http://localhost:${PORT}/app/{slug}`
-      });
-    });
-  } catch (error) {
-    logger.error('Erro ao iniciar', { message: error.message });
-    process.exit(1);
+      for (const p of policyNames) {
+        await sequelize.query(`DROP POLICY IF EXISTS "${p}" ON "${t}"`);
+      }
+      await sequelize.query(`ALTER TABLE "${t}" NO FORCE ROW LEVEL SECURITY`);
+      await sequelize.query(`ALTER TABLE "${t}" DISABLE ROW LEVEL SECURITY`);
+    } catch(e) { /* tabela pode não existir ainda */ }
   }
+
+  // ── Migração: ENUM → STRING para tipo_medicamento e tipo_receita ──
+  try {
+    await sequelize.query(`ALTER TABLE "produtos" ALTER COLUMN "tipo_medicamento" TYPE VARCHAR(30) USING "tipo_medicamento"::TEXT`);
+    await sequelize.query(`ALTER TABLE "produtos" ALTER COLUMN "tipo_receita" TYPE VARCHAR(30) USING "tipo_receita"::TEXT`);
+    await sequelize.query(`DROP TYPE IF EXISTS "enum_produtos_tipo_medicamento" CASCADE`);
+    await sequelize.query(`DROP TYPE IF EXISTS "enum_produtos_tipo_receita" CASCADE`);
+    logger.info('Migração ENUM → STRING concluída');
+  } catch(e) { /* tabela/coluna pode não existir ainda ou já ser STRING */ }
+
+  await sequelize.sync({ alter: true });
+  logger.info('Modelos sincronizados (v3.0 — SaaS Multi-Tenant)');
+
+  // ── RLS: recriar policies e reativar após sync ──
+  for (const t of rlsTables) {
+    try {
+      await sequelize.query(`ALTER TABLE "${t}" ENABLE ROW LEVEL SECURITY`);
+      await sequelize.query(`ALTER TABLE "${t}" FORCE ROW LEVEL SECURITY`);
+      const rlsCondition = `empresa_id = NULLIF(current_setting('app.current_empresa_id', true), '')::INTEGER OR current_setting('app.current_empresa_id', true) IS NULL OR current_setting('app.current_empresa_id', true) = ''`;
+      await sequelize.query(`CREATE POLICY tenant_isolation_select ON "${t}" FOR SELECT USING (${rlsCondition})`);
+      await sequelize.query(`CREATE POLICY tenant_isolation_insert ON "${t}" FOR INSERT WITH CHECK (${rlsCondition})`);
+      await sequelize.query(`CREATE POLICY tenant_isolation_update ON "${t}" FOR UPDATE USING (${rlsCondition})`);
+      await sequelize.query(`CREATE POLICY tenant_isolation_delete ON "${t}" FOR DELETE USING (${rlsCondition})`);
+    } catch(e) { /* ignora se alguma tabela falhar */ }
+  }
+  logger.info('RLS reativado em ' + rlsTables.length + ' tabelas');
+
+  dbReady = true;
+}
+
+async function start() {
+  // Validar que JWT_SECRET não é o default em produção
+  if (process.env.NODE_ENV === 'production') {
+    const jwtSecret = process.env.JWT_SECRET;
+    const masterSecret = process.env.MASTER_JWT_SECRET;
+    if (!jwtSecret || jwtSecret.includes('default') || jwtSecret.includes('change_this')) {
+      logger.error('JWT_SECRET não configurado para produção! Abortando.');
+      process.exit(1);
+    }
+    if (!masterSecret || masterSecret.includes('change_this')) {
+      logger.error('MASTER_JWT_SECRET não configurado para produção! Abortando.');
+      process.exit(1);
+    }
+  }
+
+  // ── Servidor sobe PRIMEIRO — healthcheck do Railway já pode responder ──
+  app.listen(PORT, () => {
+    logger.info(`SGC v3.0 SaaS rodando na porta ${PORT}`, {
+      landing: `http://localhost:${PORT}`,
+      master:  `http://localhost:${PORT}/master`,
+      clientes: `http://localhost:${PORT}/app/{slug}`
+    });
+  });
+
+  // ── Banco conecta em background — sem bloquear o healthcheck ──
+  connectAndSync().catch((error) => {
+    logger.error('Erro ao conectar/sincronizar banco', { message: error.message });
+    // Não mata o processo — healthcheck continua respondendo (db: "connecting")
+    // Tenta reconectar após 10 segundos
+    setTimeout(() => connectAndSync().catch((e) => {
+      logger.error('Reconexão falhou', { message: e.message });
+      process.exit(1);
+    }), 10000);
+  });
 }
 
 start();
