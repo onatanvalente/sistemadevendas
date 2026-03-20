@@ -12,6 +12,9 @@ const { logger, requestLogger } = require('./config/logger');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Railway / qualquer proxy reverso injeta X-Forwarded-For — precisa confiar
+app.set('trust proxy', 1);
+
 // ── Health check — ANTES de todo middleware (CORS, Helmet, rate limit) ──
 // Railway bate neste endpoint para confirmar que o app subiu
 let dbReady = false;
