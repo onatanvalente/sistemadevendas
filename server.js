@@ -36,10 +36,10 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'"],
-      scriptSrcAttr: ["'none'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      fontSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrcAttr: ["'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
       imgSrc: ["'self'", "data:", "https:"],
       connectSrc: ["'self'"],
       frameSrc: ["'none'"],
@@ -51,29 +51,6 @@ app.use(helmet({
   hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
   referrerPolicy: { policy: 'strict-origin-when-cross-origin' }
 }));
-
-// CSP estrita em modo de observação (não bloqueia) para evolução segura
-app.use((req, res, next) => {
-  const cspReportOnly = [
-    "default-src 'self'",
-    "script-src 'self'",
-    "script-src-attr 'none'",
-    "style-src 'self' 'unsafe-inline'",
-    "font-src 'self'",
-    "img-src 'self' data: https:",
-    "connect-src 'self'",
-    "frame-src 'none'",
-    "object-src 'none'",
-    "base-uri 'self'",
-    "form-action 'self'",
-    "frame-ancestors 'self'",
-    "report-uri /api/csp-report"
-  ].join(';');
-
-  res.setHeader('Content-Security-Policy-Report-Only', cspReportOnly);
-
-  next();
-});
 
 // CORS restritivo — wildcard proibido em produção
 const allowedOrigins = process.env.CORS_ORIGINS
@@ -231,18 +208,16 @@ app.use('/api/programas', require('./routes/programas'));
 app.use('/api/etiquetas', require('./routes/etiquetas'));
 app.use('/api/audit', require('./routes/audit'));
 
-// Endpoint para coleta de violações CSP (Report-Only)
-app.post('/api/csp-report', express.json({ type: ['application/csp-report', 'application/reports+json', 'application/json'] }), (req, res) => {
-  const report = req.body?.['csp-report'] || req.body;
-  logger.warn('CSP violation report', {
-    blockedUri: report?.['blocked-uri'] || report?.blockedURI,
-    violatedDirective: report?.['violated-directive'] || report?.violatedDirective,
-    effectiveDirective: report?.['effective-directive'] || report?.effectiveDirective,
-    sourceFile: report?.['source-file'] || report?.sourceFile,
-    lineNumber: report?.['line-number'] || report?.lineNumber,
-    documentUri: report?.['document-uri'] || report?.documentURI,
-    userAgent: req.headers['user-agent']
-  });
+// Endpoint para coleta de violações CSP
+app.post('/api/csp-report', (req, res) => {
+  try {
+    const report = req.body?.['csp-report'] || req.body || {};
+    logger.warn('CSP violation', {
+      blockedUri: report?.['blocked-uri'] || report?.blockedURI,
+      violatedDirective: report?.['violated-directive'] || report?.violatedDirective,
+      documentUri: report?.['document-uri'] || report?.documentURI,
+    });
+  } catch (e) { /* ignora erros de parse */ }
   res.status(204).end();
 });
 
