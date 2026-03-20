@@ -88,13 +88,9 @@ const allowedOrigins = process.env.CORS_ORIGINS
   : ['http://localhost:3000'];
 app.use(cors({
   origin: (origin, callback) => {
-    // Permitir requisições sem origin (Postman, server-to-server) — apenas dev
-    if (!origin) {
-      if (process.env.NODE_ENV === 'production') {
-        return callback(new Error('Bloqueado pelo CORS'));
-      }
-      return callback(null, true);
-    }
+    // Permitir requisições sem Origin (navegação direta, server-to-server, Postman)
+    // CORS só protege contra requests cross-origin do browser — que sempre enviam Origin
+    if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
       return callback(null, true);
     }
