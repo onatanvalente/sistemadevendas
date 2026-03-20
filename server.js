@@ -228,6 +228,11 @@ app.use('/api/programas', require('./routes/programas'));
 app.use('/api/etiquetas', require('./routes/etiquetas'));
 app.use('/api/audit', require('./routes/audit'));
 
+// Health check — Railway exige este endpoint para confirmar que o app subiu
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', version: '3.0', ts: new Date().toISOString() });
+});
+
 // Endpoint para coleta de violações CSP (Report-Only)
 app.post('/api/csp-report', express.json({ type: ['application/csp-report', 'application/reports+json', 'application/json'] }), (req, res) => {
   const report = req.body?.['csp-report'] || req.body;
