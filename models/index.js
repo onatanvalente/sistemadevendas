@@ -2,7 +2,7 @@ const { sequelize } = require('../config/database');
 const { DataTypes } = require('sequelize');
 
 /* ══════════════════════════════════════════════════════════════
-   SGC — Models v2.0  (ERP Varejista Modular)
+   VarlenSYS — Models v2.0  (ERP Varejista Modular)
    Segmentos: Mercado | Farmácia/Drogaria
    Feature-flags por tipo_negocio
    Preparação: NFC-e/NF-e, SNGPC, Multi-tenant por subdomínio

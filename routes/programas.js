@@ -1,5 +1,5 @@
-﻿/* ══════════════════════════════════════════════════════════════
-   SGC — Rotas: Programas Comerciais  v3.0
+/* ══════════════════════════════════════════════════════════════
+   VarlenSYS — Rotas: Programas Comerciais  v3.0
    CRUD Programas, Regras de Desconto, Inscricao de Clientes
    Endpoint de consulta de descontos via Motor de Decisão
    ══════════════════════════════════════════════════════════════ */

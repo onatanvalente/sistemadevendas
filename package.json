@@ -1,5 +1,5 @@
 {
-  "name": "sgc-sistema-gestao-comercial",
+  "name": "varlensys",
   "version": "1.0.0",
   "description": "Sistema de Gestão Comercial - SaaS para mercadinhos, drogarias e pequenos comércios",
   "main": "server.js",

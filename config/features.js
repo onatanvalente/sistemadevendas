@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════
-   SGC — Feature Flags por Segmento
+   VarlenSYS — Feature Flags por Segmento
    Controla quais funcionalidades estão disponíveis
    com base no tipo_negocio da empresa (mercado | drogaria)
    ══════════════════════════════════════════════════════════════ */

@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════
-   SGC — Testes: Programa Padrão (Clube Fidelidade)
+   VarlenSYS — Testes: Programa Padrão (Clube Fidelidade)
    
    Uso: node scripts/test-programa-padrao.js
    

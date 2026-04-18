@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SGC — Documento Mestre do Sistema</title>
+  <title>VarlenSYS — Documento Mestre do Sistema</title>
   <style>
     :root {
       --bg: #0f1117;
@@ -348,13 +348,13 @@
 <!-- ═══════════════════════════════════════════════════════ SIDEBAR ═══ -->
 <nav id="sidebar">
   <div class="logo">
-    <h1>SGC</h1>
+    <h1>VarlenSYS</h1>
     <p>Documento Mestre v1.0</p>
   </div>
 
   <div class="nav-section">Visao Geral</div>
   <ul>
-    <li><a href="#overview">O que e o SGC</a></li>
+    <li><a href="#overview">O que e o VarlenSYS</a></li>
     <li><a href="#business-types">Tipos de Negocio</a></li>
     <li><a href="#architecture">Arquitetura</a></li>
     <li><a href="#security">Seguranca</a></li>
@@ -413,7 +413,7 @@
   <!-- COVER -->
   <div class="cover">
     <div class="cover-tag">Documento Mestre &bull; Versao 1.0 &bull; Marco 2026</div>
-    <h1>SGC</h1>
+    <h1>VarlenSYS</h1>
     <p>Sistema de Gestao Comercial — plataforma SaaS multi-tenant para varejo (mercado e drogaria), com PDV, gestao financeira, estoque, compras e conformidade regulatoria (SNGPC/NF-e).</p>
     <div class="cover-meta">
       <div class="cover-meta-item"><span>Versao</span><strong>3.0 MVP</strong></div>
@@ -427,9 +427,9 @@
 
   <!-- ═══ 1. VISAO GERAL ═══ -->
   <section id="overview">
-    <h2>1. O que e o SGC</h2>
+    <h2>1. O que e o VarlenSYS</h2>
 
-    <p>O SGC e um ERP de varejo construido como SaaS multi-tenant. Cada empresa cliente (tenant) tem seu proprio ambiente isolado dentro de um banco de dados compartilhado, com seguranca em nivel de linha (RLS) do PostgreSQL.</p>
+    <p>O VarlenSYS e um ERP de varejo construido como SaaS multi-tenant. Cada empresa cliente (tenant) tem seu proprio ambiente isolado dentro de um banco de dados compartilhado, com seguranca em nivel de linha (RLS) do PostgreSQL.</p>
 
     <p>O sistema e dividido em duas grandes frentes:</p>
 
@@ -1352,9 +1352,9 @@ APLICAR_PAGAMENTO | FINALIZAR_VENDA | CANCELAR_VENDA | SANGRIA | SUPRIMENTO</cod
     </ul>
 
     <h3>Variaveis de Ambiente</h3>
-    <pre><code>DATABASE_URL=postgresql://user:pass@host:5432/sgc_db
-JWT_SECRET=sgc_jwt_secret_TROCAR_EM_PRODUCAO
-MASTER_JWT_SECRET=sgc_master_secret_TROCAR_EM_PRODUCAO
+    <pre><code>DATABASE_URL=postgresql://user:pass@host:5432/varlensys_db
+JWT_SECRET=varlensys_jwt_secret_TROCAR_EM_PRODUCAO
+MASTER_JWT_SECRET=varlensys_master_secret_TROCAR_EM_PRODUCAO
 NODE_ENV=production
 LOG_LEVEL=info
 CORS_ORIGINS=https://seudominio.com.br
@@ -1511,7 +1511,7 @@ PORT=3000</code></pre>
     </ul>
 
     <div style="margin-top:48px; padding: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); text-align: center; color: var(--text3); font-size: 12px;">
-      SGC — Sistema de Gestao Comercial &bull; Documento Mestre v1.0 &bull; Marco 2026<br>
+      VarlenSYS — Sistema de Gestao Comercial &bull; Documento Mestre v1.0 &bull; Marco 2026<br>
       Gerado a partir de analise completa do codigo-fonte. Atualizar conforme novas features forem implementadas.
     </div>
   </section>

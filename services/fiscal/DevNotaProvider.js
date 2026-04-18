@@ -327,7 +327,7 @@ class DevNotaProvider extends FiscalProvider {
         indFinal: 1,               // 1=Consumidor final
         indPres: 1,                // 1=Presencial
         procEmi: 0,                // 0=Aplicativo do contribuinte
-        verProc: 'SGC-Vendas 1.0'
+        verProc: 'VarlenSYS-Vendas 1.0'
       },
       emit: {
         CNPJ: emit.cnpj,

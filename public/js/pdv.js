@@ -1,5 +1,5 @@
-﻿/* ══════════════════════════════════════════════════════════════
-   SGC - PDV v5.0  (Máquina de Estados + Motor de Descontos v2.0)
+/* ══════════════════════════════════════════════════════════════
+   VarlenSYS - PDV v5.0  (Máquina de Estados + Motor de Descontos v2.0)
    Ponto de Venda em tela cheia, sem sidebar
    Fluxo: Abertura → Idle → CPF → Produtos → Pagamento → Cupom → Idle
    Busca de cliente por CPF, sugestões inteligentes, combos
@@ -2086,7 +2086,7 @@ const PDV = {
       versao: '2.0',
       tipo_documento: venda.tipo_documento_emitido || 'cupom_nao_fiscal',
       empresa: {
-        nome: App.empresa ? App.empresa.nome : 'SGC',
+        nome: App.empresa ? App.empresa.nome : 'VarlenSYS',
         cnpj: App.empresa ? (App.empresa.cnpj || '') : '',
         inscricao_estadual: App.empresa ? (App.empresa.inscricao_estadual || '') : '',
         endereco: App.empresa ? (App.empresa.endereco || '') : '',
@@ -2625,7 +2625,7 @@ const PDV = {
   },
 
   configImpressora() {
-    var config = JSON.parse(localStorage.getItem('sgc_printer') || '{}');
+    var config = JSON.parse(localStorage.getItem('varlen_printer') || '{}');
     Modal.show('Configura\u00e7\u00e3o de Impressora',
       '<div class="form-group"><label class="form-label">Tipo de Impressora</label>' +
         '<select class="form-control" id="printerType">' +
@@ -2654,13 +2654,13 @@ const PDV = {
       port: document.getElementById('printerPort').value,
       autoPrint: document.getElementById('printerAuto').checked
     };
-    localStorage.setItem('sgc_printer', JSON.stringify(config));
+    localStorage.setItem('varlen_printer', JSON.stringify(config));
     Toast.success('Configura\u00e7\u00e3o de impressora salva');
     Modal.close();
   },
 
   configPOS() {
-    var config = JSON.parse(localStorage.getItem('sgc_pos') || '{}');
+    var config = JSON.parse(localStorage.getItem('varlen_pos') || '{}');
     Modal.show('Configura\u00e7\u00e3o M\u00e1quina POS',
       '<div class="form-group"><label class="form-label">Tipo de Integra\u00e7\u00e3o</label>' +
         '<select class="form-control" id="posType">' +
@@ -2694,7 +2694,7 @@ const PDV = {
       loja: document.getElementById('posLoja').value,
       terminal: document.getElementById('posTerminal').value
     };
-    localStorage.setItem('sgc_pos', JSON.stringify(config));
+    localStorage.setItem('varlen_pos', JSON.stringify(config));
     Toast.success('Configura\u00e7\u00e3o POS salva');
     Modal.close();
   },

@@ -143,7 +143,7 @@ async function setup() {
     if (users.length > 0) {
       const jwt = require('jsonwebtoken');
       TOKEN_ADMIN = jwt.sign({ id: users[0].id, empresa_id: EMPRESA_ID, perfil: 'administrador' },
-        process.env.JWT_SECRET || 'sgc_jwt_secret_change_this_in_production_2024', { expiresIn: '2h' });
+        process.env.JWT_SECRET || 'varlensys_jwt_secret_change_this_in_production_2024', { expiresIn: '2h' });
     }
   } else {
     TOKEN_ADMIN = loginAdmin.data.token;

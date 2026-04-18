@@ -131,7 +131,7 @@ async function setup() {
   const bcrypt = require('bcryptjs');
   const jwt = require('jsonwebtoken');
   
-  const JWT_SECRET = process.env.JWT_SECRET || 'sgc_jwt_secret_default';
+  const JWT_SECRET = process.env.JWT_SECRET || 'varlensys_jwt_secret_default';
   
   await sequelize.authenticate();
   console.log('  DB conectado (tabelas já sincronizadas pelo servidor)');

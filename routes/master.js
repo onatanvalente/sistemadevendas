@@ -11,7 +11,7 @@ const { UsuarioMaster, Empresa, Usuario, Venda, sequelize } = require('../models
 const { Op } = require('sequelize');
 const { invalidateCache } = require('../middleware/tenantResolver');
 
-const MASTER_SECRET = process.env.MASTER_JWT_SECRET || 'sgc_master_secret_change_this';
+const MASTER_SECRET = process.env.MASTER_JWT_SECRET || 'varlensys_master_secret_change_this';
 const MASTER_EXPIRES = '8h';
 
 // ── Auth Middleware Master (isolado do tenant) ──
@@ -205,7 +205,7 @@ router.post('/impersonar/:id', masterAuth, async (req, res) => {
     });
     if (!admin) return res.status(404).json({ error: 'Admin da empresa não encontrado' });
 
-    const JWT_SECRET = process.env.JWT_SECRET || 'sgc_jwt_secret_default';
+    const JWT_SECRET = process.env.JWT_SECRET || 'varlensys_jwt_secret_default';
     const token = jwt.sign(
       { id: admin.id, empresa_id: empresa.id, perfil: admin.perfil, impersonated: true },
       JWT_SECRET,

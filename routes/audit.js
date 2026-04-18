@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════
-   SGC — Rotas de Auditoria v1.0
+   VarlenSYS — Rotas de Auditoria v1.0
    Log de descontos, ações do PDV, validação de gerente
    Prioridade 5: Proteção contra fraude interna
    ══════════════════════════════════════════════════════════════ */

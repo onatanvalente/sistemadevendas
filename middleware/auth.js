@@ -5,7 +5,7 @@ const { logger } = require('../config/logger');
 const { logSecurityEvent } = require('./validateTenantAccess');
 const { tenantContext } = require('../config/database');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'sgc_jwt_secret_default';
+const JWT_SECRET = process.env.JWT_SECRET || 'varlensys_jwt_secret_default';
 
 // ── Helper: extrai o slug do tenant da requisição ──
 // Prioridade: 1) header X-Tenant-Slug  2) Referer /app/:slug

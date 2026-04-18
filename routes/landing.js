@@ -12,9 +12,9 @@ const { sequelize } = require('../config/database');
 const { gerarSlug } = require('../middleware/tenantResolver');
 const { logger } = require('../config/logger');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'sgc_jwt_secret_default';
+const JWT_SECRET = process.env.JWT_SECRET || 'varlensys_jwt_secret_default';
 const JWT_EXPIRES = process.env.JWT_EXPIRES_IN || '2h';
-const REFRESH_SECRET = (process.env.JWT_SECRET || 'sgc_jwt_secret_default') + '_refresh';
+const REFRESH_SECRET = (process.env.JWT_SECRET || 'varlensys_jwt_secret_default') + '_refresh';
 const REFRESH_EXPIRES = '7d';
 
 // ── REGISTRO DE NOVO CLIENTE (Landing Page) ──

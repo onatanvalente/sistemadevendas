@@ -77,7 +77,7 @@ function tenantFromSubdomain(req, res, next) {
   // Em produção: extrair subdomínio
   const parts = hostname.split('.');
   if (parts.length >= 3) {
-    slug = parts[0]; // mercadinho-bb.sgc.com.br → "mercadinho-bb"
+    slug = parts[0]; // mercadinho-bb.varlem.com.br → "mercadinho-bb"
   }
 
   // Fallback para dev local: header X-Tenant-Slug

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ══════════════════════════════════════════════════════════════
  *  SEED DE MOVIMENTAÇÕES — Drogaria Romã
  *  Simula operações realistas de 01/Jan/2026 a 18/Fev/2026
@@ -367,7 +367,7 @@ async function main() {
       { desc: 'Internet/Telefone', valor: 350, dia: 15 },
       { desc: 'Folha de Pagamento', valor: 12000, dia: 5 },
       { desc: 'Contabilidade', valor: 800, dia: 10 },
-      { desc: 'Sistema SGC (SaaS)', valor: 299, dia: 1 },
+      { desc: 'Sistema VarlenSYS (SaaS)', valor: 299, dia: 1 },
       { desc: 'Seguro do Ponto', valor: 450, dia: 20 },
     ];
 

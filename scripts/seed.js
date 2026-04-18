@@ -27,12 +27,12 @@ async function seed() {
     // ═══════════════════════════════════════════
     await UsuarioMaster.create({
       nome: 'Super Admin',
-      email: 'master@sgc.com',
+      email: 'master@varlensys.com',
       senha: senhaHash,
       role: 'super_admin',
       ativo: true
     });
-    console.log('✅ Usuário Master criado (master@sgc.com / 123456)');
+    console.log('✅ Usuário Master criado (master@varlensys.com / 123456)');
 
     // ═══════════════════════════════════════════
     //  EMPRESA 1: MERCADINHO B&B
@@ -60,10 +60,10 @@ async function seed() {
     });
 
     // Usuários do mercado
-    await Usuario.create({ empresa_id: mercado.id, nome: 'Admin B&B', email: 'admin@sgc.com', senha: senhaHash, perfil: 'administrador' });
-    await Usuario.create({ empresa_id: mercado.id, nome: 'Maria Vendedora', email: 'vendedor@sgc.com', senha: senhaHash, perfil: 'vendedor' });
-    await Usuario.create({ empresa_id: mercado.id, nome: 'João Gerente', email: 'gerente@sgc.com', senha: senhaHash, perfil: 'gerente' });
-    await Usuario.create({ empresa_id: mercado.id, nome: 'Ana Financeiro', email: 'financeiro@sgc.com', senha: senhaHash, perfil: 'financeiro' });
+    await Usuario.create({ empresa_id: mercado.id, nome: 'Admin B&B', email: 'admin@varlensys.com', senha: senhaHash, perfil: 'administrador' });
+    await Usuario.create({ empresa_id: mercado.id, nome: 'Maria Vendedora', email: 'vendedor@varlensys.com', senha: senhaHash, perfil: 'vendedor' });
+    await Usuario.create({ empresa_id: mercado.id, nome: 'João Gerente', email: 'gerente@varlensys.com', senha: senhaHash, perfil: 'gerente' });
+    await Usuario.create({ empresa_id: mercado.id, nome: 'Ana Financeiro', email: 'financeiro@varlensys.com', senha: senhaHash, perfil: 'financeiro' });
     console.log('✅ Mercadinho B&B + 4 usuários criados');
 
     // Categorias mercado
@@ -286,12 +286,12 @@ async function seed() {
     console.log('══════════════════════════════════════');
     console.log('MASTER (Painel Admin):');
     console.log('  URL:   /master');
-    console.log('  Login: master@sgc.com');
+    console.log('  Login: master@varlensys.com');
     console.log('  Senha: 123456');
     console.log('');
     console.log('MERCADINHO B&B:');
     console.log('  URL:   /app/mercadinho-bb');
-    console.log('  Login: admin@sgc.com');
+    console.log('  Login: admin@varlensys.com');
     console.log('  Senha: 123456');
     console.log('');
     console.log('DROGARIA ROMÃ:');

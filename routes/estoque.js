@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════
-   SGC — Rotas: Módulo de Estoque v2.0
+   VarlenSYS — Rotas: Módulo de Estoque v2.0
    Visão geral | Lotes (FIFO/PEPS) | Ajuste manual c/ justificativa
    Inventário físico | Sugestão de compra | Movimentações
    Governança: Correção → SOMENTE via Estoque

@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════
-   SGC — Rotas: Módulo de Compras v2.0
+   VarlenSYS — Rotas: Módulo de Compras v2.0
    Fluxo: ABERTA → Itens → FINALIZAR (gera lotes, estoque, financeiro)
    Governança: entrada fornecedor SOMENTE via Compras
    ══════════════════════════════════════════════════════════════ */

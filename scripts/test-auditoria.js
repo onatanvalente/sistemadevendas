@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════
-   SGC — Testes de Auditoria v1.0
+   VarlenSYS — Testes de Auditoria v1.0
    Prioridade 5: Proteção contra fraude interna
    
    Testes:

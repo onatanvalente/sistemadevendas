@@ -791,4 +791,125 @@ router.put('/:id/cancelar', auth, perfil('administrador', 'gerente'), async (req
   }
 });
 
+// =========================================================
+//  DEVOLUCAO PARCIAL DE VENDA
+//  Devolver itens especificos sem cancelar a venda inteira
+// =========================================================
+router.post('/:id/devolucao', auth, perfil('administrador', 'gerente'), async (req, res) => {
+  const t = await sequelize.transaction();
+  try {
+    const { itens, motivo } = req.body;
+    // itens = [{ item_id: 1, quantidade: 2 }, ...]
+
+    if (!itens || !Array.isArray(itens) || itens.length === 0) {
+      await t.rollback();
+      return res.status(400).json({ error: 'Informe os itens para devolucao' });
+    }
+
+    const venda = await Venda.findOne({
+      where: { id: req.params.id, empresa_id: req.empresa_id },
+      include: [{ model: VendaItem }],
+      transaction: t
+    });
+    if (!venda) { await t.rollback(); return res.status(404).json({ error: 'Venda nao encontrada' }); }
+    if (venda.status !== 'finalizada') { await t.rollback(); return res.status(400).json({ error: 'Apenas vendas finalizadas podem ter devolucao' }); }
+
+    let totalDevolvido = 0;
+    const itensDevolvidos = [];
+
+    for (const dev of itens) {
+      const itemId = parseInt(dev.item_id);
+      const itemVenda = venda.VendaItems.find(i => i.id === itemId);
+      if (!itemVenda) {
+        await t.rollback();
+        return res.status(400).json({ error: 'Item ' + dev.item_id + ' nao pertence a esta venda' });
+      }
+
+      const qtdDevolver = parseFloat(dev.quantidade);
+      if (isNaN(qtdDevolver) || qtdDevolver <= 0 || qtdDevolver > parseFloat(itemVenda.quantidade)) {
+        await t.rollback();
+        return res.status(400).json({ error: 'Quantidade invalida para item ' + itemVenda.produto_nome });
+      }
+
+      // Devolver estoque
+      const produto = await Produto.findOne({
+        where: { id: itemVenda.produto_id, empresa_id: req.empresa_id },
+        transaction: t
+      });
+      if (produto) {
+        const estoqueAnterior = parseFloat(produto.estoque_atual);
+        const estoqueNovo = estoqueAnterior + qtdDevolver;
+        await produto.update({ estoque_atual: estoqueNovo }, { transaction: t });
+
+        await EstoqueMovimentacao.create({
+          empresa_id: req.empresa_id,
+          produto_id: produto.id,
+          tipo: 'devolucao',
+          origem: 'DEVOLUCAO_PARCIAL',
+          quantidade: qtdDevolver,
+          estoque_anterior: estoqueAnterior,
+          estoque_posterior: estoqueNovo,
+          motivo: 'Devolucao parcial venda #' + venda.numero + ' - ' + (motivo || 'Sem motivo'),
+          usuario_id: req.usuario.id,
+          referencia: 'devolucao_venda_' + venda.id
+        }, { transaction: t });
+      }
+
+      const valorDevolvido = qtdDevolver * parseFloat(itemVenda.preco_unitario);
+      totalDevolvido += valorDevolvido;
+
+      itensDevolvidos.push({
+        item_id: itemVenda.id,
+        produto: itemVenda.produto_nome,
+        quantidade_devolvida: qtdDevolver,
+        valor_devolvido: valorDevolvido
+      });
+    }
+
+    // Atualizar total da venda
+    const novoTotal = Math.max(0, parseFloat(venda.total) - totalDevolvido);
+
+    // Se devolveu tudo, marcar como devolvida
+    const todosDevolvidos = itens.length === venda.VendaItems.length &&
+      itens.every(dev => {
+        const item = venda.VendaItems.find(i => i.id === parseInt(dev.item_id));
+        return item && parseFloat(dev.quantidade) >= parseFloat(item.quantidade);
+      });
+
+    await venda.update({
+      total: novoTotal,
+      status: todosDevolvidos ? 'devolvida' : 'finalizada',
+      observacoes: (venda.observacoes || '') + '\nDevolucao parcial em ' + new Date().toISOString().split('T')[0] + ': R$ ' + totalDevolvido.toFixed(2) + ' - ' + (motivo || '')
+    }, { transaction: t });
+
+    // Reverter metricas do cliente proporcionalmente
+    if (venda.cliente_id) {
+      const cliente = await Cliente.findOne({
+        where: { id: venda.cliente_id, empresa_id: req.empresa_id },
+        transaction: t
+      });
+      if (cliente) {
+        const novoTotalCompras = Math.max(0, parseFloat(cliente.total_compras || 0) - totalDevolvido);
+        const novaQtd = cliente.quantidade_compras || 1;
+        await cliente.update({
+          total_compras: novoTotalCompras,
+          ticket_medio: novaQtd > 0 ? novoTotalCompras / novaQtd : 0
+        }, { transaction: t });
+      }
+    }
+
+    await t.commit();
+
+    res.json({
+      message: 'Devolucao parcial registrada',
+      total_devolvido: totalDevolvido,
+      novo_total_venda: novoTotal,
+      itens: itensDevolvidos
+    });
+  } catch (error) {
+    await t.rollback();
+    res.status(500).json({ error: 'Erro ao processar devolucao' });
+  }
+});
+
 module.exports = router;

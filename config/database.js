@@ -1,7 +1,7 @@
 const { Sequelize } = require('sequelize');
 const { AsyncLocalStorage } = require('async_hooks');
 
-const databaseUrl = process.env.DATABASE_URL || 'postgresql://postgres:senha@localhost:5432/sgc_db';
+const databaseUrl = process.env.DATABASE_URL || 'postgresql://postgres:senha@localhost:5432/varlensys_db';
 
 // AsyncLocalStorage para propagar empresa_id do request para as queries
 const tenantContext = new AsyncLocalStorage();

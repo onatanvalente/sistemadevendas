@@ -1,4 +1,4 @@
-# SGC - Sistema de Gestão Comercial
+# VarlenSYS - Sistema de Gestão Comercial
 
 Sistema SaaS completo para **mercadinhos**, **drogarias** e **pequenos comércios varejistas**.
 
@@ -29,7 +29,7 @@ Sistema SaaS completo para **mercadinhos**, **drogarias** e **pequenos comércio
 
 ### 2. Configurar banco
 ```sql
-CREATE DATABASE sgc_db;
+CREATE DATABASE varlensys_db;
 ```
 
 ### 3. Configurar variáveis de ambiente
@@ -56,7 +56,7 @@ npm run dev
 Acesse: http://localhost:3000
 
 **Login de teste:**
-- Email: `admin@sgc.com`
+- Email: `admin@varlensys.com`
 - Senha: `123456`
 
 ## 🚂 Deploy no Railway
@@ -65,9 +65,9 @@ Acesse: http://localhost:3000
 ```bash
 git init
 git add .
-git commit -m "SGC - MVP completo"
+git commit -m "VarlenSYS - MVP completo"
 git branch -M main
-git remote add origin https://github.com/SEU_USUARIO/sgc.git
+git remote add origin https://github.com/SEU_USUARIO/varlensys.git
 git push -u origin main
 ```
 
@@ -155,4 +155,4 @@ git push -u origin main
 
 ---
 
-**SGC** - Complexidade no código. Simplicidade na tela. 💼
+**VarlenSYS** - Complexidade no código. Simplicidade na tela. 💼

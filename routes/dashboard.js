@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════
-   SGC — Dashboard v2.0
+   VarlenSYS — Dashboard v2.0
    Métricas avançadas: margem, curva ABC, crescimento,
    alertas por segmento (mercado|drogaria), metas
    ══════════════════════════════════════════════════════════════ */

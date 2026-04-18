@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════
-   SGC — Rotas de Etiquetas  v1.0
+   VarlenSYS — Rotas de Etiquetas  v1.0
    CRUD de modelos de etiqueta + geração/simulação de preço clube
    ═══════════════════════════════════════════════════════════════════ */
 

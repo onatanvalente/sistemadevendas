@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════
-   SGC — Rotas: Módulo Fiscal Desacoplado (NFC-e)
+   VarlenSYS — Rotas: Módulo Fiscal Desacoplado (NFC-e)
    
    Arquitetura 3 camadas:
      Core Engine  → Provider Factory → DevNota/TecnoSpeed/etc

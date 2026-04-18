@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════
-   SGC — Rotas: Fornecedores v2.0
+   VarlenSYS — Rotas: Fornecedores v2.0
    CRUD + Ranking estratégico + métricas de compras
    ══════════════════════════════════════════════════════════════ */
 

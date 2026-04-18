@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SGC — Sistema de Gestão Comercial | Gerencie seu Negócio</title>
+  <title>VarlenSYS — Sistema de Gestão Comercial | Gerencie seu Negócio</title>
   <meta name="description" content="Sistema completo de gestão para mercadinhos, drogarias e pequenos comércios. PDV, estoque, financeiro, fiscal e muito mais.">
   <meta name="theme-color" content="#2563eb">
 
@@ -179,7 +179,7 @@
   <div class="nav-inner">
     <div class="nav-logo">
       <div class="nav-logo-icon">S</div>
-      SGC
+      VarlenSYS
     </div>
     <div class="nav-links">
       <a href="#features">Funcionalidades</a>
@@ -187,9 +187,11 @@
       <a href="#planos">Planos</a>
     </div>
     <div class="nav-cta">
-      <a href="/master" class="btn btn-outline" style="font-size:.85rem;padding:8px 16px;">Painel Admin</a>
+      <button class="btn btn-outline" data-action="open-login" style="font-size:.85rem;padding:8px 16px;">
+        <i data-lucide="log-in" style="width:16px;height:16px"></i> Fazer Login
+      </button>
       <button class="btn btn-primary" data-action="open-registro" style="font-size:.85rem;padding:8px 18px;">
-        <i data-lucide="rocket" style="width:16px;height:16px"></i> Começar Grátis
+        <i data-lucide="user-plus" style="width:16px;height:16px"></i> Cadastrar-se
       </button>
     </div>
   </div>
@@ -206,11 +208,11 @@
     <p>Sistema completo para mercadinhos, drogarias e comércios. PDV, estoque, financeiro, fiscal — tudo em um só lugar, na nuvem.</p>
     <div class="hero-actions">
       <button class="btn btn-primary btn-lg" data-action="open-registro">
-        <i data-lucide="rocket" style="width:20px;height:20px"></i> Criar Conta Grátis
+        <i data-lucide="user-plus" style="width:20px;height:20px"></i> Cadastrar-se
       </button>
-      <a href="#features" class="btn btn-outline btn-lg">
-        <i data-lucide="play" style="width:18px;height:18px"></i> Ver Funcionalidades
-      </a>
+      <button class="btn btn-outline btn-lg" data-action="open-login">
+        <i data-lucide="log-in" style="width:20px;height:20px"></i> Fazer Login
+      </button>
     </div>
     <div class="hero-stats">
       <div class="hero-stat"><strong>100%</strong><span>Na nuvem</span></div>
@@ -307,8 +309,8 @@
 <section class="section section-alt" id="planos">
   <div class="section-inner">
     <div class="section-header">
-      <h2>Planos para cada fase do seu negócio</h2>
-      <p>Comece grátis e evolua conforme cresce</p>
+      <h2>Planos para cada fase do seu negocio</h2>
+      <p>Escolha o plano ideal e evolua conforme cresce</p>
     </div>
     <div class="pricing-grid">
       <div class="price-card">
@@ -322,7 +324,7 @@
           <li>Controle de estoque</li>
           <li>Relatórios básicos</li>
         </ul>
-        <button class="btn btn-outline" style="width:100%" data-action="open-registro">Começar Grátis</button>
+        <button class="btn btn-outline" style="width:100%" data-action="open-registro">Cadastrar-se</button>
       </div>
       <div class="price-card popular">
         <div class="price-name">Profissional</div>
@@ -358,19 +360,59 @@
 
 <!-- ═══════════════ CTA ═══════════════ -->
 <section class="cta-section">
-  <h2>Pronto para transformar sua gestão?</h2>
-  <p>Crie sua conta em menos de 1 minuto. Sem cartão de crédito, sem compromisso.</p>
-  <button class="btn btn-white btn-lg" data-action="open-registro">
-    <i data-lucide="rocket" style="width:20px;height:20px"></i> Criar Conta Grátis
-  </button>
+  <h2>Pronto para transformar sua gestao?</h2>
+  <p>Crie sua conta em menos de 1 minuto e comece a gerenciar seu negocio agora mesmo.</p>
+  <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+    <button class="btn btn-white btn-lg" data-action="open-registro">
+      <i data-lucide="user-plus" style="width:20px;height:20px"></i> Cadastrar-se
+    </button>
+    <button class="btn btn-outline btn-lg" data-action="open-login" style="border-color:rgba(255,255,255,.3);color:#fff;">
+      <i data-lucide="log-in" style="width:20px;height:20px"></i> Fazer Login
+    </button>
+  </div>
 </section>
 
 <!-- ═══════════════ FOOTER ═══════════════ -->
 <footer class="footer">
   <div class="footer-inner">
-    <p>&copy; 2024 SGC — Sistema de Gestão Comercial. Todos os direitos reservados.</p>
+    <p>&copy; 2024 VarlenSYS — Sistema de Gestão Comercial. Todos os direitos reservados.</p>
   </div>
 </footer>
+
+<!-- ═══════════════ MODAL LOGIN ═══════════════ -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Fazer Login</h2>
+      <button class="modal-close" data-action="close-login">&times;</button>
+    </div>
+    <div class="modal-body" id="loginBody">
+      <p style="font-size:.92rem;color:var(--text-light);margin-bottom:20px;">
+        Informe o slug da sua empresa e suas credenciais para acessar o sistema.
+      </p>
+      <div class="form-group">
+        <label class="form-label">Slug da Empresa *</label>
+        <input type="text" class="form-control" id="loginSlug" placeholder="Ex: mercadinho-bb">
+        <p style="font-size:.8rem;color:var(--text-muted);margin-top:4px;">O identificador da sua empresa na URL (ex: /app/<strong>mercadinho-bb</strong>)</p>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email *</label>
+        <input type="email" class="form-control" id="loginEmail" placeholder="seu@email.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Senha *</label>
+        <input type="password" class="form-control" id="loginSenha" placeholder="Sua senha">
+      </div>
+      <div class="form-error" id="loginError"></div>
+      <button class="btn btn-primary btn-lg" style="width:100%;margin-top:8px" id="loginBtn">
+        <i data-lucide="log-in" style="width:18px;height:18px"></i> Entrar
+      </button>
+      <p style="text-align:center;margin-top:16px;font-size:.85rem;color:var(--text-muted);">
+        Nao tem conta? <a href="#" data-action="open-registro-from-login">Cadastrar-se</a>
+      </p>
+    </div>
+  </div>
+</div>
 
 <!-- ═══════════════ MODAL REGISTRO ═══════════════ -->
 <div class="modal-overlay" id="registroModal">
@@ -415,10 +457,10 @@
       </div>
       <div class="form-error" id="regError"></div>
       <button class="btn btn-primary btn-lg" style="width:100%;margin-top:8px" id="regBtn">
-        <i data-lucide="rocket" style="width:18px;height:18px"></i> Criar Conta
+        <i data-lucide="user-plus" style="width:18px;height:18px"></i> Criar Conta
       </button>
       <p style="text-align:center;margin-top:16px;font-size:.85rem;color:var(--text-muted);">
-        Já tem conta? <a href="#" data-action="close-registro">Acesse pelo link da sua empresa</a>
+        Ja tem conta? <a href="#" data-action="open-login">Fazer Login</a>
       </p>
     </div>
   </div>
@@ -428,6 +470,66 @@
 <script>
 var Landing = {
   slugTimeout: null,
+
+  openLogin: function() {
+    document.getElementById('loginModal').classList.add('active');
+  },
+
+  closeLogin: function() {
+    document.getElementById('loginModal').classList.remove('active');
+  },
+
+  doLogin: async function() {
+    var btn = document.getElementById('loginBtn');
+    var errEl = document.getElementById('loginError');
+    errEl.style.display = 'none';
+
+    var slug = (document.getElementById('loginSlug').value || '').trim().toLowerCase();
+    var email = (document.getElementById('loginEmail').value || '').trim();
+    var senha = document.getElementById('loginSenha').value;
+
+    if (!slug || !email || !senha) {
+      errEl.textContent = 'Preencha todos os campos';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i data-lucide="loader" style="width:18px;height:18px;animation:spin 1s linear infinite"></i> Entrando...';
+
+    try {
+      var res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Tenant-Slug': slug },
+        body: JSON.stringify({ email: email, senha: senha })
+      });
+      var data = await res.json();
+
+      if (!res.ok) {
+        errEl.textContent = data.error || 'Credenciais invalidas';
+        errEl.style.display = 'block';
+        btn.disabled = false;
+        btn.innerHTML = '<i data-lucide="log-in" style="width:18px;height:18px"></i> Entrar';
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+        return;
+      }
+
+      // Login OK - redirecionar para o sistema do tenant
+      window.location.href = '/app/' + slug + '#/home';
+      // Salvar token no localStorage para o SPA consumir
+      localStorage.setItem('varlen_token', data.token);
+      if (data.refreshToken) localStorage.setItem('varlen_refresh_token', data.refreshToken);
+      if (data.usuario) localStorage.setItem('varlen_usuario', JSON.stringify(data.usuario));
+      if (data.empresa) localStorage.setItem('varlen_empresa', JSON.stringify(data.empresa));
+
+    } catch(e) {
+      errEl.textContent = 'Erro de conexao. Tente novamente.';
+      errEl.style.display = 'block';
+      btn.disabled = false;
+      btn.innerHTML = '<i data-lucide="log-in" style="width:18px;height:18px"></i> Entrar';
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+  },
 
   openRegistro: function() {
     document.getElementById('registroModal').classList.add('active');
@@ -515,7 +617,7 @@ var Landing = {
         errEl.textContent = data.error || 'Erro ao criar conta';
         errEl.style.display = 'block';
         btn.disabled = false;
-        btn.innerHTML = '<i data-lucide="rocket" style="width:18px;height:18px"></i> Criar Conta';
+        btn.innerHTML = '<i data-lucide="user-plus" style="width:18px;height:18px"></i> Criar Conta';
         if (typeof lucide !== 'undefined') lucide.createIcons();
         return;
       }
@@ -541,7 +643,7 @@ var Landing = {
       errEl.textContent = 'Erro de conexão. Tente novamente.';
       errEl.style.display = 'block';
       btn.disabled = false;
-      btn.innerHTML = '<i data-lucide="rocket" style="width:18px;height:18px"></i> Criar Conta';
+      btn.innerHTML = '<i data-lucide="user-plus" style="width:18px;height:18px"></i> Criar Conta';
       if (typeof lucide !== 'undefined') lucide.createIcons();
     }
   }
@@ -558,10 +660,34 @@ document.addEventListener('DOMContentLoaded', function() {
       Landing.closeRegistro();
     });
   });
+  document.querySelectorAll('[data-action="open-login"]').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      Landing.openLogin();
+    });
+  });
+  document.querySelectorAll('[data-action="close-login"]').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      Landing.closeLogin();
+    });
+  });
+  document.querySelectorAll('[data-action="open-registro-from-login"]').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      Landing.closeLogin();
+      Landing.openRegistro();
+    });
+  });
   var regEmpNome = document.getElementById('regEmpNome');
   if (regEmpNome) regEmpNome.addEventListener('input', function() { Landing.checkSlug(); });
   var regBtn = document.getElementById('regBtn');
   if (regBtn) regBtn.addEventListener('click', function() { Landing.doRegistro(); });
+  var loginBtn = document.getElementById('loginBtn');
+  if (loginBtn) loginBtn.addEventListener('click', function() { Landing.doLogin(); });
+  // Enter key no login
+  var loginSenha = document.getElementById('loginSenha');
+  if (loginSenha) loginSenha.addEventListener('keydown', function(e) { if (e.key === 'Enter') Landing.doLogin(); });
   if (typeof lucide !== 'undefined') lucide.createIcons();
 });
 

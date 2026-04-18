@@ -1,10 +1,10 @@
 /* ══════════════════════════════════════════════════════════════
-   SGC Master Panel — Admin SaaS
+   VarlenSYS Master Panel — Admin SaaS
    Arquivo externo (CSP-compatible, sem inline)
    ══════════════════════════════════════════════════════════════ */
 var Master = {
-  token: localStorage.getItem('sgc_master_token'),
-  usuario: JSON.parse(localStorage.getItem('sgc_master_usuario') || 'null'),
+  token: localStorage.getItem('varlen_master_token'),
+  usuario: JSON.parse(localStorage.getItem('varlen_master_usuario') || 'null'),
   currentTab: 'dashboard',
   clientes: [],
   dashboard: null,
@@ -30,13 +30,13 @@ var Master = {
   setAuth: function(data) {
     this.token = data.token;
     this.usuario = data.usuario;
-    localStorage.setItem('sgc_master_token', data.token);
-    localStorage.setItem('sgc_master_usuario', JSON.stringify(data.usuario));
+    localStorage.setItem('varlen_master_token', data.token);
+    localStorage.setItem('varlen_master_usuario', JSON.stringify(data.usuario));
   },
   logout: function() {
     this.token = null; this.usuario = null;
-    localStorage.removeItem('sgc_master_token');
-    localStorage.removeItem('sgc_master_usuario');
+    localStorage.removeItem('varlen_master_token');
+    localStorage.removeItem('varlen_master_usuario');
     this.render();
   },
 
@@ -53,12 +53,12 @@ var Master = {
         '<div class="auth-card">' +
           '<div class="auth-logo">' +
             '<div style="width:56px;height:56px;background:#2563eb;border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:1.3rem;margin:0 auto">M</div>' +
-            '<h1>SGC Master</h1>' +
+            '<h1>VarlenSYS Master</h1>' +
             '<p>Painel de Gest\u00e3o SaaS</p>' +
           '</div>' +
           '<div class="form-group">' +
             '<label class="form-label">Email</label>' +
-            '<input type="email" class="form-control" id="masterEmail" placeholder="admin@sgc.com"></div>' +
+            '<input type="email" class="form-control" id="masterEmail" placeholder="admin@varlensys.com"></div>' +
           '<div class="form-group">' +
             '<label class="form-label">Senha</label>' +
             '<input type="password" class="form-control" id="masterSenha" placeholder="Senha"></div>' +
@@ -98,7 +98,7 @@ var Master = {
         '<header class="master-header">' +
           '<div class="master-header-left">' +
             '<div class="master-header-logo">M</div>' +
-            '<h2>SGC Master</h2>' +
+            '<h2>VarlenSYS Master</h2>' +
           '</div>' +
           '<div class="master-header-right">' +
             '<div class="master-header-user">' +
@@ -333,9 +333,9 @@ var Master = {
       var data = await this.api('/impersonar/' + id, { method: 'POST' });
       if (data && data.token) {
         // Salvar token do tenant e redirecionar (namespace DIFERENTE do master)
-        localStorage.setItem('sgc_token', data.token);
-        localStorage.setItem('sgc_usuario', JSON.stringify(data.usuario));
-        localStorage.setItem('sgc_empresa', JSON.stringify(data.empresa));
+        localStorage.setItem('varlen_token', data.token);
+        localStorage.setItem('varlen_usuario', JSON.stringify(data.usuario));
+        localStorage.setItem('varlen_empresa', JSON.stringify(data.empresa));
         window.open(data.url + '#/home', '_blank');
       }
     } catch(e) { alert('Erro: ' + e.message); }

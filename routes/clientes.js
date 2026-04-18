@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════
-   SGC — Rotas: Clientes
+   VarlenSYS — Rotas: Clientes
    CRUD + histórico de compras + métricas
    ══════════════════════════════════════════════════════════════ */
 

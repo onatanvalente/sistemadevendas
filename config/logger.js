@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════
-   SGC — Logger Estruturado
+   VarlenSYS — Logger Estruturado
    Logs em formato JSON para fácil ingestão em serviços de monitoramento
    (Railway logs, CloudWatch, Datadog, etc.)
    ══════════════════════════════════════════════════════════════ */

@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════
-   SGC — Motor de Descontos  v1.0
+   VarlenSYS — Motor de Descontos  v1.0
    
    Motor de decisão determinístico para programas comerciais.
    

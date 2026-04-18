@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════
-   SGC - App Core v3.0
+   VarlenSYS - App Core v3.0
    SPA Router, API Client, Layout (SEM SIDEBAR), Utilities
    - Header global com menu de perfil flutuante
    - Cada módulo é um "app" com menu próprio no header
@@ -19,10 +19,10 @@
 })();
 
 const App = {
-  token: localStorage.getItem('sgc_token'),
-  usuario: JSON.parse(localStorage.getItem('sgc_usuario') || 'null'),
-  empresa: JSON.parse(localStorage.getItem('sgc_empresa') || 'null'),
-  features: JSON.parse(localStorage.getItem('sgc_features') || 'null'),
+  token: localStorage.getItem('varlen_token'),
+  usuario: JSON.parse(localStorage.getItem('varlen_usuario') || 'null'),
+  empresa: JSON.parse(localStorage.getItem('varlen_empresa') || 'null'),
+  features: JSON.parse(localStorage.getItem('varlen_features') || 'null'),
   currentPage: null,
   tenantSlug: null, // slug do tenant atual extraído da URL
 
@@ -75,17 +75,17 @@ const App = {
     this.token = data.token;
     this.usuario = data.usuario;
     this.empresa = data.empresa;
-    localStorage.setItem('sgc_token', data.token);
-    if (data.refreshToken) localStorage.setItem('sgc_refresh_token', data.refreshToken);
-    localStorage.setItem('sgc_usuario', JSON.stringify(data.usuario));
-    localStorage.setItem('sgc_empresa', JSON.stringify(data.empresa));
+    localStorage.setItem('varlen_token', data.token);
+    if (data.refreshToken) localStorage.setItem('varlen_refresh_token', data.refreshToken);
+    localStorage.setItem('varlen_usuario', JSON.stringify(data.usuario));
+    localStorage.setItem('varlen_empresa', JSON.stringify(data.empresa));
     // Sincronizar cookie para o server-side guard ler na navegação
-    document.cookie = 'sgc_token=' + data.token + ';path=/;SameSite=Strict';
+    document.cookie = 'varlen_token=' + data.token + ';path=/;SameSite=Strict';
     // Carregar features após auth
     this.loadFeatures();
   },
   async tryRefreshToken() {
-    var refreshToken = localStorage.getItem('sgc_refresh_token');
+    var refreshToken = localStorage.getItem('varlen_refresh_token');
     if (!refreshToken) return false;
     try {
       var res = await fetch('/api/auth/refresh', {
@@ -96,10 +96,10 @@ const App = {
       if (!res.ok) return false;
       var data = await res.json();
       this.token = data.token;
-      localStorage.setItem('sgc_token', data.token);
-      if (data.refreshToken) localStorage.setItem('sgc_refresh_token', data.refreshToken);
+      localStorage.setItem('varlen_token', data.token);
+      if (data.refreshToken) localStorage.setItem('varlen_refresh_token', data.refreshToken);
       // Sincronizar cookie
-      document.cookie = 'sgc_token=' + data.token + ';path=/;SameSite=Strict';
+      document.cookie = 'varlen_token=' + data.token + ';path=/;SameSite=Strict';
       return true;
     } catch(e) { return false; }
   },
@@ -107,21 +107,21 @@ const App = {
     try {
       var f = await this.get('/features');
       this.features = f;
-      localStorage.setItem('sgc_features', JSON.stringify(f));
+      localStorage.setItem('varlen_features', JSON.stringify(f));
     } catch(e) { this.features = null; }
   },
   logout() {
     // Salvar última empresa para exibir no login
-    var emp = localStorage.getItem('sgc_empresa');
-    if (emp) localStorage.setItem('sgc_last_empresa', emp);
+    var emp = localStorage.getItem('varlen_empresa');
+    if (emp) localStorage.setItem('varlen_last_empresa', emp);
     this.token = null; this.usuario = null; this.empresa = null; this.features = null;
-    localStorage.removeItem('sgc_token');
-    localStorage.removeItem('sgc_refresh_token');
-    localStorage.removeItem('sgc_usuario');
-    localStorage.removeItem('sgc_empresa');
-    localStorage.removeItem('sgc_features');
+    localStorage.removeItem('varlen_token');
+    localStorage.removeItem('varlen_refresh_token');
+    localStorage.removeItem('varlen_usuario');
+    localStorage.removeItem('varlen_empresa');
+    localStorage.removeItem('varlen_features');
     // Limpar cookie do server-side guard
-    document.cookie = 'sgc_token=;path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    document.cookie = 'varlen_token=;path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT';
     // Se estiver em /app/:slug, recarregar para mostrar login do tenant
     if (this.tenantSlug) {
       window.location.hash = '#/login';
@@ -146,11 +146,11 @@ const App = {
     var current = document.documentElement.getAttribute('data-theme');
     var next = current === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', next);
-    localStorage.setItem('sgc_theme', next);
+    localStorage.setItem('varlen_theme', next);
     if (typeof lucide !== 'undefined') lucide.createIcons();
   },
   loadTheme() {
-    var theme = localStorage.getItem('sgc_theme') || 'light';
+    var theme = localStorage.getItem('varlen_theme') || 'light';
     document.documentElement.setAttribute('data-theme', theme);
   },
   getInitials(nome) {
@@ -467,7 +467,7 @@ var Layout = {
       headerLeft = '<button class="header-back-btn" data-action="go-back" title="Voltar">' +
         '<i data-lucide="arrow-left" style="width:18px;height:18px"></i></button>';
     } else {
-      headerLeft = '<div class="header-logo"><div class="logo-icon">S</div><span>SGC</span></div>';
+      headerLeft = '<div class="header-logo"><div class="logo-icon">S</div><span>VarlenSYS</span></div>';
     }
     headerLeft += '<h2 class="header-title">' + (opts.title || '') + '</h2>';
 
@@ -814,7 +814,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Sincronizar cookie para que o server-side guard funcione em navegações futuras
   if (App.token) {
-    document.cookie = 'sgc_token=' + App.token + ';path=/;SameSite=Strict';
+    document.cookie = 'varlen_token=' + App.token + ';path=/;SameSite=Strict';
   }
 
   // ══════════════════════════════════════════════════════════════
@@ -849,12 +849,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (tenantMismatch) {
       // Token pertence a outro tenant — limpar sessão e redirecionar
       App.token = null; App.usuario = null; App.empresa = null; App.features = null;
-      localStorage.removeItem('sgc_token');
-      localStorage.removeItem('sgc_refresh_token');
-      localStorage.removeItem('sgc_usuario');
-      localStorage.removeItem('sgc_empresa');
-      localStorage.removeItem('sgc_features');
-      document.cookie = 'sgc_token=;path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      localStorage.removeItem('varlen_token');
+      localStorage.removeItem('varlen_refresh_token');
+      localStorage.removeItem('varlen_usuario');
+      localStorage.removeItem('varlen_empresa');
+      localStorage.removeItem('varlen_features');
+      document.cookie = 'varlen_token=;path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT';
       // Esconder TUDO antes de redirecionar (impedir flash de layout)
       document.body.style.display = 'none';
       window.location.replace('/404.html');
@@ -913,6 +913,7 @@ document.addEventListener('DOMContentLoaded', function() {
     Router.register('fiscal', Pages.fiscal);
     Router.register('compras', Pages.compras);
     Router.register('etiquetas', Pages.etiquetas);
+    Router.register('relatorios', Pages.relatorios);
     Router.register('tutorial', Pages.tutorial);
     // aliases legados
     Router.register('contas-pagar', Pages.financeiro);

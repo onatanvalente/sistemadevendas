@@ -1,5 +1,5 @@
-﻿/* ══════════════════════════════════════════════════════════════
-   SGC — Pages v3.0
+/* ══════════════════════════════════════════════════════════════
+   VarlenSYS — Pages v3.0
    Cada módulo = app independente com menu próprio no header
    Home = stats + cards de módulos (sem sidebar)
    Icons: Lucide | Font: Inter | ZERO emojis
@@ -11,16 +11,16 @@ var Pages = {
   //  LOGIN
   // ============================================================
   login: function() {
-    var lastEmp = JSON.parse(localStorage.getItem('sgc_last_empresa') || 'null');
+    var lastEmp = JSON.parse(localStorage.getItem('varlen_last_empresa') || 'null');
 
     // Se estiver em /app/:slug, mostrar branding do tenant
     var tenantInfo = App.tenantInfo || null;
-    var brandName = 'SGC';
+    var brandName = 'VarlenSYS';
     var brandDesc = 'Sistema de Gestão Comercial';
     var brandHtml = '';
 
     if (tenantInfo) {
-      brandName = tenantInfo.nome_fantasia || tenantInfo.nome || 'SGC';
+      brandName = tenantInfo.nome_fantasia || tenantInfo.nome || 'VarlenSYS';
       brandDesc = tenantInfo.tipo_negocio === 'drogaria' ? 'Drogaria' : 'Mercado';
       if (tenantInfo.logo_url) {
         brandHtml = '<div style="margin-bottom:16px"><img src="' + tenantInfo.logo_url + '" alt="' + brandName + '" style="max-height:60px;border-radius:12px"></div>';
@@ -45,7 +45,7 @@ var Pages = {
           '<div class="auth-left-top">' +
             '<div class="auth-left-logo">' +
               '<div class="auth-left-logo-icon">S</div>' +
-              '<span class="auth-left-logo-text">SGC</span>' +
+              '<span class="auth-left-logo-text">VarlenSYS</span>' +
             '</div>' +
           '</div>' +
           '<div class="auth-left-hero">' +
@@ -116,7 +116,7 @@ var Pages = {
           '<div class="auth-left-top">' +
             '<div class="auth-left-logo">' +
               '<div class="auth-left-logo-icon">S</div>' +
-              '<span class="auth-left-logo-text">SGC</span>' +
+              '<span class="auth-left-logo-text">VarlenSYS</span>' +
             '</div>' +
           '</div>' +
           '<div class="auth-left-hero">' +
@@ -197,7 +197,11 @@ var Pages = {
     var dash;
     try { dash = await App.get('/dashboard'); } catch(e) { dash = {}; }
 
-    var nome = App.usuario ? App.usuario.nome.split(' ')[0] : 'Usuário';
+    // Carregar alertas do sistema
+    var alertas;
+    try { alertas = await App.get('/jobs/alertas'); } catch(e) { alertas = { alertas: [] }; }
+
+    var nome = App.usuario ? App.usuario.nome.split(' ')[0] : 'Usuario';
     var perfil = App.usuario ? App.usuario.perfil : '';
     var isDrog = App.isDrogaria();
 
@@ -297,8 +301,9 @@ var Pages = {
       modules.push({ id: 'fiscal', icon: 'file-check', color: 'blue',   label: 'Fiscal',           desc: 'Notas fiscais NFC-e / NF-e',          perfis: ['administrador','financeiro'] });
     }
 
-    modules.push({ id: 'usuarios', icon: 'users',    color: 'blue',   label: 'Usuários',          desc: 'Gerenciar acessos e permissões',    perfis: ['administrador'] });
-    modules.push({ id: 'config',   icon: 'settings',  color: 'slate',  label: 'Configurações',     desc: 'Empresa e preferências do sistema', perfis: ['administrador'] });
+    modules.push({ id: 'usuarios', icon: 'users',    color: 'blue',   label: 'Usuarios',          desc: 'Gerenciar acessos e permissoes',    perfis: ['administrador'] });
+    modules.push({ id: 'relatorios', icon: 'bar-chart-3', color: 'indigo', label: 'Relatorios', desc: 'Vendas, DRE, fluxo de caixa', perfis: ['administrador','gerente','financeiro'] });
+    modules.push({ id: 'config',   icon: 'settings',  color: 'slate',  label: 'Configuracoes',     desc: 'Empresa e preferencias do sistema', perfis: ['administrador'] });
     modules.push({ id: 'tutorial', icon: 'book-open', color: 'indigo', label: 'Tutorial',          desc: 'Central de ajuda e guia completo',  perfis: ['administrador','gerente','vendedor','caixa','estoquista','financeiro','farmaceutico'] });
 
     var cardsHtml = modules.filter(function(m) {
@@ -309,16 +314,34 @@ var Pages = {
         '<div class="module-card-info"><h3>' + m.label + '</h3><p>' + m.desc + '</p></div></div>';
     }).join('');
 
+    // Alertas do sistema
+    var alertasHtml = '';
+    var als = (alertas && alertas.alertas) ? alertas.alertas : [];
+    if (als.length > 0) {
+      alertasHtml = '<div style="margin-bottom:16px;display:flex;flex-direction:column;gap:8px">';
+      als.forEach(function(a) {
+        var bgColor = a.tipo === 'danger' ? 'var(--danger-bg, #fef2f2)' : a.tipo === 'warning' ? '#fefce8' : '#eff6ff';
+        var txtColor = a.tipo === 'danger' ? 'var(--danger)' : a.tipo === 'warning' ? '#92400e' : 'var(--primary)';
+        alertasHtml += '<div class="card" style="padding:12px 16px;border-left:4px solid ' + txtColor + ';background:' + bgColor + ';cursor:pointer" data-onclick="Router.navigate(\'' + (a.link || 'home') + '\')">' +
+          '<div style="display:flex;align-items:center;gap:12px">' +
+            '<i data-lucide="' + (a.icone || 'alert-circle') + '" style="width:20px;height:20px;color:' + txtColor + ';flex-shrink:0"></i>' +
+            '<div><strong style="color:' + txtColor + '">' + a.titulo + '</strong><p style="margin:0;font-size:0.85rem;color:' + txtColor + '">' + a.mensagem + '</p></div>' +
+          '</div></div>';
+      });
+      alertasHtml += '</div>';
+    }
+
     Layout.render(
       '<div class="home-container">' +
         '<div class="home-welcome">' +
           '<h1>Bem-vindo, ' + nome + '</h1>' +
-          '<p>' + (App.empresa ? App.empresa.nome : 'SGC') + '</p>' +
+          '<p>' + (App.empresa ? App.empresa.nome : 'VarlenSYS') + '</p>' +
         '</div>' +
+        alertasHtml +
         statsHtml +
         drogHtml +
         metaHtml +
-        '<div class="home-modules-title"><i data-lucide="layout-grid" style="width:16px;height:16px"></i> Módulos</div>' +
+        '<div class="home-modules-title"><i data-lucide="layout-grid" style="width:16px;height:16px"></i> Modulos</div>' +
         '<div class="home-modules">' + cardsHtml + '</div>' +
       '</div>',
       { hideBack: true }
@@ -497,6 +520,7 @@ var Pages = {
     var footer = '';
     if (v.status === 'finalizada') {
       footer = '<button class="btn btn-secondary" data-onclick="PDV.reimprimirCupom(' + v.id + ')"><i data-lucide="printer" style="width:16px;height:16px"></i> Reimprimir Cupom</button>';
+      footer += '<button class="btn btn-warning" data-onclick="Pages._devolucaoParcial(' + v.id + ')"><i data-lucide="rotate-ccw" style="width:16px;height:16px"></i> Devolucao</button>';
       footer += '<button class="btn btn-danger" data-onclick="Pages.cancelarVenda(' + v.id + ')"><i data-lucide="x-circle" style="width:16px;height:16px"></i> Cancelar Venda</button>';
     }
     footer += '<button class="btn btn-ghost" data-onclick="Modal.close()">Fechar</button>';
@@ -2609,13 +2633,17 @@ Pages.caixa()"><i data-lucide="search" style="width:14px;height:14px"></i> Filtr
   //  CONFIGURAÇÕES — Empresa + Perfil + Sistema
   // ============================================================
   config: async function() {
-    Layout.render('<div class="loading"><div class="spinner"></div></div>', { title: 'Configurações' });
+    Layout.render('<div class="loading"><div class="spinner"></div></div>', { title: 'Configuracoes' });
 
     var empresa;
     try { empresa = await App.get('/empresas'); } catch(e) { empresa = {}; }
 
     var themeIcon = document.documentElement.getAttribute('data-theme') === 'dark' ? 'sun' : 'moon';
     var themeLabel = document.documentElement.getAttribute('data-theme') === 'dark' ? 'Modo Claro' : 'Modo Escuro';
+
+    var logoPreview = empresa.logo_url
+      ? '<img src="' + empresa.logo_url + '" style="max-width:120px;max-height:80px;border-radius:8px;border:1px solid var(--border)" alt="Logo">'
+      : '<div style="width:120px;height:80px;background:var(--bg-secondary);border-radius:8px;display:flex;align-items:center;justify-content:center;border:1px dashed var(--border)"><i data-lucide="image" style="width:32px;height:32px;opacity:0.3"></i></div>';
 
     Layout.render(
       '<div class="tabs">' +
@@ -2625,27 +2653,55 @@ Pages.caixa()"><i data-lucide="search" style="width:14px;height:14px"></i> Filtr
       '</div>' +
 
       '<div class="tab-content active" id="tabEmpresa"><div class="card"><div class="card-body">' +
+        '<div style="display:flex;gap:24px;align-items:flex-start;margin-bottom:20px">' +
+          '<div>' + logoPreview +
+            '<div style="margin-top:8px;display:flex;gap:4px">' +
+              '<label class="btn btn-secondary btn-sm" style="cursor:pointer"><i data-lucide="upload" style="width:12px;height:12px"></i> Logo<input type="file" id="cfgLogo" accept="image/*" style="display:none" data-onchange="Pages._uploadLogo()"></label>' +
+              (empresa.logo_url ? '<button class="btn btn-ghost btn-sm" style="color:var(--danger)" data-onclick="Pages._removerLogo()"><i data-lucide="trash-2" style="width:12px;height:12px"></i></button>' : '') +
+            '</div>' +
+          '</div>' +
+          '<div style="flex:1">' +
+            '<div class="form-row">' +
+              '<div class="form-group"><label class="form-label">Razao Social</label><input type="text" class="form-control" id="cfgEmpNome" value="' + (empresa.nome||'') + '"></div>' +
+              '<div class="form-group"><label class="form-label">Nome Fantasia</label><input type="text" class="form-control" id="cfgEmpFantasia" value="' + (empresa.nome_fantasia||'') + '"></div>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
         '<div class="form-row">' +
-          '<div class="form-group"><label class="form-label">Nome da Empresa</label><input type="text" class="form-control" id="cfgEmpNome" value="' + (empresa.nome||'') + '"></div>' +
-          '<div class="form-group"><label class="form-label">CNPJ</label><input type="text" class="form-control" value="' + (empresa.cnpj||'') + '" disabled></div>' +
+          '<div class="form-group"><label class="form-label">CNPJ</label><input type="text" class="form-control" id="cfgEmpCnpj" value="' + (empresa.cnpj||'') + '" data-oninput="Utils.maskCNPJInput(event)"></div>' +
+          '<div class="form-group"><label class="form-label">Inscricao Estadual</label><input type="text" class="form-control" id="cfgEmpIe" value="' + (empresa.inscricao_estadual||'') + '"></div>' +
+          '<div class="form-group"><label class="form-label">Inscricao Municipal</label><input type="text" class="form-control" id="cfgEmpIm" value="' + (empresa.inscricao_municipal||'') + '"></div>' +
         '</div>' +
         '<div class="form-row">' +
           '<div class="form-group"><label class="form-label">Telefone</label><input type="text" class="form-control" id="cfgEmpTel" value="' + (empresa.telefone||'') + '" data-oninput="Utils.maskPhoneInput(event)"></div>' +
           '<div class="form-group"><label class="form-label">Email</label><input type="email" class="form-control" id="cfgEmpEmail" value="' + (empresa.email||'') + '"></div>' +
         '</div>' +
-        '<div class="form-group"><label class="form-label">Endereço</label><input type="text" class="form-control" id="cfgEmpEnd" value="' + (empresa.endereco||'') + '"></div>' +
+        '<h4 style="margin:20px 0 12px">Endereco</h4>' +
         '<div class="form-row">' +
+          '<div class="form-group" style="flex:3"><label class="form-label">Logradouro</label><input type="text" class="form-control" id="cfgEmpEnd" value="' + (empresa.endereco||'') + '"></div>' +
+          '<div class="form-group" style="flex:1"><label class="form-label">Numero</label><input type="text" class="form-control" id="cfgEmpNumero" value="' + (empresa.numero||'') + '"></div>' +
+        '</div>' +
+        '<div class="form-row">' +
+          '<div class="form-group"><label class="form-label">Bairro</label><input type="text" class="form-control" id="cfgEmpBairro" value="' + (empresa.bairro||'') + '"></div>' +
           '<div class="form-group"><label class="form-label">Cidade</label><input type="text" class="form-control" id="cfgEmpCidade" value="' + (empresa.cidade||'') + '"></div>' +
-          '<div class="form-group"><label class="form-label">Estado</label><input type="text" class="form-control" id="cfgEmpEstado" value="' + (empresa.estado||'') + '" maxlength="2"></div>' +
+          '<div class="form-group" style="flex:0.5"><label class="form-label">UF</label><input type="text" class="form-control" id="cfgEmpEstado" value="' + (empresa.estado||'') + '" maxlength="2"></div>' +
           '<div class="form-group"><label class="form-label">CEP</label><input type="text" class="form-control" id="cfgEmpCep" value="' + (empresa.cep||'') + '"></div>' +
+        '</div>' +
+        '<h4 style="margin:20px 0 12px">Identidade Visual</h4>' +
+        '<div class="form-row">' +
+          '<div class="form-group"><label class="form-label">Cor Primaria</label><div style="display:flex;gap:8px;align-items:center"><input type="color" id="cfgCorPrimaria" value="' + (empresa.cor_primaria||'#4F46E5') + '" style="width:40px;height:36px;padding:2px;border:1px solid var(--border);border-radius:6px;cursor:pointer"><input type="text" class="form-control" value="' + (empresa.cor_primaria||'#4F46E5') + '" style="flex:1" data-oninput="document.getElementById(\'cfgCorPrimaria\').value=this.value"></div></div>' +
+          '<div class="form-group"><label class="form-label">Cor Secundaria</label><div style="display:flex;gap:8px;align-items:center"><input type="color" id="cfgCorSecundaria" value="' + (empresa.cor_secundaria||'#7C3AED') + '" style="width:40px;height:36px;padding:2px;border:1px solid var(--border);border-radius:6px;cursor:pointer"><input type="text" class="form-control" value="' + (empresa.cor_secundaria||'#7C3AED') + '" style="flex:1" data-oninput="document.getElementById(\'cfgCorSecundaria\').value=this.value"></div></div>' +
         '</div>' +
         '<button class="btn btn-primary" data-onclick="Pages._salvarEmpresa()"><i data-lucide="save" style="width:16px;height:16px"></i> Salvar Empresa</button>' +
       '</div></div></div>' +
 
       '<div class="tab-content" id="tabPerfil"><div class="card"><div class="card-body">' +
-        '<div class="form-group"><label class="form-label">Nome</label><input type="text" class="form-control" value="' + (App.usuario ? App.usuario.nome : '') + '" disabled></div>' +
-        '<div class="form-group"><label class="form-label">Email</label><input type="text" class="form-control" value="' + (App.usuario ? App.usuario.email : '') + '" disabled></div>' +
-        '<h4 style="margin:20px 0 12px">Alterar Senha</h4>' +
+        '<div class="form-row">' +
+          '<div class="form-group"><label class="form-label">Nome</label><input type="text" class="form-control" id="cfgPerfilNome" value="' + (App.usuario ? App.usuario.nome : '') + '"></div>' +
+          '<div class="form-group"><label class="form-label">Email</label><input type="email" class="form-control" id="cfgPerfilEmail" value="' + (App.usuario ? App.usuario.email : '') + '"></div>' +
+        '</div>' +
+        '<button class="btn btn-primary" data-onclick="Pages._salvarPerfilConfig()" style="margin-bottom:20px"><i data-lucide="save" style="width:16px;height:16px"></i> Salvar Dados</button>' +
+        '<h4 style="margin:20px 0 12px;padding-top:16px;border-top:1px solid var(--border)">Alterar Senha</h4>' +
         '<div class="form-group"><label class="form-label">Senha Atual</label><input type="password" class="form-control" id="cfgSenhaAtual"></div>' +
         '<div class="form-group"><label class="form-label">Nova Senha</label><input type="password" class="form-control" id="cfgSenhaNova"></div>' +
         '<button class="btn btn-primary" data-onclick="Pages._alterarSenha()"><i data-lucide="key" style="width:16px;height:16px"></i> Alterar Senha</button>' +
@@ -2658,28 +2714,90 @@ Pages.caixa()"><i data-lucide="search" style="width:14px;height:14px"></i> Filtr
             '<i data-lucide="' + themeIcon + '" style="width:16px;height:16px"></i> ' + themeLabel + '</button>' +
         '</div>' +
         '<div style="padding:16px 0">' +
-          '<strong>Tipo de Negócio</strong><p class="text-muted" style="font-size:0.85rem">' + (empresa.tipo_negocio === 'drogaria' ? 'Drogaria' : 'Mercado') + '</p>' +
+          '<strong>Tipo de Negocio</strong><p class="text-muted" style="font-size:0.85rem">' + (empresa.tipo_negocio === 'drogaria' ? 'Drogaria' : 'Mercado') + '</p>' +
         '</div>' +
         '<div style="padding:16px 0;border-top:1px solid var(--border)">' +
-          '<strong>Regime Tributário</strong><p class="text-muted" style="font-size:0.85rem">' + (empresa.regime_tributario || 'Simples Nacional') + '</p>' +
+          '<strong>Regime Tributario</strong><p class="text-muted" style="font-size:0.85rem">' + (empresa.regime_tributario || 'Simples Nacional') + '</p>' +
+        '</div>' +
+        '<div style="padding:16px 0;border-top:1px solid var(--border)">' +
+          '<strong>Importar Produtos CSV</strong><p class="text-muted" style="font-size:0.85rem">Importar produtos em lote via arquivo CSV</p>' +
+          '<button class="btn btn-secondary btn-sm" style="margin-top:8px" data-onclick="Pages._importarProdutosCSV()"><i data-lucide="upload" style="width:14px;height:14px"></i> Importar CSV</button>' +
+        '</div>' +
+        '<div style="padding:16px 0;border-top:1px solid var(--border)">' +
+          '<strong>Processar Vencimentos</strong><p class="text-muted" style="font-size:0.85rem">Atualizar status de contas e lotes vencidos</p>' +
+          '<button class="btn btn-warning btn-sm" style="margin-top:8px" data-onclick="Pages._executarVencimentos()"><i data-lucide="clock" style="width:14px;height:14px"></i> Executar Agora</button>' +
+        '</div>' +
+        '<div style="padding:16px 0;border-top:1px solid var(--border)">' +
+          '<strong>Contas Recorrentes</strong><p class="text-muted" style="font-size:0.85rem">Gerar proximas parcelas de contas recorrentes pagas</p>' +
+          '<button class="btn btn-secondary btn-sm" style="margin-top:8px" data-onclick="Pages._executarRecorrentes()"><i data-lucide="repeat" style="width:14px;height:14px"></i> Processar Recorrentes</button>' +
         '</div>' +
       '</div></div></div>',
-      { title: 'Configurações' }
+      { title: 'Configuracoes' }
     );
+  },
+
+  _uploadLogo: async function() {
+    var input = document.getElementById('cfgLogo');
+    if (!input || !input.files[0]) return;
+    var formData = new FormData();
+    formData.append('logo', input.files[0]);
+    try {
+      var resp = await fetch('/api/empresas/logo', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + localStorage.getItem('varlen_token'), 'X-Tenant-Slug': App.slug },
+        body: formData
+      });
+      var data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || 'Erro ao enviar logo');
+      Toast.success('Logo atualizado!');
+      Pages.config();
+    } catch(e) { Toast.error(e.message); }
+  },
+
+  _removerLogo: async function() {
+    var ok = await UI.confirm('Remover o logo da empresa?');
+    if (!ok) return;
+    try {
+      await App.del('/empresas/logo');
+      Toast.success('Logo removido');
+      Pages.config();
+    } catch(e) {}
   },
 
   _salvarEmpresa: async function() {
     try {
       await App.put('/empresas', {
         nome: document.getElementById('cfgEmpNome').value,
+        nome_fantasia: document.getElementById('cfgEmpFantasia').value,
+        cnpj: document.getElementById('cfgEmpCnpj').value,
+        inscricao_estadual: document.getElementById('cfgEmpIe').value,
+        inscricao_municipal: document.getElementById('cfgEmpIm').value,
         telefone: document.getElementById('cfgEmpTel').value,
         email: document.getElementById('cfgEmpEmail').value,
         endereco: document.getElementById('cfgEmpEnd').value,
+        numero: document.getElementById('cfgEmpNumero').value,
+        bairro: document.getElementById('cfgEmpBairro').value,
         cidade: document.getElementById('cfgEmpCidade').value,
         estado: document.getElementById('cfgEmpEstado').value,
-        cep: document.getElementById('cfgEmpCep').value
+        cep: document.getElementById('cfgEmpCep').value,
+        cor_primaria: document.getElementById('cfgCorPrimaria').value,
+        cor_secundaria: document.getElementById('cfgCorSecundaria').value
       });
       Toast.success('Empresa atualizada');
+    } catch(e) {}
+  },
+
+  _salvarPerfilConfig: async function() {
+    var nome = document.getElementById('cfgPerfilNome').value.trim();
+    var email = document.getElementById('cfgPerfilEmail').value.trim();
+    if (!nome || !email) { Toast.error('Nome e email sao obrigatorios'); return; }
+    try {
+      var res = await App.put('/auth/perfil', { nome: nome, email: email });
+      if (res && res.usuario) {
+        App.usuario = res.usuario;
+        localStorage.setItem('varlen_usuario', JSON.stringify(res.usuario));
+      }
+      Toast.success('Perfil atualizado');
     } catch(e) {}
   },
 
@@ -2689,7 +2807,7 @@ Pages.caixa()"><i data-lucide="search" style="width:14px;height:14px"></i> Filtr
     var senhaConfirm = document.getElementById('perfilSenhaConfirm');
     if (!senhaAtual || !senhaNova) return;
     if (senhaConfirm && senhaNova.value !== senhaConfirm.value) {
-      Toast.error('As senhas não coincidem');
+      Toast.error('As senhas nao coincidem');
       return;
     }
     if (senhaNova.value.length < 8) {
@@ -2708,8 +2826,26 @@ Pages.caixa()"><i data-lucide="search" style="width:14px;height:14px"></i> Filtr
     } catch(e) {}
   },
 
+  _executarVencimentos: async function() {
+    var ok = await UI.confirm('Processar todos os vencimentos pendentes?');
+    if (!ok) return;
+    try {
+      var res = await App.post('/jobs/vencimentos', {});
+      var r = res.resultado || {};
+      Toast.success('Vencimentos processados: ' + (r.contas_pagar_vencidas || 0) + ' contas a pagar, ' + (r.contas_receber_vencidas || 0) + ' a receber, ' + (r.lotes_vencidos || 0) + ' lotes');
+    } catch(e) {}
+  },
+
+  _executarRecorrentes: async function() {
+    try {
+      var res = await App.post('/jobs/recorrentes', {});
+      var r = res.resultado || {};
+      Toast.success('Recorrentes processadas: ' + (r.novas_geradas || 0) + ' nova(s) conta(s) gerada(s)');
+    } catch(e) {}
+  },
+
   // ============================================================
-  //  MEU PERFIL — Modal popup (abre do menu do usuário)
+  //  MEU PERFIL - Modal popup (abre do menu do usuario)
   // ============================================================
   perfilModal: function() {
     var u = App.usuario || {};
@@ -2759,7 +2895,7 @@ Pages.caixa()"><i data-lucide="search" style="width:14px;height:14px"></i> Filtr
       var res = await App.put('/auth/perfil', { nome: nome, email: email, telefone: telefone });
       if (res && res.usuario) {
         App.usuario = res.usuario;
-        localStorage.setItem('sgc_usuario', JSON.stringify(res.usuario));
+        localStorage.setItem('varlen_usuario', JSON.stringify(res.usuario));
       }
       Toast.success('Perfil atualizado');
       Modal.close();
@@ -6233,10 +6369,529 @@ Pages.caixa()"><i data-lucide="search" style="width:14px;height:14px"></i> Filtr
   },
 
   // ============================================================
-  //  TUTORIAL — Central de Ajuda (abre em nova janela, permanece na home)
+  //  TUTORIAL - Central de Ajuda (abre em nova janela, permanece na home)
   // ============================================================
   tutorial: function() {
     window.open('/tutorial.html', '_blank');
     Router.navigate('home');
+  },
+
+  // ============================================================
+  //  RELATORIOS - Painel completo de relatorios
+  // ============================================================
+  _relTab: 'vendas',
+
+  relatorios: async function() {
+    var tab = Pages._relTab || 'vendas';
+    Layout.render('<div class="loading"><div class="spinner"></div></div>', {
+      title: 'Relatorios',
+      moduleMenu: [
+        { label: 'Vendas', icon: 'shopping-bag', active: tab==='vendas', action: "Pages._relTab='vendas';Pages.relatorios()" },
+        { label: 'Produtos', icon: 'package', active: tab==='produtos', action: "Pages._relTab='produtos';Pages.relatorios()" },
+        { label: 'Caixa', icon: 'landmark', active: tab==='caixa', action: "Pages._relTab='caixa';Pages.relatorios()" },
+        { label: 'Contas', icon: 'wallet', active: tab==='contas', action: "Pages._relTab='contas';Pages.relatorios()" },
+        { label: 'DRE', icon: 'bar-chart-3', active: tab==='dre', action: "Pages._relTab='dre';Pages.relatorios()" },
+        { label: 'Fluxo', icon: 'trending-up', active: tab==='fluxo', action: "Pages._relTab='fluxo';Pages.relatorios()" }
+      ]
+    });
+
+    if (tab === 'vendas') await Pages._relVendas();
+    else if (tab === 'produtos') await Pages._relProdutos();
+    else if (tab === 'caixa') await Pages._relCaixas();
+    else if (tab === 'contas') await Pages._relContas();
+    else if (tab === 'dre') await Pages._relDre();
+    else if (tab === 'fluxo') await Pages._relFluxo();
+  },
+
+  _relInicio: '',
+  _relFim: '',
+
+  _getRelPeriodo: function() {
+    var hoje = new Date();
+    var inicio = Pages._relInicio || new Date(hoje.getFullYear(), hoje.getMonth(), 1).toISOString().split('T')[0];
+    var fim = Pages._relFim || hoje.toISOString().split('T')[0];
+    return { inicio: inicio, fim: fim };
+  },
+
+  _relFiltroHtml: function() {
+    var p = Pages._getRelPeriodo();
+    return '<div class="card" style="margin-bottom:16px"><div class="card-body" style="padding:12px 16px">' +
+      '<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">' +
+        '<div class="form-group" style="margin:0"><label class="form-label" style="margin-bottom:4px">Inicio</label>' +
+          '<input type="date" class="form-control" id="relInicio" value="' + p.inicio + '"></div>' +
+        '<div class="form-group" style="margin:0"><label class="form-label" style="margin-bottom:4px">Fim</label>' +
+          '<input type="date" class="form-control" id="relFim" value="' + p.fim + '"></div>' +
+        '<button class="btn btn-primary btn-sm" style="margin-top:18px" data-onclick="Pages._relInicio=document.getElementById(\'relInicio\').value;Pages._relFim=document.getElementById(\'relFim\').value;Pages.relatorios()">' +
+          '<i data-lucide="search" style="width:14px;height:14px"></i> Filtrar</button>' +
+      '</div></div></div>';
+  },
+
+  _relVendas: async function() {
+    var p = Pages._getRelPeriodo();
+    var res;
+    try { res = await App.get('/relatorios/vendas?inicio=' + p.inicio + '&fim=' + p.fim); } catch(e) { res = { resumo: {}, por_pagamento: {}, vendas: [] }; }
+    var r = res.resumo || {};
+
+    var fpHtml = '';
+    var fp = res.por_pagamento || {};
+    Object.keys(fp).forEach(function(k) {
+      fpHtml += '<tr><td class="fw-500">' + k + '</td><td class="text-right">' + fp[k].quantidade + '</td><td class="text-right fw-600">' + Utils.currency(fp[k].valor) + '</td></tr>';
+    });
+
+    var vendasRows = (res.vendas || []).slice(0, 50).map(function(v) {
+      return '<tr data-onclick="Pages._verCupom(' + v.id + ')">' +
+        '<td class="fw-500">#' + v.numero + '</td>' +
+        '<td>' + new Date(v.data).toLocaleDateString('pt-BR') + '</td>' +
+        '<td>' + (v.cliente || '-') + '</td>' +
+        '<td>' + (v.forma_pagamento || '-') + '</td>' +
+        '<td class="text-right">' + v.itens + '</td>' +
+        '<td class="text-right fw-600">' + Utils.currency(v.total) + '</td>' +
+        '<td class="text-right">' + Utils.currency(v.lucro || 0) + '</td></tr>';
+    }).join('');
+
+    Layout.render(
+      Pages._relFiltroHtml() +
+      '<div class="stats-grid" style="margin-bottom:16px">' +
+        UI.statCard('Vendas', r.total_vendas || 0, 'shopping-bag', 'blue') +
+        UI.statCard('Faturamento', Utils.currency(r.faturamento || 0), 'dollar-sign', 'green') +
+        UI.statCard('Lucro Bruto', Utils.currency(r.lucro_bruto || 0), 'trending-up', 'teal') +
+        UI.statCard('Ticket Medio', Utils.currency(r.ticket_medio || 0), 'receipt', 'purple') +
+        UI.statCard('Margem', (r.margem || 0).toFixed(1) + '%', 'percent', 'amber') +
+        UI.statCard('Descontos', Utils.currency(r.descontos || 0), 'tag', 'red') +
+      '</div>' +
+      (fpHtml ? '<div class="card" style="margin-bottom:16px"><div class="card-header"><h3>Por Forma de Pagamento</h3></div><div class="table-container"><table><thead><tr><th>Forma</th><th class="text-right">Qtd</th><th class="text-right">Valor</th></tr></thead><tbody>' + fpHtml + '</tbody></table></div></div>' : '') +
+      '<div class="card"><div class="card-header"><h3>Vendas no Periodo</h3></div><div class="table-container"><table><thead><tr><th>Numero</th><th>Data</th><th>Cliente</th><th>Pagamento</th><th class="text-right">Itens</th><th class="text-right">Total</th><th class="text-right">Lucro</th></tr></thead><tbody>' + (vendasRows || '<tr><td colspan="7" class="text-center text-muted" style="padding:40px">Nenhuma venda no periodo</td></tr>') + '</tbody></table></div></div>',
+      {
+        title: 'Relatorios',
+        moduleMenu: [
+          { label: 'Vendas', icon: 'shopping-bag', active: true, action: "Pages._relTab='vendas';Pages.relatorios()" },
+          { label: 'Produtos', icon: 'package', active: false, action: "Pages._relTab='produtos';Pages.relatorios()" },
+          { label: 'Caixa', icon: 'landmark', active: false, action: "Pages._relTab='caixa';Pages.relatorios()" },
+          { label: 'Contas', icon: 'wallet', active: false, action: "Pages._relTab='contas';Pages.relatorios()" },
+          { label: 'DRE', icon: 'bar-chart-3', active: false, action: "Pages._relTab='dre';Pages.relatorios()" },
+          { label: 'Fluxo', icon: 'trending-up', active: false, action: "Pages._relTab='fluxo';Pages.relatorios()" }
+        ]
+      }
+    );
+  },
+
+  _relProdutos: async function() {
+    var p = Pages._getRelPeriodo();
+    var res;
+    try { res = await App.get('/relatorios/produtos-ranking?inicio=' + p.inicio + '&fim=' + p.fim + '&limit=50'); } catch(e) { res = { produtos: [] }; }
+
+    var rows = (res.produtos || []).map(function(pr) {
+      return '<tr><td class="fw-600">' + pr.posicao + '</td><td class="fw-500">' + pr.nome + '</td>' +
+        '<td class="text-right">' + pr.quantidade + '</td>' +
+        '<td class="text-right">' + pr.ocorrencias + '</td>' +
+        '<td class="text-right fw-600">' + Utils.currency(pr.faturamento) + '</td></tr>';
+    }).join('');
+
+    Layout.render(
+      Pages._relFiltroHtml() +
+      '<div class="card"><div class="card-header"><h3>Ranking de Produtos</h3></div><div class="table-container"><table><thead><tr><th>#</th><th>Produto</th><th class="text-right">Qtd Vendida</th><th class="text-right">Ocorrencias</th><th class="text-right">Faturamento</th></tr></thead><tbody>' + (rows || '<tr><td colspan="5" class="text-center text-muted" style="padding:40px">Sem dados</td></tr>') + '</tbody></table></div></div>',
+      {
+        title: 'Relatorios',
+        moduleMenu: [
+          { label: 'Vendas', icon: 'shopping-bag', active: false, action: "Pages._relTab='vendas';Pages.relatorios()" },
+          { label: 'Produtos', icon: 'package', active: true, action: "Pages._relTab='produtos';Pages.relatorios()" },
+          { label: 'Caixa', icon: 'landmark', active: false, action: "Pages._relTab='caixa';Pages.relatorios()" },
+          { label: 'Contas', icon: 'wallet', active: false, action: "Pages._relTab='contas';Pages.relatorios()" },
+          { label: 'DRE', icon: 'bar-chart-3', active: false, action: "Pages._relTab='dre';Pages.relatorios()" },
+          { label: 'Fluxo', icon: 'trending-up', active: false, action: "Pages._relTab='fluxo';Pages.relatorios()" }
+        ]
+      }
+    );
+  },
+
+  _relCaixas: async function() {
+    var res;
+    try { res = await App.get('/caixa?limit=20'); } catch(e) { res = { data: [] }; }
+    var caixas = res.data || res || [];
+
+    var rows = (Array.isArray(caixas) ? caixas : []).map(function(cx) {
+      return '<tr class="clickable" data-onclick="Pages._relDetalharCaixa(' + cx.id + ')">' +
+        '<td class="fw-500">#' + (cx.numero_caixa || cx.id) + '</td>' +
+        '<td>' + (cx.data_abertura ? new Date(cx.data_abertura).toLocaleDateString('pt-BR') : '-') + '</td>' +
+        '<td>' + UI.badge(cx.status === 'aberto' ? 'Aberto' : 'Fechado', cx.status === 'aberto' ? 'green' : 'slate') + '</td>' +
+        '<td class="text-right">' + Utils.currency(cx.total_vendas || 0) + '</td>' +
+        '<td class="text-right">' + (cx.quantidade_vendas || 0) + '</td>' +
+        '<td class="text-right">' + Utils.currency(cx.diferenca || 0) + '</td></tr>';
+    }).join('');
+
+    Layout.render(
+      '<div class="card"><div class="card-header"><h3>Historico de Caixas</h3><p class="text-muted">Clique em um caixa para ver o relatorio completo</p></div><div class="table-container"><table><thead><tr><th>Caixa</th><th>Abertura</th><th>Status</th><th class="text-right">Total Vendas</th><th class="text-right">Qtd Vendas</th><th class="text-right">Diferenca</th></tr></thead><tbody>' + (rows || '<tr><td colspan="6" class="text-center text-muted" style="padding:40px">Nenhum caixa</td></tr>') + '</tbody></table></div></div>',
+      {
+        title: 'Relatorios',
+        moduleMenu: [
+          { label: 'Vendas', icon: 'shopping-bag', active: false, action: "Pages._relTab='vendas';Pages.relatorios()" },
+          { label: 'Produtos', icon: 'package', active: false, action: "Pages._relTab='produtos';Pages.relatorios()" },
+          { label: 'Caixa', icon: 'landmark', active: true, action: "Pages._relTab='caixa';Pages.relatorios()" },
+          { label: 'Contas', icon: 'wallet', active: false, action: "Pages._relTab='contas';Pages.relatorios()" },
+          { label: 'DRE', icon: 'bar-chart-3', active: false, action: "Pages._relTab='dre';Pages.relatorios()" },
+          { label: 'Fluxo', icon: 'trending-up', active: false, action: "Pages._relTab='fluxo';Pages.relatorios()" }
+        ]
+      }
+    );
+  },
+
+  _relDetalharCaixa: async function(id) {
+    var res;
+    try { res = await App.get('/relatorios/fechamento-caixa/' + id); } catch(e) { return Toast.error('Erro ao carregar relatorio'); }
+    var v = res.valores || {};
+
+    var movRows = (res.movimentacoes || []).map(function(m) {
+      return '<tr><td>' + UI.badge(m.tipo, m.tipo === 'suprimento' ? 'green' : 'red') + '</td><td class="text-right fw-600">' + Utils.currency(m.valor) + '</td><td>' + (m.motivo || '-') + '</td><td>' + new Date(m.data).toLocaleTimeString('pt-BR') + '</td></tr>';
+    }).join('');
+
+    var vendaRows = (res.vendas || []).map(function(vd) {
+      return '<tr><td class="fw-500">#' + vd.numero + '</td><td class="text-right fw-600">' + Utils.currency(vd.total) + '</td><td>' + (vd.forma_pagamento || '-') + '</td><td>' + new Date(vd.hora).toLocaleTimeString('pt-BR') + '</td></tr>';
+    }).join('');
+
+    Modal.show('Relatorio do Caixa #' + (res.caixa.numero_caixa || res.caixa.id),
+      '<div class="stats-grid" style="margin-bottom:16px">' +
+        UI.statCard('Abertura', Utils.currency(v.abertura), 'log-in', 'blue') +
+        UI.statCard('Vendas', Utils.currency(v.total_vendas), 'shopping-bag', 'green') +
+        UI.statCard('Sangrias', Utils.currency(v.sangrias), 'arrow-down-circle', 'red') +
+        UI.statCard('Suprimentos', Utils.currency(v.suprimentos), 'arrow-up-circle', 'teal') +
+        UI.statCard('Esperado', Utils.currency(v.esperado), 'target', 'purple') +
+        UI.statCard('Diferenca', Utils.currency(v.diferenca), 'alert-circle', v.diferenca >= 0 ? 'green' : 'red') +
+      '</div>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:16px">' +
+        '<div class="stat-card"><div class="stat-value">' + Utils.currency(v.dinheiro) + '</div><div class="stat-label">Dinheiro</div></div>' +
+        '<div class="stat-card"><div class="stat-value">' + Utils.currency(v.pix) + '</div><div class="stat-label">PIX</div></div>' +
+        '<div class="stat-card"><div class="stat-value">' + Utils.currency(v.debito) + '</div><div class="stat-label">Debito</div></div>' +
+        '<div class="stat-card"><div class="stat-value">' + Utils.currency(v.credito) + '</div><div class="stat-label">Credito</div></div>' +
+      '</div>' +
+      (movRows ? '<h4 style="margin:16px 0 8px">Movimentacoes</h4><div class="table-container"><table><thead><tr><th>Tipo</th><th class="text-right">Valor</th><th>Motivo</th><th>Hora</th></tr></thead><tbody>' + movRows + '</tbody></table></div>' : '') +
+      (vendaRows ? '<h4 style="margin:16px 0 8px">Vendas (' + res.vendas_qtd + ')</h4><div class="table-container" style="max-height:300px;overflow-y:auto"><table><thead><tr><th>Numero</th><th class="text-right">Total</th><th>Pagamento</th><th>Hora</th></tr></thead><tbody>' + vendaRows + '</tbody></table></div>' : ''),
+      '<button class="btn btn-secondary" data-onclick="Modal.close()">Fechar</button>'
+    );
+  },
+
+  _relContas: async function() {
+    var res;
+    try { res = await App.get('/relatorios/contas-pendentes'); } catch(e) { res = { resumo: {}, contas_pagar: [], contas_receber: [] }; }
+    var r = res.resumo || {};
+
+    var pagarRows = (res.contas_pagar || []).map(function(c) {
+      var vencida = c.status === 'vencido' ? ' style="color:var(--danger)"' : '';
+      return '<tr' + vencida + '><td class="fw-500">' + c.descricao + '</td><td>' + (c.fornecedor || '-') + '</td><td>' + (c.categoria || '-') + '</td><td>' + new Date(c.vencimento).toLocaleDateString('pt-BR') + '</td><td>' + UI.badge(c.status, c.status === 'vencido' ? 'red' : 'amber') + '</td><td class="text-right fw-600">' + Utils.currency(c.valor) + '</td></tr>';
+    }).join('');
+
+    var receberRows = (res.contas_receber || []).map(function(c) {
+      var vencida = c.status === 'vencido' ? ' style="color:var(--danger)"' : '';
+      return '<tr' + vencida + '><td class="fw-500">' + c.descricao + '</td><td>' + (c.cliente || '-') + '</td><td>' + new Date(c.vencimento).toLocaleDateString('pt-BR') + '</td><td>' + UI.badge(c.status, c.status === 'vencido' ? 'red' : 'amber') + '</td><td class="text-right fw-600">' + Utils.currency(c.valor) + '</td></tr>';
+    }).join('');
+
+    Layout.render(
+      '<div class="stats-grid" style="margin-bottom:16px">' +
+        UI.statCard('A Pagar', Utils.currency(r.total_pagar || 0), 'arrow-down-circle', 'red') +
+        UI.statCard('A Receber', Utils.currency(r.total_receber || 0), 'arrow-up-circle', 'green') +
+        UI.statCard('Saldo', Utils.currency(r.saldo || 0), 'scale', r.saldo >= 0 ? 'green' : 'red') +
+        UI.statCard('Vencidas (Pagar)', r.vencidas_pagar || 0, 'alert-circle', 'red') +
+      '</div>' +
+      '<div class="card" style="margin-bottom:16px"><div class="card-header"><h3>Contas a Pagar Pendentes</h3></div><div class="table-container"><table><thead><tr><th>Descricao</th><th>Fornecedor</th><th>Categoria</th><th>Vencimento</th><th>Status</th><th class="text-right">Valor</th></tr></thead><tbody>' + (pagarRows || '<tr><td colspan="6" class="text-center text-muted" style="padding:40px">Nenhuma conta pendente</td></tr>') + '</tbody></table></div></div>' +
+      '<div class="card"><div class="card-header"><h3>Contas a Receber Pendentes</h3></div><div class="table-container"><table><thead><tr><th>Descricao</th><th>Cliente</th><th>Vencimento</th><th>Status</th><th class="text-right">Valor</th></tr></thead><tbody>' + (receberRows || '<tr><td colspan="5" class="text-center text-muted" style="padding:40px">Nenhuma conta pendente</td></tr>') + '</tbody></table></div></div>',
+      {
+        title: 'Relatorios',
+        moduleMenu: [
+          { label: 'Vendas', icon: 'shopping-bag', active: false, action: "Pages._relTab='vendas';Pages.relatorios()" },
+          { label: 'Produtos', icon: 'package', active: false, action: "Pages._relTab='produtos';Pages.relatorios()" },
+          { label: 'Caixa', icon: 'landmark', active: false, action: "Pages._relTab='caixa';Pages.relatorios()" },
+          { label: 'Contas', icon: 'wallet', active: true, action: "Pages._relTab='contas';Pages.relatorios()" },
+          { label: 'DRE', icon: 'bar-chart-3', active: false, action: "Pages._relTab='dre';Pages.relatorios()" },
+          { label: 'Fluxo', icon: 'trending-up', active: false, action: "Pages._relTab='fluxo';Pages.relatorios()" }
+        ]
+      }
+    );
+  },
+
+  _relDre: async function() {
+    var p = Pages._getRelPeriodo();
+    var res;
+    try { res = await App.get('/relatorios/dre?inicio=' + p.inicio + '&fim=' + p.fim); } catch(e) { res = { dre: {} }; }
+    var d = res.dre || {};
+
+    var despCatHtml = '';
+    var despCat = d.despesas_por_categoria || {};
+    Object.keys(despCat).forEach(function(k) {
+      despCatHtml += '<tr><td style="padding-left:32px">' + k + '</td><td class="text-right">' + Utils.currency(despCat[k]) + '</td></tr>';
+    });
+
+    var dreTable =
+      '<table style="width:100%">' +
+        '<tr class="fw-600" style="background:var(--bg-secondary)"><td>Receita Bruta</td><td class="text-right">' + Utils.currency(d.receita_bruta || 0) + '</td></tr>' +
+        '<tr style="color:var(--danger)"><td style="padding-left:20px">(-) Devolucoes</td><td class="text-right">' + Utils.currency(d.devolucoes || 0) + '</td></tr>' +
+        '<tr class="fw-600" style="background:var(--bg-secondary)"><td>= Receita Liquida</td><td class="text-right">' + Utils.currency(d.receita_liquida || 0) + '</td></tr>' +
+        '<tr style="color:var(--danger)"><td style="padding-left:20px">(-) Custo das Mercadorias (CMV)</td><td class="text-right">' + Utils.currency(d.cmv || 0) + '</td></tr>' +
+        '<tr class="fw-600" style="background:var(--bg-secondary)"><td>= Lucro Bruto</td><td class="text-right">' + Utils.currency(d.lucro_bruto || 0) + '</td></tr>' +
+        '<tr><td colspan="2" style="padding:4px"></td></tr>' +
+        '<tr style="color:var(--danger)"><td style="padding-left:20px">(-) Despesas Operacionais</td><td class="text-right">' + Utils.currency(d.despesas_operacionais || 0) + '</td></tr>' +
+        despCatHtml +
+        '<tr class="fw-600" style="font-size:1.1rem;background:var(--bg-secondary);border-top:2px solid var(--border)"><td>= Lucro Operacional</td><td class="text-right" style="color:' + ((d.lucro_operacional || 0) >= 0 ? 'var(--success)' : 'var(--danger)') + '">' + Utils.currency(d.lucro_operacional || 0) + '</td></tr>' +
+      '</table>';
+
+    Layout.render(
+      Pages._relFiltroHtml() +
+      '<div class="stats-grid" style="margin-bottom:16px">' +
+        UI.statCard('Receita Liquida', Utils.currency(d.receita_liquida || 0), 'dollar-sign', 'blue') +
+        UI.statCard('Lucro Bruto', Utils.currency(d.lucro_bruto || 0), 'trending-up', 'green') +
+        UI.statCard('Margem Bruta', (d.margem_bruta || 0).toFixed(1) + '%', 'percent', 'teal') +
+        UI.statCard('Lucro Operacional', Utils.currency(d.lucro_operacional || 0), 'target', (d.lucro_operacional || 0) >= 0 ? 'green' : 'red') +
+      '</div>' +
+      '<div class="card"><div class="card-header"><h3>DRE - Demonstrativo de Resultado</h3></div><div class="card-body">' + dreTable + '</div></div>',
+      {
+        title: 'Relatorios',
+        moduleMenu: [
+          { label: 'Vendas', icon: 'shopping-bag', active: false, action: "Pages._relTab='vendas';Pages.relatorios()" },
+          { label: 'Produtos', icon: 'package', active: false, action: "Pages._relTab='produtos';Pages.relatorios()" },
+          { label: 'Caixa', icon: 'landmark', active: false, action: "Pages._relTab='caixa';Pages.relatorios()" },
+          { label: 'Contas', icon: 'wallet', active: false, action: "Pages._relTab='contas';Pages.relatorios()" },
+          { label: 'DRE', icon: 'bar-chart-3', active: true, action: "Pages._relTab='dre';Pages.relatorios()" },
+          { label: 'Fluxo', icon: 'trending-up', active: false, action: "Pages._relTab='fluxo';Pages.relatorios()" }
+        ]
+      }
+    );
+  },
+
+  _relFluxo: async function() {
+    var res;
+    try { res = await App.get('/relatorios/fluxo-projetado?dias=90'); } catch(e) { res = { projecao: [], total_pagar: 0, total_receber: 0 }; }
+
+    var projRows = (res.projecao || []).map(function(pr) {
+      return '<tr>' +
+        '<td class="fw-500">' + pr.periodo + '</td>' +
+        '<td class="text-right" style="color:var(--success)">' + Utils.currency(pr.entradas_previstas) + '</td>' +
+        '<td class="text-right" style="color:var(--danger)">' + Utils.currency(pr.saidas_previstas) + '</td>' +
+        '<td class="text-right fw-600" style="color:' + (pr.saldo_projetado >= 0 ? 'var(--success)' : 'var(--danger)') + '">' + Utils.currency(pr.saldo_projetado) + '</td></tr>';
+    }).join('');
+
+    var diarioHtml = '';
+    var fluxoDiario = res.fluxo_diario || {};
+    var dias = Object.keys(fluxoDiario).sort();
+    var saldoAcumulado = 0;
+    dias.slice(0, 30).forEach(function(dia) {
+      var f = fluxoDiario[dia];
+      saldoAcumulado += f.entradas - f.saidas;
+      diarioHtml += '<tr><td>' + new Date(dia + 'T12:00:00').toLocaleDateString('pt-BR') + '</td>' +
+        '<td class="text-right" style="color:var(--success)">' + Utils.currency(f.entradas) + '</td>' +
+        '<td class="text-right" style="color:var(--danger)">' + Utils.currency(f.saidas) + '</td>' +
+        '<td class="text-right fw-600" style="color:' + (saldoAcumulado >= 0 ? 'var(--success)' : 'var(--danger)') + '">' + Utils.currency(saldoAcumulado) + '</td></tr>';
+    });
+
+    Layout.render(
+      '<div class="stats-grid" style="margin-bottom:16px">' +
+        UI.statCard('A Receber (90d)', Utils.currency(res.total_receber || 0), 'arrow-up-circle', 'green') +
+        UI.statCard('A Pagar (90d)', Utils.currency(res.total_pagar || 0), 'arrow-down-circle', 'red') +
+        UI.statCard('Saldo Projetado', Utils.currency((res.total_receber || 0) - (res.total_pagar || 0)), 'scale', (res.total_receber || 0) >= (res.total_pagar || 0) ? 'green' : 'red') +
+      '</div>' +
+      '<div class="card" style="margin-bottom:16px"><div class="card-header"><h3>Projecao por Periodo</h3></div><div class="table-container"><table><thead><tr><th>Periodo</th><th class="text-right">Entradas</th><th class="text-right">Saidas</th><th class="text-right">Saldo</th></tr></thead><tbody>' + (projRows || '<tr><td colspan="4" class="text-center text-muted">Sem projecao</td></tr>') + '</tbody></table></div></div>' +
+      (diarioHtml ? '<div class="card"><div class="card-header"><h3>Fluxo Diario (proximos 30 dias)</h3></div><div class="table-container" style="max-height:400px;overflow-y:auto"><table><thead><tr><th>Data</th><th class="text-right">Entradas</th><th class="text-right">Saidas</th><th class="text-right">Saldo Acumulado</th></tr></thead><tbody>' + diarioHtml + '</tbody></table></div></div>' : ''),
+      {
+        title: 'Relatorios',
+        moduleMenu: [
+          { label: 'Vendas', icon: 'shopping-bag', active: false, action: "Pages._relTab='vendas';Pages.relatorios()" },
+          { label: 'Produtos', icon: 'package', active: false, action: "Pages._relTab='produtos';Pages.relatorios()" },
+          { label: 'Caixa', icon: 'landmark', active: false, action: "Pages._relTab='caixa';Pages.relatorios()" },
+          { label: 'Contas', icon: 'wallet', active: false, action: "Pages._relTab='contas';Pages.relatorios()" },
+          { label: 'DRE', icon: 'bar-chart-3', active: false, action: "Pages._relTab='dre';Pages.relatorios()" },
+          { label: 'Fluxo', icon: 'trending-up', active: true, action: "Pages._relTab='fluxo';Pages.relatorios()" }
+        ]
+      }
+    );
+  },
+
+  _verCupom: async function(vendaId) {
+    var res;
+    try { res = await App.get('/relatorios/cupom/' + vendaId); } catch(e) { return Toast.error('Erro ao carregar cupom'); }
+    var c = res.cupom || {};
+    var emp = c.empresa || {};
+    var vd = c.venda || {};
+    var totais = c.totais || {};
+    var pag = c.pagamento || {};
+
+    var itensHtml = (c.itens || []).map(function(i, idx) {
+      return '<tr><td>' + (idx + 1) + '</td><td>' + i.nome + '</td><td class="text-right">' + i.qtd + '</td><td class="text-right">' + Utils.currency(i.unitario) + '</td><td class="text-right fw-600">' + Utils.currency(i.subtotal) + '</td></tr>';
+    }).join('');
+
+    var cupomHtml =
+      '<div id="cupom-print" style="font-family:monospace;max-width:320px;margin:0 auto;font-size:0.8rem">' +
+        '<div style="text-align:center;border-bottom:1px dashed #999;padding-bottom:8px;margin-bottom:8px">' +
+          '<strong style="font-size:1rem">' + (emp.nome || 'Empresa') + '</strong><br>' +
+          '<span>' + (emp.cnpj ? 'CNPJ: ' + emp.cnpj : '') + '</span><br>' +
+          '<span style="font-size:0.7rem">' + (emp.endereco || '') + '</span><br>' +
+          (emp.telefone ? '<span>Tel: ' + emp.telefone + '</span>' : '') +
+        '</div>' +
+        '<div style="border-bottom:1px dashed #999;padding-bottom:8px;margin-bottom:8px">' +
+          '<strong>CUPOM NAO-FISCAL</strong><br>' +
+          'Venda: #' + (vd.numero || '') + '<br>' +
+          'Data: ' + (vd.data ? new Date(vd.data).toLocaleString('pt-BR') : '') + '<br>' +
+          'Operador: ' + (vd.operador || '-') + '<br>' +
+          (vd.cliente ? 'Cliente: ' + vd.cliente + '<br>' : '') +
+          (vd.cpf ? 'CPF: ' + vd.cpf + '<br>' : '') +
+        '</div>' +
+        '<table style="width:100%;font-size:0.75rem"><thead><tr><th>#</th><th>Item</th><th class="text-right">Qtd</th><th class="text-right">Unit</th><th class="text-right">Sub</th></tr></thead><tbody>' + itensHtml + '</tbody></table>' +
+        '<div style="border-top:1px dashed #999;margin-top:8px;padding-top:8px">' +
+          '<div style="display:flex;justify-content:space-between"><span>Subtotal:</span><span>' + Utils.currency(totais.subtotal || 0) + '</span></div>' +
+          (totais.desconto > 0 ? '<div style="display:flex;justify-content:space-between;color:var(--danger)"><span>Desconto:</span><span>-' + Utils.currency(totais.desconto) + '</span></div>' : '') +
+          '<div style="display:flex;justify-content:space-between;font-size:1.1rem;font-weight:700;margin-top:4px"><span>TOTAL:</span><span>' + Utils.currency(totais.total || 0) + '</span></div>' +
+        '</div>' +
+        '<div style="border-top:1px dashed #999;margin-top:8px;padding-top:8px;font-size:0.75rem">' +
+          '<strong>Pagamento: ' + (pag.forma || '') + '</strong><br>' +
+          (pag.dinheiro > 0 ? 'Dinheiro: ' + Utils.currency(pag.dinheiro) + '<br>' : '') +
+          (pag.pix > 0 ? 'PIX: ' + Utils.currency(pag.pix) + '<br>' : '') +
+          (pag.debito > 0 ? 'Debito: ' + Utils.currency(pag.debito) + '<br>' : '') +
+          (pag.credito > 0 ? 'Credito: ' + Utils.currency(pag.credito) + '<br>' : '') +
+          (totais.troco > 0 ? '<strong>Troco: ' + Utils.currency(totais.troco) + '</strong>' : '') +
+        '</div>' +
+        '<div style="text-align:center;border-top:1px dashed #999;margin-top:8px;padding-top:8px;font-size:0.7rem">' +
+          'NAO E DOCUMENTO FISCAL<br>VarlenSYS - varlem.com.br' +
+        '</div>' +
+      '</div>';
+
+    Modal.show('Cupom Nao-Fiscal',
+      cupomHtml,
+      '<button class="btn btn-primary" data-onclick="Pages._imprimirCupom()"><i data-lucide="printer" style="width:16px;height:16px"></i> Imprimir</button>' +
+      '<button class="btn btn-secondary" data-onclick="Modal.close()">Fechar</button>'
+    );
+  },
+
+  _imprimirCupom: function() {
+    var cupom = document.getElementById('cupom-print');
+    if (!cupom) return;
+    var win = window.open('', '_blank', 'width=350,height=600');
+    win.document.write('<html><head><title>Cupom</title><style>body{font-family:monospace;margin:8px}table{width:100%;border-collapse:collapse}td,th{padding:2px 4px;text-align:left}.text-right{text-align:right}.fw-600{font-weight:600}@media print{body{margin:0}}</style></head><body>' + cupom.innerHTML + '<script>setTimeout(function(){window.print();},300)<\/script></body></html>');
+    win.document.close();
+  },
+
+  // ============================================================
+  //  IMPORTACAO CSV - Modal para importar produtos
+  // ============================================================
+  _importarProdutosCSV: function() {
+    Modal.show('Importar Produtos via CSV',
+      '<div style="margin-bottom:16px">' +
+        '<p class="text-muted">Envie um arquivo CSV com os produtos. O arquivo deve ter cabecalho na primeira linha.</p>' +
+        '<p class="text-muted" style="font-size:0.8rem">Campos obrigatorios: <strong>nome</strong>, <strong>preco_venda</strong></p>' +
+        '<p class="text-muted" style="font-size:0.8rem">Campos opcionais: codigo_barras, preco_custo, estoque_atual, estoque_minimo, unidade, categoria, marca, ncm, descricao</p>' +
+        '<a href="#" data-onclick="Pages._downloadTemplateCSV()" style="font-size:0.85rem"><i data-lucide="download" style="width:14px;height:14px"></i> Baixar template CSV</a>' +
+      '</div>' +
+      '<div class="form-group">' +
+        '<label class="form-label">Arquivo CSV</label>' +
+        '<input type="file" class="form-control" id="csvFile" accept=".csv">' +
+      '</div>' +
+      '<div id="csvResult" style="margin-top:12px"></div>',
+      '<button class="btn btn-primary" data-onclick="Pages._enviarCSV()"><i data-lucide="upload" style="width:16px;height:16px"></i> Importar</button>' +
+      '<button class="btn btn-secondary" data-onclick="Modal.close()">Cancelar</button>'
+    );
+  },
+
+  _downloadTemplateCSV: async function() {
+    try {
+      var resp = await fetch('/api/importacao/template', {
+        headers: { 'Authorization': 'Bearer ' + localStorage.getItem('varlen_token'), 'X-Tenant-Slug': App.slug }
+      });
+      var blob = await resp.blob();
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url; a.download = 'template-produtos.csv'; a.click();
+      URL.revokeObjectURL(url);
+    } catch(e) { Toast.error('Erro ao baixar template'); }
+  },
+
+  _enviarCSV: async function() {
+    var input = document.getElementById('csvFile');
+    if (!input || !input.files[0]) { Toast.error('Selecione um arquivo CSV'); return; }
+
+    var formData = new FormData();
+    formData.append('arquivo', input.files[0]);
+
+    var resultDiv = document.getElementById('csvResult');
+    if (resultDiv) resultDiv.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+    try {
+      var resp = await fetch('/api/importacao', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + localStorage.getItem('varlen_token'), 'X-Tenant-Slug': App.slug },
+        body: formData
+      });
+      var data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || 'Erro na importacao');
+
+      var r = data.resultado || {};
+      var errosHtml = '';
+      if (r.erros && r.erros.length > 0) {
+        errosHtml = '<div style="margin-top:8px;max-height:150px;overflow-y:auto;font-size:0.8rem;color:var(--danger)">' +
+          r.erros.map(function(e) { return '<div>Linha ' + e.linha + ': ' + e.erro + '</div>'; }).join('') + '</div>';
+      }
+
+      if (resultDiv) {
+        resultDiv.innerHTML =
+          '<div class="card" style="background:var(--bg-secondary);padding:12px">' +
+            '<div style="display:flex;gap:16px">' +
+              '<div><strong style="color:var(--success)">' + (r.importados || 0) + '</strong> importados</div>' +
+              '<div><strong style="color:var(--warning)">' + (r.atualizados || 0) + '</strong> atualizados</div>' +
+              '<div><strong style="color:var(--danger)">' + (r.erros ? r.erros.length : 0) + '</strong> erros</div>' +
+            '</div>' + errosHtml +
+          '</div>';
+      }
+      Toast.success('Importacao concluida!');
+    } catch(e) {
+      if (resultDiv) resultDiv.innerHTML = '<div style="color:var(--danger)">' + e.message + '</div>';
+      Toast.error(e.message);
+    }
+  },
+
+  // ============================================================
+  //  DEVOLUCAO PARCIAL - Modal
+  // ============================================================
+  _devolucaoParcial: async function(vendaId) {
+    var res;
+    try { res = await App.get('/vendas/' + vendaId); } catch(e) { return Toast.error('Erro ao carregar venda'); }
+    var venda = res.venda || res;
+    var itens = venda.VendaItems || venda.itens || [];
+
+    var itensHtml = itens.map(function(item) {
+      return '<div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border)">' +
+        '<input type="checkbox" id="devCheck_' + item.id + '" class="dev-check">' +
+        '<div style="flex:1"><strong>' + item.produto_nome + '</strong><br>' +
+          '<span class="text-muted" style="font-size:0.8rem">Qtd vendida: ' + parseFloat(item.quantidade) + ' - Unit: ' + Utils.currency(item.preco_unitario) + '</span></div>' +
+        '<div class="form-group" style="margin:0;width:80px"><input type="number" class="form-control" id="devQtd_' + item.id + '" value="' + parseFloat(item.quantidade) + '" min="1" max="' + parseFloat(item.quantidade) + '" step="1" style="text-align:center"></div>' +
+      '</div>';
+    }).join('');
+
+    Modal.show('Devolucao Parcial - Venda #' + (venda.numero || vendaId),
+      '<p class="text-muted" style="margin-bottom:12px">Selecione os itens e quantidades a devolver:</p>' +
+      itensHtml +
+      '<div class="form-group" style="margin-top:12px"><label class="form-label">Motivo da devolucao</label>' +
+        '<input type="text" class="form-control" id="devMotivo" placeholder="Ex: Produto avariado"></div>',
+      '<button class="btn btn-warning" data-onclick="Pages._confirmarDevolucao(' + vendaId + ')"><i data-lucide="rotate-ccw" style="width:16px;height:16px"></i> Confirmar Devolucao</button>' +
+      '<button class="btn btn-secondary" data-onclick="Modal.close()">Cancelar</button>'
+    );
+    Pages._devItens = itens;
+  },
+
+  _confirmarDevolucao: async function(vendaId) {
+    var itens = [];
+    (Pages._devItens || []).forEach(function(item) {
+      var check = document.getElementById('devCheck_' + item.id);
+      var qtd = document.getElementById('devQtd_' + item.id);
+      if (check && check.checked && qtd) {
+        itens.push({ item_id: item.id, quantidade: parseFloat(qtd.value) });
+      }
+    });
+    if (itens.length === 0) { Toast.error('Selecione pelo menos um item'); return; }
+
+    var motivo = (document.getElementById('devMotivo') || {}).value || '';
+
+    var confirmado = await UI.confirm('Confirmar devolucao de ' + itens.length + ' item(ns)?');
+    if (!confirmado) return;
+
+    try {
+      var res = await App.post('/vendas/' + vendaId + '/devolucao', { itens: itens, motivo: motivo });
+      Toast.success('Devolucao registrada! Total devolvido: ' + Utils.currency(res.total_devolvido));
+      Modal.close();
+      Pages.vendas();
+    } catch(e) {}
   }
 };

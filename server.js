@@ -23,7 +23,7 @@ app.get('/api/health', (req, res) => {
 });
 
 /* ══════════════════════════════════════════════════════════════
-   SGC v3.0 — Sistema SaaS Multi-Tenant
+   VarlenSYS v3.0 — Sistema SaaS Multi-Tenant
    
    Estrutura de URLs:
    /                    → Landing page (site de vendas)
@@ -175,7 +175,8 @@ const tenantApiRoutes = [
   '/api/fornecedores', '/api/produtos', '/api/vendas', '/api/caixa',
   '/api/estoque', '/api/financeiro', '/api/dashboard', '/api/clientes',
   '/api/sngpc', '/api/fiscal', '/api/features', '/api/compras',
-  '/api/programas', '/api/etiquetas'
+  '/api/programas', '/api/etiquetas', '/api/relatorios', '/api/jobs',
+  '/api/importacao', '/api/audit'
 ];
 app.use(tenantApiRoutes, (req, res, next) => {
   const slug = (req.headers['x-tenant-slug'] || '').toLowerCase().trim();
@@ -208,6 +209,9 @@ app.use('/api/fiscal', require('./routes/fiscal'));
 app.use('/api/compras', require('./routes/compras'));
 app.use('/api/programas', require('./routes/programas'));
 app.use('/api/etiquetas', require('./routes/etiquetas'));
+app.use('/api/relatorios', require('./routes/relatorios'));
+app.use('/api/jobs', require('./routes/jobs'));
+app.use('/api/importacao', require('./routes/importacao'));
 app.use('/api/audit', require('./routes/audit'));
 
 // Endpoint para coleta de violações CSP
@@ -221,11 +225,6 @@ app.post('/api/csp-report', (req, res) => {
     });
   } catch (e) { /* ignora erros de parse */ }
   res.status(204).end();
-});
-
-// Health check
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', version: '3.0-saas', timestamp: new Date().toISOString() });
 });
 
 // Features endpoint
@@ -252,7 +251,7 @@ app.get('/master/*', (req, res) => {
 // ── GUARD: validar slug + JWT ANTES de servir qualquer HTML ──
 const { resolveBySlug: resolveSlug } = require('./middleware/tenantResolver');
 const jwtLib = require('jsonwebtoken');
-const JWT_SECRET_GUARD = process.env.JWT_SECRET || 'sgc_jwt_secret_default';
+const JWT_SECRET_GUARD = process.env.JWT_SECRET || 'varlensys_jwt_secret_default';
 
 async function tenantPageGuard(req, res) {
   const slug = (req.params.slug || '').toLowerCase().trim();
@@ -266,9 +265,9 @@ async function tenantPageGuard(req, res) {
   // 2) Se houver token JWT (cookie ou Authorization), verificar pertencimento
   const authHeader = req.headers.authorization || '';
   const tokenStr = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
-  // Verificar cookie sgc_token como fallback (SPA pode enviar)
+  // Verificar cookie varlen_token como fallback (SPA pode enviar)
   const cookieToken = (req.headers.cookie || '').split(';')
-    .map(c => c.trim()).find(c => c.startsWith('sgc_token='));
+    .map(c => c.trim()).find(c => c.startsWith('varlen_token='));
   const jwt_token = tokenStr || (cookieToken ? cookieToken.split('=')[1] : null);
 
   if (jwt_token) {
@@ -401,7 +400,7 @@ async function start() {
 
   // ── Servidor sobe PRIMEIRO — healthcheck do Railway já pode responder ──
   app.listen(PORT, () => {
-    logger.info(`SGC v3.0 SaaS rodando na porta ${PORT}`, {
+    logger.info(`VarlenSYS v3.0 SaaS rodando na porta ${PORT}`, {
       landing: `http://localhost:${PORT}`,
       master:  `http://localhost:${PORT}/master`,
       clientes: `http://localhost:${PORT}/app/{slug}`

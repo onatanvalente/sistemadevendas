@@ -22,7 +22,7 @@ const http = require('http');
 const BASE = 'http://localhost:3000';
 
 // Tenants de teste (conforme seed)
-const TENANT_A = { slug: 'mercadinho-bb', email: 'admin@sgc.com', senha: '123456' };
+const TENANT_A = { slug: 'mercadinho-bb', email: 'admin@varlensys.com', senha: '123456' };
 const TENANT_B = { slug: 'drogaria-roma', email: 'admin@farmacia.com', senha: '123456' };
 
 let passed = 0;
@@ -228,7 +228,7 @@ async function run() {
     { 'Authorization': `Bearer ${tokenA}` }
   );
   assert(r.status === 404, 'GET /app/slug-B com token A → 404', `got ${r.status}`);
-  assert(typeof r.raw === 'string' && !r.raw.includes('SGC - Sistema'),
+  assert(typeof r.raw === 'string' && !r.raw.includes('VarlenSYS - Sistema'),
     'Resposta NÃO contém interface do app');
 
   // Token B tentando acessar URL de A

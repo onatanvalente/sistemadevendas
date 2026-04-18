@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VarlenSYS - Análise Completa para MVP Comercializável</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{--primary:#2563eb;--green:#059669;--red:#dc2626;--amber:#f59e0b;--purple:#7c3aed;--bg:#f8fafc;--card:#fff;--text:#0f172a;--muted:#64748b;--border:#e2e8f0}
+    html{font-size:15px;scroll-behavior:smooth}
+    body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+    a{color:var(--primary)}
+    .container{max-width:1100px;margin:0 auto;padding:0 24px}
+
+    /* Header */
+    .header{background:linear-gradient(135deg,#0f172a,#1e293b);color:#fff;padding:60px 24px 48px;position:relative;overflow:hidden}
+    .header::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 30% 0%,rgba(37,99,235,.15) 0%,transparent 60%);pointer-events:none}
+    .header h1{font-size:2.4rem;font-weight:900;margin-bottom:8px;position:relative}
+    .header p{font-size:1.1rem;color:#94a3b8;max-width:700px;position:relative}
+    .header .badge{display:inline-block;background:rgba(37,99,235,.2);border:1px solid rgba(37,99,235,.3);color:#60a5fa;padding:4px 14px;border-radius:999px;font-size:.78rem;font-weight:600;margin-bottom:16px;position:relative}
+    .header .meta{display:flex;gap:24px;margin-top:20px;position:relative}
+    .header .meta span{font-size:.85rem;color:#94a3b8}
+    .header .meta strong{color:#e2e8f0}
+
+    /* Nav */
+    .nav{background:#fff;border-bottom:1px solid var(--border);padding:12px 24px;position:sticky;top:0;z-index:100}
+    .nav-inner{max-width:1100px;margin:0 auto;display:flex;gap:16px;flex-wrap:wrap}
+    .nav a{color:var(--muted);font-size:.85rem;font-weight:500;text-decoration:none;padding:6px 12px;border-radius:6px;transition:all .2s}
+    .nav a:hover{background:#eff6ff;color:var(--primary)}
+
+    /* Sections */
+    .section{padding:48px 0}
+    .section-title{font-size:1.6rem;font-weight:800;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+    .section-title .num{background:var(--primary);color:#fff;width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:800;flex-shrink:0}
+    .section-desc{color:var(--muted);margin-bottom:28px;font-size:.95rem}
+
+    /* Cards */
+    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:16px;transition:all .2s}
+    .card:hover{box-shadow:0 4px 16px rgba(0,0,0,.06)}
+
+    /* Tables */
+    table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.9rem}
+    th{background:#f1f5f9;text-align:left;padding:10px 14px;font-weight:600;font-size:.82rem;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);border-bottom:2px solid var(--border)}
+    td{padding:10px 14px;border-bottom:1px solid var(--border)}
+    tr:hover td{background:#f8fafc}
+
+    /* Status badges */
+    .badge-ok{background:#ecfdf5;color:#059669;padding:3px 10px;border-radius:6px;font-size:.78rem;font-weight:600}
+    .badge-partial{background:#fffbeb;color:#d97706;padding:3px 10px;border-radius:6px;font-size:.78rem;font-weight:600}
+    .badge-missing{background:#fef2f2;color:#dc2626;padding:3px 10px;border-radius:6px;font-size:.78rem;font-weight:600}
+    .badge-p0{background:#fef2f2;color:#dc2626;padding:3px 10px;border-radius:6px;font-size:.78rem;font-weight:700}
+    .badge-p1{background:#fffbeb;color:#d97706;padding:3px 10px;border-radius:6px;font-size:.78rem;font-weight:700}
+    .badge-p2{background:#eff6ff;color:#2563eb;padding:3px 10px;border-radius:6px;font-size:.78rem;font-weight:700}
+    .badge-p3{background:#f1f5f9;color:#64748b;padding:3px 10px;border-radius:6px;font-size:.78rem;font-weight:700}
+
+    /* Checklist */
+    .checklist{list-style:none}
+    .checklist li{padding:10px 0;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:12px;font-size:.93rem}
+    .checklist li:last-child{border-bottom:none}
+    .check-icon{width:22px;height:22px;border-radius:6px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;font-size:.7rem;color:#fff}
+    .check-icon.done{background:var(--green);border-color:var(--green)}
+    .check-icon.pending{background:#fff;border-color:var(--border)}
+    .check-label{font-weight:600;margin-bottom:2px}
+    .check-desc{color:var(--muted);font-size:.85rem}
+
+    /* Stats grid */
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:24px 0}
+    .stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center}
+    .stat-value{font-size:2rem;font-weight:900;color:var(--primary)}
+    .stat-label{font-size:.82rem;color:var(--muted);margin-top:4px}
+
+    /* Credentials */
+    .cred-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    .cred-card{background:var(--card);border:1.5px solid var(--border);border-radius:14px;overflow:hidden}
+    .cred-header{padding:16px 20px;font-weight:700;font-size:1rem;border-bottom:1px solid var(--border)}
+    .cred-header.mercado{background:#eff6ff;color:var(--primary)}
+    .cred-header.drogaria{background:#ecfdf5;color:var(--green)}
+    .cred-header.master{background:#f1f5f9;color:var(--text)}
+    .cred-body{padding:16px 20px}
+    .cred-item{display:flex;justify-content:space-between;padding:6px 0;font-size:.88rem;border-bottom:1px solid #f1f5f9}
+    .cred-item:last-child{border:none}
+    .cred-item span:first-child{color:var(--muted)}
+    .cred-item code{background:#f1f5f9;padding:2px 8px;border-radius:4px;font-size:.82rem;font-weight:600}
+
+    /* Architecture */
+    .arch-table{margin:20px 0}
+    .arch-row{display:grid;grid-template-columns:180px 1fr 200px;gap:16px;padding:14px 20px;border-bottom:1px solid var(--border);align-items:center}
+    .arch-row:first-child{background:#f1f5f9;font-weight:700;font-size:.82rem;text-transform:uppercase;color:var(--muted)}
+    .arch-url{font-family:monospace;font-size:.88rem;background:#f1f5f9;padding:4px 10px;border-radius:6px;font-weight:600}
+
+    /* Progress */
+    .progress-bar{background:#e2e8f0;border-radius:999px;height:8px;overflow:hidden;margin:8px 0}
+    .progress-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--primary),var(--green))}
+
+    /* Footer */
+    .footer{background:#0f172a;color:#64748b;text-align:center;padding:32px 24px;margin-top:48px;font-size:.85rem}
+
+    /* Print */
+    @media print{
+      .nav{display:none}
+      .header{padding:24px;background:#0f172a;-webkit-print-color-adjust:exact}
+      .section{padding:24px 0}
+    }
+    @media(max-width:768px){
+      .stats{grid-template-columns:1fr 1fr}
+      .cred-grid{grid-template-columns:1fr}
+      .arch-row{grid-template-columns:1fr}
+      .header h1{font-size:1.8rem}
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="container">
+    <div class="badge">Documento de Análise</div>
+    <h1>VarlenSYS - Análise Completa para MVP</h1>
+    <p>Parecer técnico sobre o estado atual do sistema, módulos prontos, lacunas identificadas e roadmap para comercialização.</p>
+    <div class="meta">
+      <span><strong>Data:</strong> 17/04/2026</span>
+      <span><strong>Versão:</strong> v3.0 SaaS</span>
+      <span><strong>Stack:</strong> Node.js + PostgreSQL</span>
+      <span><strong>Código:</strong> ~20.000 linhas</span>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#parecer">Parecer</a>
+    <a href="#modulos">Módulos</a>
+    <a href="#credenciais">Credenciais</a>
+    <a href="#arquitetura">Arquitetura</a>
+    <a href="#subdominios">Subdomínios</a>
+    <a href="#mvp">MVP</a>
+    <a href="#seguranca">Segurança</a>
+    <a href="#resumo">Resumo</a>
+  </div>
+</nav>
+
+<div class="container">
+
+<!-- 1. PARECER GERAL -->
+<section class="section" id="parecer">
+  <div class="section-title"><span class="num">1</span> Parecer Geral</div>
+  <div class="section-desc">Avaliação do estado atual do sistema para viabilidade de comercialização.</div>
+
+  <div class="card">
+    <p style="font-size:1rem;line-height:1.8">
+      O VarlenSYS está em <strong>estágio avançado de desenvolvimento</strong> com aproximadamente 20.000 linhas de código.
+      A arquitetura multi-tenant, segurança (JWT, RLS, CORS, Helmet, proteção IDOR) e a maioria dos módulos operacionais
+      estão <strong>completos e funcionais</strong>.
+    </p>
+    <br>
+    <p style="font-size:1rem;line-height:1.8">
+      O sistema está <strong>próximo de ser comercializável</strong>, mas precisa de ajustes em áreas críticas que um
+      cliente pagante espera desde o primeiro dia: relatórios exportáveis, cupom imprimível, jobs automáticos e
+      configuração completa da empresa.
+    </p>
+  </div>
+
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-value">17</div>
+      <div class="stat-label">Módulos operacionais</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">47</div>
+      <div class="stat-label">Modelos de dados</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">150+</div>
+      <div class="stat-label">Endpoints da API</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--green)">85%</div>
+      <div class="stat-label">Completude geral</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <strong>Progresso geral para MVP:</strong>
+    <div class="progress-bar"><div class="progress-fill" style="width:85%"></div></div>
+    <div style="display:flex;justify-content:space-between;font-size:.82rem;color:var(--muted)">
+      <span>Backend: 90% pronto</span>
+      <span>Frontend: 85% pronto</span>
+      <span>Infraestrutura: 70% pronto</span>
+    </div>
+  </div>
+</section>
+
+<!-- 2. STATUS DOS MODULOS -->
+<section class="section" id="modulos">
+  <div class="section-title"><span class="num">2</span> Status de Cada Módulo</div>
+  <div class="section-desc">Inventário completo de todos os módulos do sistema e seu estado de implementação.</div>
+
+  <div class="card">
+    <h3 style="margin-bottom:16px;color:var(--green)">Módulos Prontos e Funcionais</h3>
+    <table>
+      <thead>
+        <tr><th>Módulo</th><th>Status</th><th>Backend</th><th>Linhas</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>PDV (Ponto de Venda)</strong></td><td><span class="badge-ok">OK</span></td><td>vendas.js, caixa.js, produtos.js</td><td>~2.600 (front)</td></tr>
+        <tr><td><strong>Vendas</strong></td><td><span class="badge-ok">OK</span></td><td>vendas.js</td><td>734</td></tr>
+        <tr><td><strong>Caixa</strong></td><td><span class="badge-ok">OK</span></td><td>caixa.js</td><td>163</td></tr>
+        <tr><td><strong>Produtos</strong></td><td><span class="badge-ok">OK</span></td><td>produtos.js</td><td>522</td></tr>
+        <tr><td><strong>Estoque</strong></td><td><span class="badge-ok">OK</span></td><td>estoque.js</td><td>460</td></tr>
+        <tr><td><strong>Categorias</strong></td><td><span class="badge-ok">OK</span></td><td>categorias.js</td><td>67</td></tr>
+        <tr><td><strong>Fornecedores</strong></td><td><span class="badge-ok">OK</span></td><td>fornecedores.js</td><td>250</td></tr>
+        <tr><td><strong>Clientes</strong></td><td><span class="badge-ok">OK</span></td><td>clientes.js</td><td>350</td></tr>
+        <tr><td><strong>Compras</strong></td><td><span class="badge-ok">OK</span></td><td>compras.js</td><td>692</td></tr>
+        <tr><td><strong>Programas Comerciais</strong></td><td><span class="badge-ok">OK</span></td><td>programas.js</td><td>370</td></tr>
+        <tr><td><strong>Dashboard</strong></td><td><span class="badge-ok">OK</span></td><td>dashboard.js</td><td>271</td></tr>
+        <tr><td><strong>Etiquetas</strong></td><td><span class="badge-ok">OK</span></td><td>etiquetas.js</td><td>316</td></tr>
+        <tr><td><strong>Fiscal (NFC-e)</strong></td><td><span class="badge-ok">OK</span></td><td>fiscal.js + 5 services</td><td>1.752</td></tr>
+        <tr><td><strong>SNGPC</strong></td><td><span class="badge-ok">OK</span></td><td>sngpc.js + services</td><td>1.762+</td></tr>
+        <tr><td><strong>Auditoria</strong></td><td><span class="badge-ok">OK</span></td><td>audit.js</td><td>388</td></tr>
+        <tr><td><strong>Auth/Segurança</strong></td><td><span class="badge-ok">OK</span></td><td>auth.js, tenantResolver.js</td><td>269</td></tr>
+        <tr><td><strong>Painel Master</strong></td><td><span class="badge-ok">OK</span></td><td>master.js</td><td>238</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom:16px;color:var(--amber)">Módulos Parciais</h3>
+    <table>
+      <thead>
+        <tr><th>Módulo</th><th>Status</th><th>Problema</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Empresas (config)</strong></td><td><span class="badge-partial">PARCIAL</span></td><td>Só 2 endpoints, poucos campos editáveis, sem upload de logo</td></tr>
+        <tr><td><strong>Financeiro</strong></td><td><span class="badge-partial">PARCIAL</span></td><td>Contas pagar/receber OK, mas fluxo de caixa e DRE muito básicos</td></tr>
+        <tr><td><strong>Usuários</strong></td><td><span class="badge-partial">PARCIAL</span></td><td>CRUD ok, mas falta troca de senha própria</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom:16px;color:var(--red)">Módulos Ausentes</h3>
+    <table>
+      <thead>
+        <tr><th>Módulo</th><th>Impacto</th><th>Descrição</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Relatórios PDF/Excel</strong></td><td><span class="badge-p0">CRÍTICO</span></td><td>Nenhum relatório pode ser exportado</td></tr>
+        <tr><td><strong>Jobs agendados</strong></td><td><span class="badge-p0">CRÍTICO</span></td><td>Contas não vencem automaticamente, lotes não expiram</td></tr>
+        <tr><td><strong>DRE</strong></td><td><span class="badge-p1">ALTO</span></td><td>Gestor não tem visão do lucro real do negócio</td></tr>
+        <tr><td><strong>Notificações</strong></td><td><span class="badge-p2">MÉDIO</span></td><td>Sem alertas para estoque crítico ou contas vencendo</td></tr>
+        <tr><td><strong>Import CSV produtos</strong></td><td><span class="badge-p2">MÉDIO</span></td><td>Onboarding manual produto a produto</td></tr>
+        <tr><td><strong>Import XML NF-e</strong></td><td><span class="badge-p2">MÉDIO</span></td><td>Entrada de compra não usa XML do fornecedor</td></tr>
+        <tr><td><strong>Devolução parcial</strong></td><td><span class="badge-p2">MÉDIO</span></td><td>Só cancela venda inteira, não troca/devolve 1 item</td></tr>
+        <tr><td><strong>PIX QR Code</strong></td><td><span class="badge-p3">BAIXO</span></td><td>PIX é totalmente manual no PDV</td></tr>
+        <tr><td><strong>Modo offline</strong></td><td><span class="badge-p3">BAIXO</span></td><td>Sistema para se a internet cair</td></tr>
+        <tr><td><strong>TEF (maquininha)</strong></td><td><span class="badge-p3">BAIXO</span></td><td>Sem integração com Stone/Cielo/PagSeguro</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 3. CREDENCIAIS -->
+<section class="section" id="credenciais">
+  <div class="section-title"><span class="num">3</span> Credenciais do Seed</div>
+  <div class="section-desc">Usuários criados pelo script de seed (scripts/seed.js). Senha padrão: <code style="background:#fee2e2;padding:2px 8px;border-radius:4px;font-weight:700;color:#dc2626">123456</code></div>
+
+  <div class="card" style="margin-bottom:20px">
+    <div class="cred-header master">Painel Master (Admin SaaS) - URL: /master</div>
+    <div class="cred-body">
+      <div class="cred-item"><span>Email</span><code>master@varlensys.com</code></div>
+      <div class="cred-item"><span>Senha</span><code>123456</code></div>
+      <div class="cred-item"><span>Role</span><code>super_admin</code></div>
+    </div>
+  </div>
+
+  <div class="cred-grid">
+    <div class="cred-card">
+      <div class="cred-header mercado">Mercadinho B&B (slug: mercadinho-bb)</div>
+      <div class="cred-body">
+        <div class="cred-item"><span>Admin</span><code>admin@varlensys.com</code></div>
+        <div class="cred-item"><span>Vendedor</span><code>vendedor@varlensys.com</code></div>
+        <div class="cred-item"><span>Gerente</span><code>gerente@varlensys.com</code></div>
+        <div class="cred-item"><span>Financeiro</span><code>financeiro@varlensys.com</code></div>
+        <div class="cred-item"><span>Senha (todos)</span><code>123456</code></div>
+      </div>
+    </div>
+    <div class="cred-card">
+      <div class="cred-header drogaria">Drogaria Romã (slug: drogaria-roma)</div>
+      <div class="cred-body">
+        <div class="cred-item"><span>Admin</span><code>admin@farmacia.com</code></div>
+        <div class="cred-item"><span>Vendedor</span><code>vendedor@farmacia.com</code></div>
+        <div class="cred-item"><span>Farmacêutico</span><code>farmaceutico@farmacia.com</code></div>
+        <div class="cred-item"><span>Senha (todos)</span><code>123456</code></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;background:#fffbeb;border-color:#fde68a">
+    <p style="font-size:.92rem"><strong style="color:#92400e">IMPORTANTE:</strong> Para o banco na nuvem (Railway), o seed precisa ser executado
+    apontando para a DATABASE_URL de produção. Se ainda não foi executado, esses usuários não existem lá.
+    Execute: <code style="background:#fef3c7;padding:2px 8px;border-radius:4px">DATABASE_URL=postgres://... node scripts/seed.js</code></p>
+  </div>
+</section>
+
+<!-- 4. ARQUITETURA -->
+<section class="section" id="arquitetura">
+  <div class="section-title"><span class="num">4</span> Arquitetura de URLs (Atual)</div>
+  <div class="section-desc">Dois sistemas separados acessando o mesmo banco de dados PostgreSQL - estrutura atual baseada em caminhos de URL.</div>
+
+  <div class="card">
+    <div class="arch-table">
+      <div class="arch-row">
+        <div>URL</div><div>Sistema</div><div>Quem acessa</div>
+      </div>
+      <div class="arch-row">
+        <div><span class="arch-url">/</span></div>
+        <div>Landing Page (site público)</div>
+        <div>Visitantes</div>
+      </div>
+      <div class="arch-row">
+        <div><span class="arch-url">/app/:slug</span></div>
+        <div>Sistema do cliente (SPA)</div>
+        <div>Usuários do tenant</div>
+      </div>
+      <div class="arch-row">
+        <div><span class="arch-url">/master</span></div>
+        <div>Painel Administrativo SaaS</div>
+        <div>Administradores</div>
+      </div>
+      <div class="arch-row">
+        <div><span class="arch-url">/api/master/*</span></div>
+        <div>API do admin (JWT separado)</div>
+        <div>Backend master</div>
+      </div>
+      <div class="arch-row">
+        <div><span class="arch-url">/api/*</span></div>
+        <div>API do tenant (JWT + slug)</div>
+        <div>Backend do cliente</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="background:#eff6ff;border-color:#bfdbfe">
+    <p style="font-size:.92rem"><strong style="color:var(--primary)">Separação de sistemas:</strong>
+    O link do painel master (<code>/master</code>) foi removido da landing page pública. Clientes não veem nem acessam.
+    O acesso ao master se dá apenas por URL direta, com JWT completamente separado (MASTER_JWT_SECRET).</p>
+  </div>
+</section>
+
+<!-- 5. ROADMAP MVP -->
+<section class="section" id="mvp">
+  <div class="section-title"><span class="num">5</span> Roadmap para MVP Comercializável</div>
+  <div class="section-desc">Checklist priorizado do que falta implementar para começar a vender o sistema.</div>
+
+  <!-- P0 -->
+  <div class="card" style="border-left:4px solid var(--red)">
+    <h3 style="color:var(--red);margin-bottom:4px">PRIORIDADE 0 - Bloqueantes</h3>
+    <p style="color:var(--muted);font-size:.85rem;margin-bottom:16px">Sem estes itens o sistema não pode ser comercializado.</p>
+    <ul class="checklist">
+      <li>
+        <div class="check-icon pending"></div>
+        <div>
+          <div class="check-label">5.1 - Módulo Empresas completo</div>
+          <div class="check-desc">Editar todos os campos (CNPJ, IE, IM, endereço completo, dados fiscais). Upload de logo. Gestão de plano e trial.</div>
+        </div>
+      </li>
+      <li>
+        <div class="check-icon pending"></div>
+        <div>
+          <div class="check-label">5.2 - Troca de senha pelo próprio usuário</div>
+          <div class="check-desc">Endpoint PUT /api/usuarios/minha-senha. Tela de "minha conta" no frontend.</div>
+        </div>
+      </li>
+      <li>
+        <div class="check-icon pending"></div>
+        <div>
+          <div class="check-label">5.3 - Relatórios básicos exportáveis (PDF)</div>
+          <div class="check-desc">Vendas por período, produtos mais vendidos, fechamento de caixa, contas pendentes.</div>
+        </div>
+      </li>
+      <li>
+        <div class="check-icon pending"></div>
+        <div>
+          <div class="check-label">5.4 - Jobs de vencimento automático</div>
+          <div class="check-desc">Marcar contas como "vencido" e lotes como "VENCIDO" automaticamente. Scheduler diário.</div>
+        </div>
+      </li>
+      <li>
+        <div class="check-icon pending"></div>
+        <div>
+          <div class="check-label">5.5 - Cupom não-fiscal imprimível</div>
+          <div class="check-desc">Gerar PDF do cupom para impressão via navegador. O snapshot_cupom já existe na venda.</div>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- P1 -->
+  <div class="card" style="border-left:4px solid var(--amber)">
+    <h3 style="color:var(--amber);margin-bottom:4px">PRIORIDADE 1 - Importantes</h3>
+    <p style="color:var(--muted);font-size:.85rem;margin-bottom:16px">Cliente espera ter em 30 dias após contratação.</p>
+    <ul class="checklist">
+      <li>
+        <div class="check-icon pending"></div>
+        <div>
+          <div class="check-label">5.6 - DRE básico</div>
+          <div class="check-desc">Receita bruta - CMV = Lucro bruto - Despesas = Lucro operacional. Dados já existem nas vendas.</div>
+        </div>
+      </li>
+      <li>
+        <div class="check-icon pending"></div>
+        <div>
+          <div class="check-label">5.7 - Contas recorrentes automáticas</div>
+          <div class="check-desc">Quando quitar conta recorrente, gerar a próxima. Campos já existem no modelo.</div>
+        </div>
+      </li>
+      <li>
+        <div class="check-icon pending"></div>
+        <div>
+          <div class="check-label">5.8 - Previsão de fluxo de caixa</div>
+          <div class="check-desc">Projetar saldo futuro baseado em contas pendentes. Gráfico 30/60/90 dias.</div>
+        </div>
+      </li>
+      <li>
+        <div class="check-icon pending"></div>
+        <div>
+          <div class="check-label">5.9 - Import CSV de produtos</div>
+          <div class="check-desc">Endpoint POST /api/produtos/importar com planilha padrão. Essencial para onboarding.</div>
+        </div>
+      </li>
+      <li>
+        <div class="check-icon pending"></div>
+        <div>
+          <div class="check-label">5.10 - Devolução/troca parcial de venda</div>
+          <div class="check-desc">Devolver 1 item de uma venda com 5 itens. Reverter estoque e gerar crédito.</div>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- P2 -->
+  <div class="card" style="border-left:4px solid var(--primary)">
+    <h3 style="color:var(--primary);margin-bottom:4px">PRIORIDADE 2 - Diferenciais</h3>
+    <p style="color:var(--muted);font-size:.85rem;margin-bottom:16px">Funcionalidades que fazem o cliente ficar satisfeito e recomendar.</p>
+    <ul class="checklist">
+      <li>
+        <div class="check-icon pending"></div>
+        <div>
+          <div class="check-label">5.11 - Import XML NF-e de compra</div>
+          <div class="check-desc">Ler XML da SEFAZ e auto-preencher itens da compra. A lib xml2js já está no projeto.</div>
+        </div>
+      </li>
+      <li>
+        <div class="check-icon pending"></div>
+        <div>
+          <div class="check-label">5.12 - Notificações por e-mail</div>
+          <div class="check-desc">Estoque crítico, conta vencendo amanhã, lote vencendo em 30 dias.</div>
+        </div>
+      </li>
+      <li>
+        <div class="check-icon pending"></div>
+        <div>
+          <div class="check-label">5.13 - Programa de fidelidade com pontos</div>
+          <div class="check-desc">Pontos por R$ gasto, resgate, histórico e vencimento de pontos.</div>
+        </div>
+      </li>
+      <li>
+        <div class="check-icon pending"></div>
+        <div>
+          <div class="check-label">5.14 - Dashboard em tempo real</div>
+          <div class="check-desc">WebSocket para vendas sendo realizadas. KPIs atualizando sem refresh.</div>
+        </div>
+      </li>
+      <li>
+        <div class="check-icon pending"></div>
+        <div>
+          <div class="check-label">5.15 - Impressão térmica real</div>
+          <div class="check-desc">Integração com impressoras térmicas (58mm/80mm).</div>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- P3 -->
+  <div class="card" style="border-left:4px solid #94a3b8">
+    <h3 style="color:#64748b;margin-bottom:4px">PRIORIDADE 3 - Roadmap Futuro</h3>
+    <p style="color:var(--muted);font-size:.85rem;margin-bottom:16px">Para evolução pós-lançamento.</p>
+    <ul class="checklist">
+      <li><div class="check-icon pending"></div><div><div class="check-label">5.16 - TEF (integração maquininha)</div></div></li>
+      <li><div class="check-icon pending"></div><div><div class="check-label">5.17 - PIX QR Code dinâmico</div></div></li>
+      <li><div class="check-icon pending"></div><div><div class="check-label">5.18 - Modo offline PDV</div></div></li>
+      <li><div class="check-icon pending"></div><div><div class="check-label">5.19 - Multi-filial</div></div></li>
+      <li><div class="check-icon pending"></div><div><div class="check-label">5.20 - PBM (benefício medicamento)</div></div></li>
+      <li><div class="check-icon pending"></div><div><div class="check-label">5.21 - Interação medicamentosa</div></div></li>
+      <li><div class="check-icon pending"></div><div><div class="check-label">5.22 - Conciliação bancária</div></div></li>
+      <li><div class="check-icon pending"></div><div><div class="check-label">5.23 - API pública para integração</div></div></li>
+      <li><div class="check-icon pending"></div><div><div class="check-label">5.24 - App mobile</div></div></li>
+      <li><div class="check-icon pending"></div><div><div class="check-label">5.25 - Venda fiado (crédito cliente)</div></div></li>
+    </ul>
+  </div>
+</section>
+
+<!-- 6. SEGURANÇA -->
+<section class="section" id="seguranca">
+  <div class="section-title"><span class="num">6</span> Análise de Segurança</div>
+  <div class="section-desc">Pontos de atenção e status das proteções implementadas.</div>
+
+  <div class="card">
+    <table>
+      <thead>
+        <tr><th>Proteção</th><th>Status</th><th>Detalhe</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>JWT com expiração</td><td><span class="badge-ok">OK</span></td><td>2h para tenant, 8h para master</td></tr>
+        <tr><td>bcrypt 12 rounds</td><td><span class="badge-ok">OK</span></td><td>Hash de senha robusto</td></tr>
+        <tr><td>Senha mínima 8 chars</td><td><span class="badge-ok">OK</span></td><td>Validado no registro e landing</td></tr>
+        <tr><td>RBAC por perfil</td><td><span class="badge-ok">OK</span></td><td>7 perfis com permissões granulares</td></tr>
+        <tr><td>Multi-tenant RLS</td><td><span class="badge-ok">OK</span></td><td>Row-Level Security no PostgreSQL</td></tr>
+        <tr><td>Cross-tenant bloqueado</td><td><span class="badge-ok">OK</span></td><td>Retorna 404 (não 403) para não revelar existência</td></tr>
+        <tr><td>IDOR protection</td><td><span class="badge-ok">OK</span></td><td>Validação de FK em todas as rotas críticas</td></tr>
+        <tr><td>Helmet headers</td><td><span class="badge-ok">OK</span></td><td>CSP, HSTS, X-Frame-Options, etc.</td></tr>
+        <tr><td>CORS restritivo</td><td><span class="badge-ok">OK</span></td><td>Wildcard bloqueado em produção</td></tr>
+        <tr><td>Rate limiting</td><td><span class="badge-ok">OK</span></td><td>1000 req/15min global, 20 login/15min</td></tr>
+        <tr><td>Tokens fiscais criptografados</td><td><span class="badge-ok">OK</span></td><td>AES-256-GCM</td></tr>
+        <tr><td>JWT_SECRET fallback</td><td><span class="badge-partial">ATENÇÃO</span></td><td>Se .env não configurar, usa valor hardcoded</td></tr>
+        <tr><td>SSL rejectUnauthorized</td><td><span class="badge-partial">ACEITÁVEL</span></td><td>Necessário para Railway (certificado auto-assinado)</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 7. RESUMO -->
+<section class="section" id="resumo">
+  <div class="section-title"><span class="num">7</span> Resumo Executivo</div>
+
+  <div class="card" style="background:linear-gradient(135deg,#0f172a,#1e293b);color:#e2e8f0;border:none">
+    <h3 style="color:#fff;margin-bottom:16px;font-size:1.3rem">O que está PRONTO</h3>
+    <ul style="list-style:none;font-size:.95rem;line-height:2">
+      <li>- 17 módulos operacionais com ~20.000 linhas de código</li>
+      <li>- Multi-tenant completo com isolamento por JWT + RLS</li>
+      <li>- PDV com motor de descontos, multi-pagamento, FIFO de lotes</li>
+      <li>- SNGPC completo (3 fases) para farmácias</li>
+      <li>- NFC-e com provider DevNota integrado</li>
+      <li>- Segurança robusta (Helmet, CORS, Rate Limit, bcrypt, RLS)</li>
+    </ul>
+    <br>
+    <h3 style="color:#f59e0b;margin-bottom:16px;font-size:1.3rem">O que FALTA para vender</h3>
+    <ul style="list-style:none;font-size:.95rem;line-height:2">
+      <li>1. Relatórios exportáveis (PDF pelo menos)</li>
+      <li>2. Jobs automáticos de vencimento</li>
+      <li>3. Módulo de configuração da empresa completo</li>
+      <li>4. Cupom imprimível</li>
+      <li>5. Troca de senha pelo usuário</li>
+    </ul>
+    <br>
+    <div style="background:rgba(255,255,255,.1);border-radius:12px;padding:20px;text-align:center">
+      <div style="font-size:.85rem;color:#94a3b8;margin-bottom:4px">Esforco estimado para MVP</div>
+      <div style="font-size:1.8rem;font-weight:900;color:#fff">5 a 7 semanas</div>
+      <div style="font-size:.85rem;color:#94a3b8;margin-top:4px">P0 (2-3 semanas) + P1 (3-4 semanas)</div>
+    </div>
+  </div>
+</section>
+
+<!-- 8. ALTERAÇÕES REALIZADAS -->
+<section class="section" id="alteracoes">
+  <div class="section-title"><span class="num">8</span> Alterações Já Realizadas</div>
+  <div class="section-desc">Mudanças aplicadas na landing page nesta sessão de análise.</div>
+
+  <div class="card">
+    <ul class="checklist">
+      <li><div class="check-icon done">&#10003;</div><div><div class="check-label">Removido botão "Painel Admin" da navbar</div><div class="check-desc">Master só acessível por URL direta /master</div></div></li>
+      <li><div class="check-icon done">&#10003;</div><div><div class="check-label">Removido ícone de foguete de todos os botões</div><div class="check-desc">Substituído por ícones semânticos (user-plus, log-in)</div></div></li>
+      <li><div class="check-icon done">&#10003;</div><div><div class="check-label">"Começar Grátis" substituído por "Cadastrar-se"</div><div class="check-desc">Navbar, hero, CTA e modais atualizados</div></div></li>
+      <li><div class="check-icon done">&#10003;</div><div><div class="check-label">Adicionado botão "Fazer Login" na navbar e hero</div><div class="check-desc">Com modal de login (slug + e-mail + senha)</div></div></li>
+      <li><div class="check-icon done">&#10003;</div><div><div class="check-label">Modal de login completo</div><div class="check-desc">Campo de slug da empresa, e-mail, senha. Redireciona para /app/:slug após login</div></div></li>
+      <li><div class="check-icon done">&#10003;</div><div><div class="check-label">CTA section atualizada</div><div class="check-desc">Dois botões: Cadastrar-se + Fazer Login</div></div></li>
+      <li><div class="check-icon done">&#10003;</div><div><div class="check-label">Links cruzados entre modais</div><div class="check-desc">Login tem link para cadastro e vice-versa</div></div></li>
+    </ul>
+  </div>
+</section>
+
+<!-- 9. ARQUITETURA DE SUBDOMÍNIOS -->
+<section class="section" id="subdominios">
+  <div class="section-title"><span class="num">9</span> Arquitetura de Subdomínios (varlem.com.br)</div>
+  <div class="section-desc">Migração para uma arquitetura profissional baseada em subdomínios, onde cada cliente recebe seu próprio endereço personalizado.</div>
+
+  <!-- Mapa de domínios -->
+  <div class="card">
+    <h3 style="margin-bottom:16px">Mapa de Domínios Pretendido</h3>
+    <div class="arch-table">
+      <div class="arch-row">
+        <div>Subdomínio</div><div>Propósito</div><div>Público</div>
+      </div>
+      <div class="arch-row">
+        <div><span class="arch-url">varlem.com.br</span></div>
+        <div>Site institucional da empresa Varlem</div>
+        <div>Público geral</div>
+      </div>
+      <div class="arch-row">
+        <div><span class="arch-url">system.varlem.com.br</span></div>
+        <div>Landing page e login do produto SaaS</div>
+        <div>Clientes e prospects</div>
+      </div>
+      <div class="arch-row">
+        <div><span class="arch-url">mastersystem.varlem.com.br</span></div>
+        <div>Painel de administração do SaaS</div>
+        <div>Equipe interna (oculto)</div>
+      </div>
+      <div class="arch-row">
+        <div><span class="arch-url">mercadinho-bb.varlem.com.br</span></div>
+        <div>Sistema exclusivo do Mercadinho B&amp;B</div>
+        <div>Usuários desse cliente</div>
+      </div>
+      <div class="arch-row">
+        <div><span class="arch-url">drogaria-roma.varlem.com.br</span></div>
+        <div>Sistema exclusivo da Drogaria Romã</div>
+        <div>Usuários desse cliente</div>
+      </div>
+      <div class="arch-row">
+        <div><span class="arch-url">*.varlem.com.br</span></div>
+        <div>Qualquer novo cliente cadastrado</div>
+        <div>Usuários do respectivo cliente</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Viabilidade -->
+  <div class="card" style="background:#ecfdf5;border-color:#6ee7b7">
+    <h3 style="color:var(--green);margin-bottom:12px">Viabilidade: 100% possível</h3>
+    <p style="font-size:.93rem;line-height:1.8">
+      O sistema já tem suporte a subdomínios. O middleware <code>tenantFromSubdomain</code>
+      em <code>middleware/tenantResolver.js</code> extrai o slug do hostname
+      (ex: <code>mercadinho-bb.varlem.com.br</code> → slug <code>mercadinho-bb</code>)
+      e faz o lookup no banco. Só precisam ser feitos ajustes pontuais no código
+      e nas configurações de DNS e Railway.
+    </p>
+  </div>
+
+  <!-- O que precisa ser feito -->
+  <div class="card">
+    <h3 style="margin-bottom:16px">O Que Precisa Ser Feito</h3>
+
+    <p style="font-weight:700;margin-bottom:8px;color:var(--muted);font-size:.82rem;text-transform:uppercase;letter-spacing:.04em">1. DNS (no painel do seu registrador - ex: Registro.br, Cloudflare)</p>
+    <table style="margin-bottom:24px">
+      <thead>
+        <tr><th>Registro</th><th>Tipo</th><th>Valor</th><th>Observação</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>system</code></td>
+          <td>CNAME</td>
+          <td><code>xxxx.up.railway.app</code></td>
+          <td>Landing/login do produto</td>
+        </tr>
+        <tr>
+          <td><code>mastersystem</code></td>
+          <td>CNAME</td>
+          <td><code>xxxx.up.railway.app</code></td>
+          <td>Painel admin (oculto)</td>
+        </tr>
+        <tr>
+          <td><code>*</code> (wildcard)</td>
+          <td>CNAME</td>
+          <td><code>xxxx.up.railway.app</code></td>
+          <td>Cobre todos os clientes automaticamente</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:12px 16px;font-size:.85rem;margin-bottom:20px">
+      <strong>Nota:</strong> O registro wildcard <code>*</code> precisa ser suportado pelo seu provedor DNS.
+      Cloudflare suporta wildcards gratuitamente. Registro.br <strong>não</strong> suporta wildcard diretamente;
+      nesse caso, recomenda-se usar Cloudflare como nameserver secundário.
+    </div>
+
+    <p style="font-weight:700;margin-bottom:8px;color:var(--muted);font-size:.82rem;text-transform:uppercase;letter-spacing:.04em">2. Railway (painel do projeto)</p>
+    <ul style="font-size:.9rem;line-height:2;margin-bottom:20px;padding-left:20px">
+      <li>Em <strong>Settings → Domains</strong>, adicionar o domínio <code>*.varlem.com.br</code></li>
+      <li>Adicionar também <code>system.varlem.com.br</code> e <code>mastersystem.varlem.com.br</code> explicitamente</li>
+      <li>Railway gera certificado SSL automaticamente via Let's Encrypt (HTTPS gratuito)</li>
+      <li>Para wildcard SSL, o Railway pode exigir verificação via registro DNS TXT (ACME challenge)</li>
+    </ul>
+
+    <p style="font-weight:700;margin-bottom:8px;color:var(--muted);font-size:.82rem;text-transform:uppercase;letter-spacing:.04em">3. Variáveis de Ambiente (.env / Railway)</p>
+    <table style="margin-bottom:20px">
+      <thead>
+        <tr><th>Variável</th><th>Valor</th><th>Função</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>BASE_DOMAIN</code></td><td><code>varlem.com.br</code></td><td>Domínio base para extração do subdomínio</td></tr>
+        <tr><td><code>CORS_ORIGINS</code></td><td><code>https://system.varlem.com.br,https://*.varlem.com.br</code></td><td>Origens permitidas no CORS</td></tr>
+        <tr><td><code>PRODUCT_URL</code></td><td><code>https://system.varlem.com.br</code></td><td>URL base do produto (para e-mails, redirects)</td></tr>
+        <tr><td><code>MASTER_URL</code></td><td><code>https://mastersystem.varlem.com.br</code></td><td>URL do painel admin</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Mudanças no código -->
+  <div class="card">
+    <h3 style="margin-bottom:16px">Mudanças Necessárias no Código</h3>
+
+    <div style="margin-bottom:20px">
+      <p style="font-weight:600;margin-bottom:8px">server.js - Roteamento por hostname</p>
+      <p style="font-size:.88rem;color:var(--muted);line-height:1.7">Adicionar um middleware no início do servidor que detecta o subdomínio e redireciona para o
+      conteúdo correto: <code>mastersystem.*</code> → serve master.html; qualquer outro subdomínio não reservado →
+      serve index.html do tenant (com guard JWT). As rotas atuais <code>/app/:slug</code> e <code>/master</code>
+      podem continuar funcionando como fallback para ambiente de desenvolvimento local.</p>
+    </div>
+
+    <div style="margin-bottom:20px">
+      <p style="font-weight:600;margin-bottom:8px">middleware/tenantResolver.js - Lista de slugs reservados</p>
+      <p style="font-size:.88rem;color:var(--muted);line-height:1.7">Adicionar à lista de slugs reservados: <code>system</code>, <code>mastersystem</code>, <code>app</code>,
+      <code>suporte</code>, <code>ajuda</code>, <code>blog</code>, <code>docs</code>. Isso evita que um cliente
+      tente se cadastrar com um slug que conflitaria com uma URL do sistema.</p>
+    </div>
+
+    <div style="margin-bottom:20px">
+      <p style="font-weight:600;margin-bottom:8px">server.js - CORS com wildcard de subdomínio</p>
+      <p style="font-size:.88rem;color:var(--muted);line-height:1.7">Atualizar a lógica do CORS para aceitar qualquer origem
+      que termine em <code>.varlem.com.br</code>, usando a variável <code>BASE_DOMAIN</code>.
+      O CORS atual aceita uma lista fixa de origens; precisa aceitar o padrão <code>*.varlem.com.br</code> dinamicamente.</p>
+    </div>
+
+    <div style="margin-bottom:20px">
+      <p style="font-weight:600;margin-bottom:8px">public/js/app.js - Detecção de tenant por subdomínio</p>
+      <p style="font-size:.88rem;color:var(--muted);line-height:1.7">Atualizar a função <code>detectTenant()</code> para extrair o slug do
+      <code>window.location.hostname</code> antes de tentar ler do path <code>/app/:slug</code>.
+      Exemplo: <code>mercadinho-bb.varlem.com.br</code> → slug = <code>mercadinho-bb</code>. Manter a leitura
+      por path como fallback para desenvolvimento local.</p>
+    </div>
+
+    <div>
+      <p style="font-weight:600;margin-bottom:8px">Landing page - Modal de login (campo de slug)</p>
+      <p style="font-size:.88rem;color:var(--muted);line-height:1.7">Na <code>system.varlem.com.br</code>, o cliente ainda precisa informar o slug para fazer login
+      (já que é a página genérica do produto). Após autenticar, o redirecionamento vai para
+      <code>https://slug.varlem.com.br</code> em vez de <code>/app/:slug</code>. Na tela
+      de login dentro do próprio subdomínio do cliente (ex: <code>mercadinho-bb.varlem.com.br</code>),
+      o campo de slug pode ser ocultado pois o tenant é implícito no endereço.</p>
+    </div>
+  </div>
+
+  <!-- Resumo de esforço -->
+  <div class="card" style="background:#f1f5f9">
+    <h3 style="margin-bottom:16px">Resumo do Esforço de Implementação</h3>
+    <table>
+      <thead>
+        <tr><th>Tarefa</th><th>Onde</th><th>Esforço</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Criar registros DNS (CNAME + wildcard)</td><td>Painel DNS (Cloudflare/Registro.br)</td><td>30 min</td></tr>
+        <tr><td>Adicionar domínios no Railway</td><td>Railway Dashboard</td><td>15 min</td></tr>
+        <tr><td>Adicionar variável BASE_DOMAIN</td><td>.env / Railway Env Vars</td><td>5 min</td></tr>
+        <tr><td>Slugs reservados (system, mastersystem)</td><td>tenantResolver.js</td><td>5 min</td></tr>
+        <tr><td>Roteamento por hostname no servidor</td><td>server.js</td><td>2-3 horas</td></tr>
+        <tr><td>CORS dinâmico com wildcard de domínio</td><td>server.js</td><td>1 hora</td></tr>
+        <tr><td>detectTenant() por subdomínio</td><td>public/js/app.js</td><td>1 hora</td></tr>
+        <tr><td>Redirect pós-login para subdomínio</td><td>public/landing.html</td><td>1 hora</td></tr>
+        <tr><td><strong>Total estimado</strong></td><td></td><td><strong>~1 dia de trabalho</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card" style="background:#fffbeb;border-color:#fde68a">
+    <p style="font-size:.92rem">
+      <strong style="color:#92400e">Sobre domínio futuro:</strong> A ideia de migrar para um domínio mais curto (ex: <code>.com</code> ou
+      um <code>.app</code>) é excelente para o posicionamento do produto. Quando esse domínio for adquirido,
+      basta repetir o mesmo processo de DNS e Railway. O código precisa ser alterado apenas na variável
+      <code>BASE_DOMAIN</code> - nenhuma outra mudança será necessária se a implementação for feita corretamente.
+    </p>
+  </div>
+</section>
+
+</div>
+
+<footer class="footer">
+  <p>VarlenSYS - Sistema de Gestão Comercial | Documento de Análise para MVP | 17/04/2026</p>
+</footer>
+
+</body>
+</html>

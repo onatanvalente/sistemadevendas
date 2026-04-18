@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════
-   SGC — Middleware de Auditoria (Audit Log)
+   VarlenSYS — Middleware de Auditoria (Audit Log)
    Registra todas as ações relevantes no sistema
    ══════════════════════════════════════════════════════════════ */
 

@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════
-   SGC — Script: Criar Programa Padrão "Clube Fidelidade"
+   VarlenSYS — Script: Criar Programa Padrão "Clube Fidelidade"
    Execução única para configuração inicial do sistema.
    
    Uso: node scripts/criar-clube-fidelidade.js

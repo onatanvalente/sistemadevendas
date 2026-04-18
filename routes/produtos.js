@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════
-   SGC — Rotas: Produtos v2.0
+   VarlenSYS — Rotas: Produtos v2.0
    CRUD + sugestões inteligentes + combos + curva ABC
    ══════════════════════════════════════════════════════════════ */
 
